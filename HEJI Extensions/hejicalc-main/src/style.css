@@ -1,4 +1,3 @@
-
 @font-face {
     font-family: "HEJI2Text";
     src: url("fonts/HEJI2Text.otf") format("opentype");
@@ -379,4 +378,10 @@ html.transition *:after {
   transition-delay: 0 !important;
 }
 
-
+.fiftyThree, .fiftyNine, .sixtyOne, .sixtySeven, .seventyOne, .seventyThree, .seventyNine, .eightyThree, .eightyNine {
+    font-family: "HEJIExtensions2022", "HEJI2", sans-serif;
+    font-size: 1.67rem;
+    position: relative;
+    letter-spacing: 0.1em;
+    border-radius: 25%;
+}
