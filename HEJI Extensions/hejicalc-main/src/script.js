@@ -1975,6 +1975,9 @@ function getPC(){
 	} else if (displaySum[23] == -3){
 		eightyNine = eightyNineSymbols[0];
 	}
+	var heji2String = fortySeven + fortyThree + fortyOne + thirtySeven + thirtyOne + twentyNine + twentyThree + nineteen + seventeen + tridecimal + undecimal + septimal + pythag + natural;
+	var hejiExtensionsPath = eightyNine + eightyThree + seventyNine + seventyThree + seventyOne + sixtySeven + sixtyOne + fiftyNine + fiftyThree;
+
 	var notationString;
 	var undefinedNotation;
 	if ($("#ratioInput").prop("checked") && (eightyNine == null || eightyThree == null || seventyNine == null || seventyThree == null || seventyOne == null || sixtySeven == null || sixtyOne == null || fiftyNine == null || fiftyThree == null || fortySeven == null || fortyThree == null || fortyOne == null || thirtySeven == null || thirtyOne == null || twentyNine == null || twentyThree == null || nineteen == null || seventeen == null || tridecimal == null || undecimal == null || septimal == null || pythag == null || natural == null || reducedRatioRemainder[0] > 1 || reducedRatioRemainder[1] > 1)) {
@@ -1982,7 +1985,7 @@ function getPC(){
 		outputDiatonic = "";
 		undefinedNotation = "undefined";
 	} else {
-		notationString = eightyNine + eightyThree + seventyNine + seventyThree + seventyOne + sixtySeven + sixtyOne + fiftyNine + fiftyThree + fortySeven + fortyThree + fortyOne + thirtySeven + thirtyOne + twentyNine + twentyThree + nineteen + seventeen + tridecimal + undecimal + septimal + pythag + natural;
+		notationString = '<span class="heji-extensions">' + hejiExtensionsPath + '</span>' + '<span class="heji2">' + heji2String + '</span>';
 		undefinedNotation = "";
 		monzoMessage = "";
 	}

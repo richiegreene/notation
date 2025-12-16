@@ -284,7 +284,6 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 
 .notationOutput{
     color: var(--color-text);
-    font-family: "HEJIExtensions2022", "HEJI2Text", sans-serif;
     font-size: 2.3rem;
     display: inline-flex;
     margin-top: 0.25rem;
@@ -399,4 +398,12 @@ html.transition *:after {
 
 #midiNote {
     font-family: "Plainsound Text", sans-serif;
+}
+
+.heji-extensions {
+    font-family: "HEJIExtensions2022", sans-serif;
+}
+
+.heji2 {
+    font-family: "HEJI2", "HEJI2Text", sans-serif;
 }
