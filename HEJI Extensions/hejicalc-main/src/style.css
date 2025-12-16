@@ -159,6 +159,7 @@ label {
 
 input {
     background-color: var(--color-input);
+    color: var(--color-text);
     text-align: center;
     font-size: 1rem;
     border: none;
@@ -242,6 +243,7 @@ div.version {
 button {
     font-size: 1rem;
     background-color: var(--bg-button);
+    color: var(--color-text);
     text-align: center;
     vertical-align: middle;
     border: 1px solid var(--border-button);
