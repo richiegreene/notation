@@ -58,19 +58,19 @@ html {
 }
 
 html[data-theme='dark'] {
-    --bg-main: #303030;
-    --bg-header: #282828;
-    --bg-button: #66757F;
-    --bg-button-selected: #D3E6D1;
-    --bg-button-clear: #DCDCDC;
-    --bg-button-get: #D3E6D1;
-    --border-button: #a8b8a7;
-    --color-palette-labels: #a8b8a7;
-    --color-text: #DCDCDC;
-    --color-em: #D3E6D1;
-    --color-link: #00BFFF;
-    --color-link-hover: #66757F;
-    --color-input: #D3D3D3;
+    --bg-main: #1a1a2e;
+    --bg-header: #16213e;
+    --bg-button: #0f3460;
+    --bg-button-selected: #537895;
+    --bg-button-clear: #2a3b4d;
+    --bg-button-get: #537895;
+    --border-button: #537895;
+    --color-palette-labels: #537895;
+    --color-text: #e0e0e0;
+    --color-em: #537895;
+    --color-link: #9d9d9d;
+    --color-link-hover: #e0e0e0;
+    --color-input: #16213e;
 }
 
 body {
@@ -313,6 +313,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 select {
     border: none;
     background-color: var(--color-input);
+    color: var(--color-text);
     padding: -1rem;
     font-size: inherit;
 }
