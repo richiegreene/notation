@@ -306,7 +306,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 
 .noteName{
     color: var(--color-text);
-    font-family: "Plainsound Text";
+    font-family: Menlo, Monaco, 'Courier New', monospace;
     font-size: 2.3rem;
     display: inline;
 }
@@ -391,4 +391,12 @@ html.transition *:after {
 
 .palette {
     white-space: nowrap;
+}
+
+#cents {
+    font-family: "Plainsound Text", sans-serif;
+}
+
+#midiNote {
+    font-family: Menlo, Monaco, 'Courier New', monospace;
 }
