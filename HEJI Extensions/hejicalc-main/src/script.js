@@ -929,6 +929,33 @@ $(document).ready(function(){
 		getBend();
     });
 
+    // Collapsible menu functionality
+    document.querySelectorAll('.settings-menu-item').forEach(item => {
+        const header = item.querySelector('.settings-header');
+        const content = item.querySelector('.settings-content');
+        const toggleIcon = header.querySelector('.toggle-icon');
+
+        // Initially collapse all sections except the first one (REFERENCE PITCH)
+        if (item !== document.querySelector('.settings-menu-item')) {
+            header.classList.add('collapsed');
+            content.style.display = 'none';
+            toggleIcon.textContent = '▶'; // Right-pointing triangle for collapsed
+        } else {
+            toggleIcon.textContent = '▼'; // Down-pointing triangle for expanded
+        }
+
+        header.addEventListener('click', () => {
+            const isCollapsed = header.classList.toggle('collapsed');
+            if (isCollapsed) {
+                content.style.display = 'none';
+                toggleIcon.textContent = '▶';
+            } else {
+                content.style.display = 'block'; // Or 'grid' if that's what it was
+                toggleIcon.textContent = '▼';
+            }
+        });
+    });
+
 });
 
 
