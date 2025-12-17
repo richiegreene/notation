@@ -1405,7 +1405,7 @@ function clearFreq(){
 // Load page with A-natural "input"
 function sendA(){
 	$("#paletteInput").click();
-	$("#Anatural").click();
+	$(".notes[value='1']").click();
 	$("#defaultOctave").click();
 	$("#default3").click();
 	$("#default5").click();

@@ -388,8 +388,8 @@ html.transition *:after {
 .fiftyThree, .fiftyNine, .sixtyOne, .sixtySeven, .seventyOne, .seventyThree, .seventyNine, .eightyThree, .eightyNine {
     font-family: "HEJIExtensions2022", "HEJI2", sans-serif;
     font-size: 1.67rem;
-    letter-spacing: 0.1em;
     border-radius: 0;
+    top: -2px; /* Adjust vertical position */
 }
 
 .palette {
