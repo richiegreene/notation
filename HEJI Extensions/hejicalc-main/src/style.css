@@ -67,7 +67,10 @@ body {
     border-radius: 8px;
     color: var(--color-text);
     font-family: monospace;
-    margin-bottom: 10px; /* Space between items */
+    margin: 10px; /* Space around each item */
+    flex: 1 1 300px; /* Allow items to grow, shrink, and have a base width of 300px */
+    min-width: 300px; /* Ensure items don't get too small */
+    max-width: 400px; /* Prevent items from becoming too wide on very large screens */
 }
 
 .settings-header {
@@ -99,6 +102,8 @@ body {
     grid-template-columns: auto 1fr; /* Adjust as needed for content */
     gap: 10px;
     align-items: center;
+    overflow: hidden; /* Hide overflowing content during transition */
+    transition: max-height 0.3s ease-out; /* Smooth transition for max-height */
 }
 
 h1 {
@@ -192,10 +197,11 @@ div.version {
 
 .calc-container {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    justify-content: center; /* Center items horizontally */
     padding: 10px;
-    max-width: 400px; /* Adjust as needed */
     margin: 0 auto; /* Center the container */
+    max-width: 1200px; /* A reasonable max-width for a wider layout */
 }
 
 .calc-container > div {
