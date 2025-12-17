@@ -959,6 +959,14 @@ $(document).ready(function(){
         });
     });
 
+    // Initialize SortableJS for drag-and-drop
+    var el = document.querySelector('.calc-container');
+    var sortable = Sortable.create(el, {
+        animation: 150,
+        handle: '.settings-header', // Only drag by the header
+        ghostClass: 'sortable-ghost' // Class name for the drop placeholder
+    });
+
 });
 
 

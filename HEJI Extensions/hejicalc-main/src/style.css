@@ -419,3 +419,8 @@ table.enharmonic-table > tr, td, th {
 .heji2 {
     font-family: "HEJI2", "HEJI2Text", sans-serif;
 }
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: #f0f0f0; /* Light background for visibility */
+    border: 2px dashed #ccc; /* Dashed border */
+}
