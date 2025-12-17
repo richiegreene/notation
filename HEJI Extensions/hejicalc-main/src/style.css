@@ -387,6 +387,7 @@ html.transition *:after {
     font-size: 1.67rem;
     letter-spacing: 0.1em;
     border-radius: 0;
+    top: -5px; /* Added to reduce upper padding */
 }
 
 .palette {
@@ -403,6 +404,7 @@ html.transition *:after {
 
 .heji-extensions {
     font-family: "HEJIExtensions2022", sans-serif;
+    letter-spacing: 0.05em;
 }
 
 .heji2 {
