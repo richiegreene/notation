@@ -26,12 +26,12 @@
     <div class="calc-container">
         <div class="settings-menu-item">
             <div class="settings-header">
-                <span>REFERENCE PITCH</span>
+                <span>Reference Pitch</span>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="settings-content">
                 <div class="refbox">
-                    <h3><b>REFERENCE PITCH</b><br>notation & frequency of 1/1</h3>
+                    <h3>notation & frequency of 1/1</h3>
                     <br>
                     <em>octave (Middle C = C4)</em>
                     <br>
@@ -79,12 +79,12 @@
 
         <div class="settings-menu-item">
             <div class="settings-header">
-                <span>INPUT 1</span>
+                <span>HEJI Entry</span>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="settings-content">
                 <div class="palettebox">
-                    <h3><b>INPUT 1</b><br><input type="radio" name="inputType" id="paletteInput" checked> HEJI notation</h3>
+                    <h3><br><input type="radio" name="inputType" id="paletteInput" checked>HEJI notation</h3>
                     <br>
         			<div class="palette">
         				<h2></h2>
@@ -350,12 +350,12 @@
 
 		<div class="settings-menu-item">
             <div class="settings-header">
-                <span>INPUT 2</span>
+                <span>Ratio Rentry</span>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="settings-content">
                 <div class="ratiobox">
-        			<h3><b>INPUT 2</b><br><input type="radio" name="inputType" id="ratioInput"> JI ratio (input × offset)</h3>
+        			<h3><br><input type="radio" name="inputType" id="ratioInput"> JI ratio (input × offset)</h3>
                     <br>
         			<em>offset ratio</em>
         			<br>
@@ -395,12 +395,11 @@
 
         <div class="settings-menu-item">
             <div class="settings-header">
-                <span>OUTPUT</span>
+                <span>Output</span>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="settings-content">
                 <div class="outputbox">
-                    <h3><b>OUTPUT</b><br>
                     <input type="checkbox" name="inputType" id="normalize"> normalise</h3>
                     <br>
         			<em>HEJI notation</em>
@@ -429,7 +428,7 @@
         	            <b><div id="JIgross" value="0">0</div></b>
                		</div>
                     <div class="output-content">
-                        <label for="decimals">calculator precision: </label>
+                        <label for="decimals"></label>
                         <select id="precision">
                             <option value="6">6</option>
                             <option value="5">5</option>
@@ -516,12 +515,12 @@
 
         <div class="settings-menu-item">
             <div class="settings-header">
-                <span>MELODIC DISTANCE</span>
+                <span>Melodic Distance</span>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="settings-content">
                 <div class="melodicbox">
-                    <h3><b>MELODIC DISTANCE</b><br>from ratio I to ratio II</h3>
+                    <h3><br>from ratio I to ratio II</h3>
                     <br>
                     <em>ratio I</em>
         			<br>
@@ -559,141 +558,10 @@
             </div>
         </div>
 
-        <div class="settings-menu-item">
-            <div class="settings-header">
-                <span>SCALE BUILDER</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="scalabox">
-                    <h2>SCALE BUILDER<br>Scala file format</h2>
-                    <br>
-                    <em>filename</em><br>
-        			<input type="text" id="filename" value="myscale"><br>
-        			<button id="pushScala" class="getMelodic" onclick="updateFilename()">update</button><br><br>
-        			<em>short description</em><br>
-        			<input type="text" id="scalaDescription" value="...A new scale..."><br>
-        			<button id="pushScala" class="getMelodic" onclick="updateDescription()">update</button><br><br>
-        			<button id="pushScala" class="getMelodic" onclick="pushScala()">load output</button>&nbsp;
-        			<button id="clearScala" class="clearMelodic" onclick="clearScala()">reset</button><br><br>
-
-        			<em>current # of pitches</em><br>
-        			<b><div id="scalaPitches">1</div></b>
-        			<button id="getMelodic" class="getMelodic" onclick="scalaPreview()">preview</button>
-
-        			<br><br>
-
-        			<em>remove pitch from scale</em><br>
-        			<input type="text" id="removeScala" value="b/a"><br>
-        			<button id="clearScala" class="clearMelodic" onclick="removeScala()">remove</button><br><br>
-
-        			<a href='#' id="downloadlink">download file</a><br><br>
-                    
-        			<b>Note:</b><br>
-        			1/1 is implicit in the Scala file format;<br>
-        			input pitches are automatically normalised<br>
-        			and sorted, thus scales are octave-repeating.
-                </div>
-            </div>
-        </div>
+        
 
     </div>
-    <div class="settings-menu-item">
-            <div class="settings-header">
-                <span>ENHARMONIC PITCH-CLASS COMPARISON</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="enharmonic-search">
-                    <h2>AUTO-NORMALISED ENHARMONIC PITCH-CLASS COMPARISON</h2>
-        			<em>simplified to a Pythagorean notation modified, optionally, by up to<br>
-        				3 syntonic commas and/or one of the primes 7, 11 or 13, and<br>
-        				inflected by up to 3 strokes each signifying ca. 1/6-comma<br>
-        				19/ = 512:513 </em>|<em> 17/ = 255:256 </em>|<em> 29/ = 144:145</em><br><br>
-        			<em>primes to include</em><br>
-        			<input type="checkbox" class="filter3" id="filter3" checked> 3
-        			&nbsp;
-        			&nbsp;
-        			<input type="checkbox" class="filter5" id="filter5" checked> 5
-        			&nbsp;
-        			&nbsp;
-        			<input type="checkbox" class="filter" id="filter7"> 7
-        			&nbsp;
-        			&nbsp;
-        			<input type="checkbox" class="filter" id="filter11"> 11
-        			&nbsp;
-        			&nbsp;
-        			<input type="checkbox" class="filter" id="filter13"> 13
-        			&nbsp;
-        			&nbsp;
-        			<input type="checkbox" class="filterstroke" id="filter17" checked> 17
-        			&nbsp;
-        			&nbsp;
-        			<input type="checkbox" class="filterstroke" id="filter19" checked> 19
-        			&nbsp;
-        			&nbsp;
-        			<input type="checkbox" class="filterstroke" id="filter29" checked> 29
-        			&nbsp;
-        			&nbsp;
-                    <input type="checkbox" class="filter" id="filterall" checked> toggle 17-19-29 (strokes)
-                    <br>
-                    <input type="radio" name="enharmonicInput" id="enharmonicCentsRadio" checked> <em>cent input (interval to ref)</em>
-                    <br>
-                    <input type="number" class="mod1200" id="centreCents" value="0" min="0">
-                    <br>
-                    <button class="getEnharmonic" onclick="getCurrentCents()">load output</button>
-                    <button class="getEnharmonic" onclick="getMelodicCents()">save melodic</button>
-                    <br>
-                    <input type="radio" name="enharmonicInput" id="enharmonicFrequencyRadio"> <em>frequency input (interval to ref)</em>
-                    <br>
-                    <input type="number" class="freq" id="frequencyInput" value="440" min="1">
-                    <br>
-                    <button class="clearEnharmonic" onclick="clearCurrentCF()">reset inputs</button>
-                    <br><br>
-                    <em>tolerance range (0 - 1200 c)</em><br>
-                    <input type="number" class="mod1200" id="rangeCents" value="2" min="0">
-                    <br>
-                    <em>minimum & maximum HD values</em>
-                    <br>
-                    <input type="number" class="positive" id="minHD" value="0" min="0">&nbsp;&nbsp;
-                    <input type="number" class="positive" id="maxHD" value="50" min="0">
-                    <br>
-                    <em>maximum size of output list</em>
-                    <br>
-                    <input type="number" step="1" class="naturalnumberbox" id="outputSize" value="48" min="0">
-                    <br>
-                    <button class="clearEnharmonic" onclick="clearFilters()">reset filters</button>
-                    <br><br>
-                    <input type="radio" name="sorting" id="centSort">sort by cents deviation&nbsp;&nbsp;
-                    <input type="radio" name="sorting" id="hdSort" checked>sort by HD
-                    <br>
-                    <button class="getEnharmonic" onclick="wipeEnharmonics()">search</button>
-        			<div id="loading"></div>
-        			<table class="enharmonic-table">
-        				<tr>
-        					<th>3</th>
-        					<th>5</th>
-        					<th>7</th>
-        					<th>11</th>
-        					<th>13</th>
-        					<th>17</th>
-        					<th>19</th>
-        					<th>23</th>
-        					<th>29</th>
-        					<th>ratio</th>
-        					<th>interval (cents)</th>
-        					<th>delta (cents)</th>
-        					<th>HD</th>
-        					<th>HE notation</th>
-        				</tr>
-        				<tbody id="data">
-
-        				</tbody>
-        			</table>
-                </div>
-            </div>
-        </div>
-    <br><br>
+    
 	    
 </body>
 </html>
