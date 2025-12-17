@@ -919,17 +919,7 @@ $(document).ready(function(){
 		doCalc();
 		getMelodicRatio();
     });
-    $("#theme").click(function(c) {
-        if (this.checked) {
-            trans()
-			document.documentElement.setAttribute("data-theme", "dark");
-			localStorage.setItem("theme", "dark");
-        } else {
-            trans()
-			document.documentElement.setAttribute("data-theme", "light");
-			localStorage.setItem("theme", "light");
-        }
-	});
+    
 	$("#sibeliusRange").change(function(c){
 		sibeliusRange = $(this).val();
 		getBend();
@@ -941,25 +931,9 @@ $(document).ready(function(){
 
 });
 
-function preferences() {
-	var savedPreference = localStorage.getItem("theme");
-	if (savedPreference == "dark") {
-		trans()
-        document.documentElement.setAttribute('data-theme', 'dark');
-		$("#theme").click();
-	} else if (savedPreference == "light"){
-		$("#theme").prop("checked", false);
-	} else if (savedPreference == null){
-		$("#theme").prop("checked", false);
-	}
-}
 
-let trans = () => {
-    document.documentElement.classList.add('transition');
-    window.setTimeout(() => {
-        document.documentElement.classList.remove('transition')
-    }, 1000);
-} 
+
+ 
 
 // utilities
 function getValue(arr){
