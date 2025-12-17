@@ -8,7 +8,7 @@
 }
 @font-face {
     font-family: "HEJIExtensions2022";
-    src: url("fonts/HEJIExtensions2022-Regular.otf") format("opentype");
+    src: url("fonts/HEJIExtensions2025-Text.ttf") format("opentype");
 }
 /*@font-face {
     font-family: "HEJI2Bravura";
@@ -57,19 +57,19 @@ html {
 }
 
 html[data-theme='dark'] {
-    --bg-main: #1a1a2e;
-    --bg-header: #16213e;
-    --bg-button: #0f3460;
-    --bg-button-selected: #537895;
-    --bg-button-clear: #2a3b4d;
-    --bg-button-get: #537895;
-    --border-button: #537895;
-    --color-palette-labels: #537895;
-    --color-text: #e0e0e0;
-    --color-em: #537895;
-    --color-link: #9d9d9d;
-    --color-link-hover: #e0e0e0;
-    --color-input: #16213e;
+    --bg-main: #424242; /* Changed to darker grey */
+    --bg-header: #3a328a;
+    --bg-button: #7c40a8;
+    --bg-button-selected: #b5539e;
+    --bg-button-clear: #7c40a8;
+    --bg-button-get: #b5539e;
+    --border-button: #e07b79;
+    --color-palette-labels: #b5539e;
+    --color-text: #f0f0f0;
+    --color-em: #fcae68;
+    --color-link: #e07b79;
+    --color-link-hover: #fcae68;
+    --color-input: #3a328a;
 }
 
 body {
@@ -245,7 +245,7 @@ button {
     color: var(--color-text);
     text-align: center;
     vertical-align: middle;
-    border: 1px solid var(--border-button);
+    border: 3px solid var(--border-button);
     padding: 0.125rem 0.375rem;
     margin: 0.25rem 0;
 }
@@ -253,9 +253,9 @@ button {
 button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .nineteen, .twentyThree, .twentyNine, .thirtyOne, .thirtySeven, .fortyOne, .fortyThree, .fortySeven, .fiftyThree, .fiftyNine, .sixtyOne, .sixtySeven, .seventyOne, .seventyThree, .seventyNine, .eightyThree, .eightyNine, .refAccidental, .spacer {
     height: 2.875rem;
     width: 2.8rem;
-    border: 1px solid var(--border-button);
+    border: 3px solid var(--border-button);
     position: relative;
-    border-radius: 35%;
+    border-radius: 0;
     margin-top: 0;
     margin-bottom: -0.25rem;
     box-sizing: border-box;
@@ -269,7 +269,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 }
 
 .octave, .notes, .refOctave, .refNote {
-    border-radius: 50%;
+    border-radius: 0;
 }
 
 .chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .nineteen, .twentyThree, .twentyNine, .thirtyOne, .thirtySeven, .fortyOne, .fortyThree, .fortySeven, .refAccidental {
@@ -305,7 +305,8 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 
 .noteName{
     color: var(--color-text);
-    font-family: "Plainsound Text", sans-serif;
+    font-family: Menlo, Monaco, 'Courier New', monospace;
+    font-weight: bold;
     font-size: 2.3rem;
     display: inline;
 }
@@ -324,19 +325,19 @@ select {
 
 .selected {
     background-color: var(--bg-button-selected);
-    border: 1px solid var(--border-button);
+    border: 3px solid var(--border-button);
 }
 
 .clearFreq, .clear, .clearSave, .clearMelodic, .clearMelodicSave, .clearInputRatio, .clearEnharmonic {
-    border-radius: 0.375rem;
+    border-radius: 0;
     background-color: var(--bg-button-clear);
-    border: 1px solid var(--border-button);
+    border: 3px solid var(--border-button);
 }
 
 .getMelodic, .getMelodicReference, .getCurrentPitch, .getEnharmonic {
-    border-radius: 0.375rem;
+    border-radius: 0;
     background-color: var(--bg-button-get);
-    border: 1px solid var(--border-button);
+    border: 3px solid var(--border-button);
 }
 
 .header-content {
@@ -385,7 +386,7 @@ html.transition *:after {
     font-family: "HEJIExtensions2022", "HEJI2", sans-serif;
     font-size: 1.67rem;
     letter-spacing: 0.1em;
-    border-radius: 25%;
+    border-radius: 0;
 }
 
 .palette {
@@ -393,7 +394,7 @@ html.transition *:after {
 }
 
 #cents {
-    font-family: Menlo, Monaco, 'Courier New', monospace;
+    font-family: "Plainsound Text", sans-serif;
 }
 
 #midiNote {
