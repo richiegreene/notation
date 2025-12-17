@@ -967,6 +967,30 @@ $(document).ready(function(){
         ghostClass: 'sortable-ghost' // Class name for the drop placeholder
     });
 
+    // Software bends toggle functionality
+    const toggleSoftwareBendsCheckbox = document.getElementById('toggleSoftwareBends');
+    const softwareBendsContent = document.getElementById('softwareBendsContent');
+
+    // Hide by default using maxHeight
+    if (softwareBendsContent) {
+        softwareBendsContent.style.maxHeight = '0';
+        softwareBendsContent.style.overflow = 'hidden'; // Ensure overflow is hidden for smooth transition
+    }
+
+    if (toggleSoftwareBendsCheckbox) {
+        toggleSoftwareBendsCheckbox.addEventListener('change', function() {
+            if (softwareBendsContent) {
+                if (this.checked) {
+                    // Expand to full height
+                    softwareBendsContent.style.maxHeight = softwareBendsContent.scrollHeight + 'px';
+                } else {
+                    // Collapse
+                    softwareBendsContent.style.maxHeight = '0';
+                }
+            }
+        });
+    }
+
 });
 
 

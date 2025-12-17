@@ -441,74 +441,76 @@
                         </select> decimal places
                     </div>
 
-                    <h3 class="software">software pitch bends</h3>
-                    <p>from nearest
-        			<select id="bendParameter" class="bendParameter">
-        				<option value="1">diatonic</option>
-        				<option value="2">chromatic</option> MIDI pitch
-        			</select>
-        			MIDI pitch
-        			</p>
-        			<div class="pbrange first">
-        			<em>Sibelius pb range
-        			± <select id="sibeliusRange" class="sibeliusRange">
-        		 		<option value="100">100</option>
-        				<option value="200" selected>200</option>
-        				<option value="300">300</option>
-        				<option value="400">400</option>
-        				<option value="500">500</option>
-        				<option value="600">600</option>
-        				<option value="700">700</option>
-        				<option value="800">800</option>
-        				<option value="900">900</option>
-        				<option value="1000">1000</option>
-        				<option value="1100">1100</option>
-        				<option value="1200">1200</option>
-        			</select> cents</em>
-        			</div>
-                    <div class="software-bends">
-        				<div class="software-type">
-        					<em>command</em>
-        				</div>
-        				<div class="bend">
-        					<b><div id="sibelius_bend" value="~B 0,64">~B 0,64</div></b>
-        				</div> 
-        			</div>
-        			<div class="pbrange">
-        			<em>Finale pb range
-        			± <select id="midiRange" class="midiRange">
-        				<option value="100">100</option>
-        				<option value="200">200</option>
-        				<option value="300">300</option>
-        				<option value="400">400</option>
-        				<option value="500">500</option>
-        				<option value="600">600</option>
-        				<option value="700">700</option>
-        				<option value="800">800</option>
-        				<option value="900">900</option>
-        				<option value="1000">1000</option>
-        				<option value="1100">1100</option>
-        				<option value="1200" selected>1200</option>
-        			</select> cents</em>
-        			</div>
-        			<div class="software-bends">
-        				<div class="software-type">
-        					<em>value</em>
-        				</div>
-        				<div class="bend">
-        					<b><div id="xbend" value="8192"></div></b>
-        				</div> 
-        			</div>
-        			<div class="pbrange">
-        			<em>Musescore “tuning” ± </em>200<em> cents</em>
-        			</div>
-        			<div class="software-bends">
-        				<div class="software-type">
-        					<em>cent value</em>
-        				</div>
-        				<div class="bend">
-        					<b><div id="musescore_cents" value="0"></div></b>
-        				</div> 
+                    <h3 class="software">software pitch bends <input type="checkbox" id="toggleSoftwareBends"></h3>
+                    <div id="softwareBendsContent">
+                        <p>from nearest
+            			<select id="bendParameter" class="bendParameter">
+            				<option value="1">diatonic</option>
+            				<option value="2">chromatic</option> MIDI pitch
+            			</select>
+            			MIDI pitch
+            			</p>
+            			<div class="pbrange first">
+            			<em>Sibelius pb range
+            			± <select id="sibeliusRange" class="sibeliusRange">
+            		 		<option value="100">100</option>
+            				<option value="200" selected>200</option>
+            				<option value="300">300</option>
+            				<option value="400">400</option>
+            				<option value="500">500</option>
+            				<option value="600">600</option>
+            				<option value="700">700</option>
+            				<option value="800">800</option>
+            				<option value="900">900</option>
+            				<option value="1000">1000</option>
+            				<option value="1100">1100</option>
+            				<option value="1200">1200</option>
+            			</select> cents</em>
+            			</div>
+                        <div class="software-bends">
+            				<div class="software-type">
+            					<em>command</em>
+            				</div>
+            				<div class="bend">
+            					<b><div id="sibelius_bend" value="~B 0,64">~B 0,64</div></b>
+            				</div> 
+            			</div>
+            			<div class="pbrange">
+            			<em>Finale pb range
+            			± <select id="midiRange" class="midiRange">
+            				<option value="100">100</option>
+            				<option value="200">200</option>
+            				<option value="300">300</option>
+            				<option value="400">400</option>
+            				<option value="500">500</option>
+            				<option value="600">600</option>
+            				<option value="700">700</option>
+            				<option value="800">800</option>
+            				<option value="900">900</option>
+            				<option value="1000">1000</option>
+            				<option value="1100">1100</option>
+            				<option value="1200" selected>1200</option>
+            			</select> cents</em>
+            			</div>
+            			<div class="software-bends">
+            				<div class="software-type">
+            					<em>value</em>
+            				</div>
+            				<div class="bend">
+            					<b><div id="xbend" value="8192"></div></b>
+            				</div> 
+            			</div>
+            			<div class="pbrange">
+            			<em>Musescore “tuning” ± </em>200<em> cents</em>
+            			</div>
+            			<div class="software-bends">
+            				<div class="software-type">
+            					<em>cent value</em>
+            				</div>
+            				<div class="bend">
+            					<b><div id="musescore_cents" value="0"></div></b>
+            				</div> 
+                        </div>
                     </div>
                 </div>
             </div>
