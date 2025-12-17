@@ -257,7 +257,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
     position: relative;
     border-radius: 0;
     margin-top: 0;
-    margin-bottom: -0.25rem;
+    margin-bottom: 0;
     box-sizing: border-box;
     line-height: 2.875rem; /* For vertical centering */
     padding: 0; /* To help with line-height centering */
@@ -390,7 +390,6 @@ html.transition *:after {
     font-size: 1.67rem;
     letter-spacing: 0.1em;
     border-radius: 0;
-    top: -5px; /* Added to reduce upper padding */
 }
 
 .palette {
