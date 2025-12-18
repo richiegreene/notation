@@ -354,6 +354,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
     font-size: 4rem;
     display: inline;
     vertical-align: middle;
+    position: relative;
 }
 
 .clear {
@@ -439,11 +440,13 @@ table.enharmonic-table > tr, td, th {
     font-family: "HEJIExtensions2022", sans-serif;
     letter-spacing: 0.05em;
     font-size: 6rem;
+    position: relative;
 }
 
 .heji2 {
     font-family: "HEJI2", "HEJI2Text", sans-serif;
     font-size: 6rem;
+    position: relative;
 }
 .sortable-ghost {
     opacity: 0.4;

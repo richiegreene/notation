@@ -2014,6 +2014,21 @@ function getPC(){
 	var heji2String = fortySeven + fortyThree + fortyOne + thirtySeven + thirtyOne + twentyNine + twentyThree + nineteen + seventeen + tridecimal + undecimal + septimal + pythag + natural;
 	var hejiExtensionsPath = eightyNine + eightyThree + seventyNine + seventyThree + seventyOne + sixtySeven + sixtyOne + fiftyNine + fiftyThree;
 
+	// Conditional alignment logic based on user feedback
+	const isHejiExtOnly = (heji2String.trim().length === 0 || heji2String.trim() === 'n') && hejiExtensionsPath.trim().length > 0;
+
+	if (isHejiExtOnly) {
+		// State: HEJI Extensions only
+		$('#noteName').css('top', '1rem');
+		$('.heji2').css('top', '0rem');
+		$('.heji-extensions').css('top', '-1rem');
+	} else {
+		// Default state: HEJI2 only, or both together
+		$('#noteName').css('top', '0rem');
+		$('.heji2').css('top', '0rem');
+		$('.heji-extensions').css('top', '0rem');
+	}
+
 	var notationString;
 	var undefinedNotation;
 	if ($("#ratioInput").prop("checked") && (eightyNine == null || eightyThree == null || seventyNine == null || seventyThree == null || seventyOne == null || sixtySeven == null || sixtyOne == null || fiftyNine == null || fiftyThree == null || fortySeven == null || fortyThree == null || fortyOne == null || thirtySeven == null || thirtyOne == null || twentyNine == null || twentyThree == null || nineteen == null || seventeen == null || tridecimal == null || undecimal == null || septimal == null || pythag == null || natural == null || reducedRatioRemainder[0] > 1 || reducedRatioRemainder[1] > 1)) {
