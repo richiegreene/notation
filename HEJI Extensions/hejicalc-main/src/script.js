@@ -938,22 +938,22 @@ $(document).ready(function(){
         // Initially collapse all sections except the first one (REFERENCE PITCH)
         if (item !== document.querySelector('.settings-menu-item')) {
             header.classList.add('collapsed');
-            content.style.maxHeight = '0'; // Set max-height to 0 for collapsed state
+            content.style.display = 'none'; // Set display to none for collapsed state
             toggleIcon.textContent = ''; // Hide the toggle icon
         } else {
-            // For the first item, ensure it's expanded and has a max-height
+            // For the first item, ensure it's expanded
             header.classList.remove('collapsed');
-            content.style.maxHeight = content.scrollHeight + 'px'; // Set to content's full height
+            content.style.display = 'grid'; // Set display to grid for expanded state
             toggleIcon.textContent = '▼'; // Show the toggle icon
         }
 
         header.addEventListener('click', () => {
             const isCollapsed = header.classList.toggle('collapsed');
             if (isCollapsed) {
-                content.style.maxHeight = '0'; // Collapse
+                content.style.display = 'none'; // Collapse
                 toggleIcon.textContent = ''; // Hide icon
             } else {
-                content.style.maxHeight = content.scrollHeight + 'px'; // Expand to full height
+                content.style.display = 'grid'; // Expand
                 toggleIcon.textContent = '▼'; // Show icon
             }
         });
