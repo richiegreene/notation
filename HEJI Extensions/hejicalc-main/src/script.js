@@ -1520,29 +1520,29 @@ function getPC(){
 	var refNat = 7 * ref12acc;
 	var note = mod(((((ref12 * 100) + jiCents ) / 100).toFixed(0) - ref12acc),12);
 	var refMidiNoteOutput = refMidiNote[note];
-	var natural;
-	var pythag;
-	var septimal;
-	var undecimal;
-	var tridecimal;
-	var seventeen;
-	var nineteen;
-	var twentyThree;
-	var twentyNine;
-	var thirtyOne;
-	var thirtySeven;
-	var fortyOne;
-	var fortyThree;
-	var fortySeven;
-	var fiftyThree;
-	var fiftyNine;
-	var sixtyOne;
-	var sixtySeven;
-	var seventyOne;
-	var seventyThree;
-	var seventyNine;
-	var eightyThree;
-	var eightyNine;
+	var natural = "";
+	var pythag = "";
+	var septimal = "";
+	var undecimal = "";
+	var tridecimal = "";
+	var seventeen = "";
+	var nineteen = "";
+	var twentyThree = "";
+	var twentyNine = "";
+	var thirtyOne = "";
+	var thirtySeven = "";
+	var fortyOne = "";
+	var fortyThree = "";
+	var fortySeven = "";
+	var fiftyThree = "";
+	var fiftyNine = "";
+	var sixtyOne = "";
+	var sixtySeven = "";
+	var seventyOne = "";
+	var seventyThree = "";
+	var seventyNine = "";
+	var eightyThree = "";
+	var eightyNine = "";
 	var chromatic = tonalArraySum + 25;
 	// display natural on diatonic pitch classes 
 	if ((displaySum[1] - refNat + refpc - 4 == -4 || displaySum[1] - refNat + refpc - 4 == -3 || displaySum[1] - refNat + refpc - 4 == -2 || displaySum[1] - refNat + refpc - 4 == -1 || displaySum[1] - refNat + refpc - 4 == 0 || displaySum[1] - refNat + refpc - 4 == 1 || displaySum[1] - refNat + refpc - 4 == 2) && displaySum[2] == 0 && displaySum[3] == 0 && displaySum[4] == 0 && displaySum[5] == 0 && displaySum[6] == 0 && displaySum[7] == 0 && displaySum[8] == 0 && displaySum[9] == 0 && displaySum[10] == 0 && displaySum[11] == 0 && displaySum[12] == 0 && displaySum[13] == 0 && displaySum[14] == 0 && displaySum[15] == 0 && displaySum[16] == 0 && displaySum[17] == 0 && displaySum[18] == 0 && displaySum[19] == 0 && displaySum[20] == 0 && displaySum[21] == 0 && displaySum[22] == 0 && displaySum[23] == 0){
@@ -2020,14 +2020,15 @@ function getPC(){
 	if (isHejiExtOnly) {
 		// State: HEJI Extensions only
 		$('#noteName').css('top', '1rem');
-		$('.heji2').css('top', '0rem');
-		$('.heji-extensions').css('top', '-1rem');
+		$('.notation-display-container').css('padding-bottom', '2rem');
 	} else {
 		// Default state: HEJI2 only, or both together
 		$('#noteName').css('top', '0rem');
-		$('.heji2').css('top', '0rem');
-		$('.heji-extensions').css('top', '0rem');
+		$('.notation-display-container').css('padding-bottom', '0rem');
 	}
+
+	// Reset other offsets to ensure clean state
+	$('.heji2').css('top', '0rem');
 
 	var notationString;
 	var undefinedNotation;
