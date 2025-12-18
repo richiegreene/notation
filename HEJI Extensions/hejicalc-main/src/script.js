@@ -410,12 +410,7 @@ var numValue = 1;
 var denValue = 1; 
 var displayNumValue = 1;
 var displayDenValue = 1;
-var melodicRefNum = 1;
-var melodicRefDen = 1;
-var melodicNum = 1;
-var melodicDen = 1;
-var checkMelodicNum = 1;
-var checkMelodicDen = 1;
+
 var inputNum = 1; 
 var inputDen = 1; 
 var inputNumReduced = 1;
@@ -465,7 +460,7 @@ var delta = [];
 var accCount = [];
 var diatPC= [];
 var acc3 = [];
-var melodicCents = 0;
+
 var monzoMessage = "";
 var cents_from_diatonic_tempered = 0;
 var centDeviation = 0;
@@ -620,21 +615,13 @@ function getInputDen(){
 	return $(".inputDen").attr("value");
 }
 
-function getMelodicRefNum(){
-	return $(".melodicRefNum").attr("value");
-}
 
-function getMelodicRefDen(){
-	return $(".melodicRefDen").attr("value");
-}
 
-function checkMelodicNum(){
-	return $(".checkMelodicNum").attr("value");
-}
 
-function checkMelodicDen(){
-	return $(".checkMelodicDen").attr("value");
-}
+
+
+
+
 
 
 $(document).ready(function(){
@@ -842,22 +829,10 @@ $(document).ready(function(){
 		getCentDeviation();
 		getPC();
 	});
-	$("#melodicRefNum").change(function(c){
-		melodicRefNum = $(this).val();
-		getMelodicRatio();
-	});
-	$("#melodicRefDen").change(function(c){
-		melodicRefDen = $(this).val();
-		getMelodicRatio();
-	});
-	$("#checkMelodicNum").change(function(c){
-		checkMelodicNum = $(this).val();
-		getMelodicRatio();
-	});
-	$("#checkMelodicDen").change(function(c){
-		checkMelodicDen = $(this).val();
-		getMelodicRatio();
-	});
+	
+	
+	
+	
 	$("#frequencyA4").change(function(c){
 		kammerTon = $(this).val();
 		if ($("#refFrequencyLinkedRadio").prop("checked")){
@@ -917,7 +892,6 @@ $(document).ready(function(){
 	$("#precision").change(function(c){
 		precision = $(this).val();
 		doCalc();
-		getMelodicRatio();
     });
     
 	$("#sibeliusRange").change(function(c){
@@ -1282,21 +1256,9 @@ function getSavedInputSum(){
 	doCalc(); 
 }
 
-function getMelodicReference(){
-	melodicRefNum = displayNumValue;
-	melodicRefDen = displayDenValue;
-	$("#melodicRefNum").val(melodicRefNum);
-	$("#melodicRefDen").val(melodicRefDen);
-	getMelodicRatio();
-}
 
-function getMelodicCheck(){
-	checkMelodicNum = displayNumValue;
-	checkMelodicDen = displayDenValue;
-	$("#checkMelodicNum").val(checkMelodicNum);
-	$("#checkMelodicDen").val(checkMelodicDen);
-	getMelodicRatio();
-}
+
+
 
 function clearSave(){
 	savedNum = 1;
@@ -1307,21 +1269,9 @@ function clearSave(){
 	getSavedInputSum();
 }
 
-function clearMelodicSave() {
-	melodicRefNum = 1;
-	melodicRefDen = 1;
-	$("#melodicRefNum").val(melodicRefNum);
-	$("#melodicRefDen").val(melodicRefDen);
-	getMelodicRatio();
-}
 
-function clearMelodic() {
-	checkMelodicNum = 1;
-	checkMelodicDen = 1;
-	$("#checkMelodicNum").val(checkMelodicNum);
-	$("#checkMelodicDen").val(checkMelodicDen);
-	getMelodicRatio();
-}
+
+
 
 function clearInputRatio() {
 	inputNum = 1;
@@ -1439,7 +1389,6 @@ function sendA(){
 	getFrequency1to1();
 	getFrequencyKammerTon();
 	getCurrentPitch();
-	getMelodicRatio();
 	getBend();
 	//getEDOSteps();
 }

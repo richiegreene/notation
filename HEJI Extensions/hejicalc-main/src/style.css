@@ -69,9 +69,9 @@ body {
     color: var(--color-text);
     font-family: monospace;
     margin: 10px; /* Space around each item */
-    flex: 1 1 300px; /* Allow items to grow, shrink, and have a base width of 300px */
-    min-width: 300px; /* Ensure items don't get too small */
-    max-width: 400px; /* Prevent items from becoming too wide on very large screens */
+    flex: 1 1 340px; /* Allow items to grow, shrink, and have a base width of 350px */
+    min-width: 340px; /* Ensure items don't get too small */
+    max-width: 440px; /* Prevent items from becoming too wide on very large screens */
 }
 
 .settings-header {
