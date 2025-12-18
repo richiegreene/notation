@@ -37,6 +37,7 @@
     margin: 0;
     padding: 0;
     font-family: Menlo, Monaco, 'Courier New', monospace;
+    font-size: 14px;
 }
 
 html {
@@ -74,7 +75,7 @@ body {
 }
 
 .settings-header {
-    padding: 10px 15px;
+    padding: 8px 12px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -84,7 +85,7 @@ body {
 
 .settings-header span {
     font-weight: bold;
-    font-size: 1.25rem; /* Match h2 size */
+    font-size: 1rem; /* Match h2 size */
 }
 
 .toggle-icon {
@@ -196,12 +197,35 @@ div.version {
 }
 
 .calc-container {
-    display: flex;
-    flex-wrap: wrap; /* Allow items to wrap to the next line */
-    justify-content: center; /* Center items horizontally */
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
     padding: 10px;
-    margin: 0 auto; /* Center the container */
-    max-width: 1200px; /* A reasonable max-width for a wider layout */
+    margin: 0 auto;
+}
+
+@media (max-width: 1200px) {
+    .calc-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .calc-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .calc-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .calc-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 .calc-container > div {
@@ -256,28 +280,28 @@ div.version {
 }
 
 button {
-    font-size: 1rem;
+    font-size: 0.9rem;
     background-color: var(--bg-button);
     color: var(--color-text);
     text-align: center;
     vertical-align: middle;
     border: 1px solid var(--border-button); /* Changed border thickness */
     border-radius: 4px; /* Added border-radius */
-    padding: 5px 10px; /* Adjusted padding */
-    margin: 0.25rem 0;
+    padding: 4px 8px; /* Adjusted padding */
+    margin: 0.2rem 0;
     cursor: pointer;
 }
 
 button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .nineteen, .twentyThree, .twentyNine, .thirtyOne, .thirtySeven, .fortyOne, .fortyThree, .fortySeven, .fiftyThree, .fiftyNine, .sixtyOne, .sixtySeven, .seventyOne, .seventyThree, .seventyNine, .eightyThree, .eightyNine, .refAccidental, .spacer {
-    height: 2.875rem;
-    width: 2.8rem;
+    height: 2.5rem;
+    width: 2.5rem;
     border: 1px solid var(--border-button); /* Changed border thickness */
     position: relative;
     border-radius: 4px; /* Added border-radius */
     margin-top: 0;
     margin-bottom: 0;
     box-sizing: border-box;
-    line-height: 2.875rem; /* For vertical centering */
+    line-height: 2.5rem; /* For vertical centering */
     padding: 0; /* To help with line-height centering */
     vertical-align: middle;
 }
@@ -303,7 +327,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 
 .notationOutput{
     color: var(--color-text);
-    font-size: 2.3rem;
+    font-size: 2rem;
     display: inline-flex;
     margin-top: 0.25rem;
     margin-bottom: 0;
@@ -312,7 +336,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 
 #num {
     color: var(--color-text);
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     text-decoration:underline;
     text-underline-offset: 0.175rem;
 }
@@ -320,20 +344,20 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 #den {
     margin-top: -0.3125rem;
     color: var(--color-text);
-    font-size: 1.5rem;
+    font-size: 1.2rem;
 }
 
 .noteName{
     color: var(--color-text);
     font-family: monospace; /* Changed font to monospace */
     font-weight: normal;
-    font-size: 2.3rem;
+    font-size: 2rem;
     display: inline;
     vertical-align: middle;
 }
 
 .clear {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
 }
 
 select {
