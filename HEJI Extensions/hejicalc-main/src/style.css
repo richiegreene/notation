@@ -462,3 +462,7 @@ table.enharmonic-table > tr, td, th {
     gap: 10px; /* Add some space between the dropdowns */
     margin-bottom: 10px; /* Add some space below the dropdowns */
 }
+
+.palette .label {
+    color: var(--bg-button);
+}
