@@ -549,9 +549,8 @@ table.enharmonic-table > tr, td, th {
 }
 
 .times-symbol {
-    font-size: 2rem; /* Make '×' prominent */
-    font-weight: bold;
-    align-self: center; /* Vertically center the '×' */
+    font-size: 1.5rem;
+    align-self: center;
 }
 
 input.ratioIn {

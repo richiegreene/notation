@@ -421,6 +421,11 @@ var numArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var denArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var savedNumArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var savedDenArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var inputNum2 = 1;
+var inputDen2 = 1;
+var savedNumArray2 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var savedDenArray2 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var inputSum2 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var reducedSavedNum = 1;
 var reducedSavedDen = 1;
 var reducedRatioRemainder = [1,1];
@@ -1031,17 +1036,27 @@ function getInputSum(){
 		.SumArray(eightyThree[getEightyThree()])
 		.SumArray(eightyNine[getEightyNine()]);
 } else if ($("#intervalInput").prop("checked")){ 
-		smallestTerms = reduce(inputNum,inputDen);
-		inputNumReduced =  smallestTerms[0];
-		inputDenReduced = smallestTerms[1];
-		numArray = getArray(inputNumReduced);
-		denArray = getArray(inputDenReduced);
-		var inputInputSum = numArray
-		.DiffArray(denArray)
-		var productNumArray = numArray.SumArray(savedNumArray);
-		var productDenArray = denArray.SumArray(savedDenArray);
-		reducedOffsetInput = productNumArray.LowestTermsArray(productDenArray);
-		inputSum = reducedOffsetInput[0].DiffArray(reducedOffsetInput[1]);
+        // Calculate Monzo for Ratio 1 (savedNum/savedDen)
+        var r1Monzo = savedNumArray.DiffArray(savedDenArray);
+
+        // Calculate Monzo for Ratio 2 (inputNum/inputDen)
+		var smallestTermsInput = reduce(inputNum, inputDen);
+		var inputNumReduced = smallestTermsInput[0];
+		var inputDenReduced = smallestTermsInput[1];
+		var numArray = getArray(inputNumReduced);
+		var denArray = getArray(inputDenReduced);
+		var r2Monzo = numArray.DiffArray(denArray);
+
+        // Calculate Monzo for Ratio 3 (inputNum2/inputDen2)
+        var smallestTermsInput2 = reduce(inputNum2, inputDen2);
+        var inputNumReduced2 = smallestTermsInput2[0];
+        var inputDenReduced2 = smallestTermsInput2[1];
+        var numArray2 = getArray(inputNumReduced2);
+        var denArray2 = getArray(inputDenReduced2);
+        var r3Monzo = numArray2.DiffArray(denArray2);
+
+        // Chain multiply the monzos: (R1 * R2) * R3
+		inputSum = r1Monzo.SumArray(r2Monzo).SumArray(r3Monzo);
 	}
 }
 
@@ -1110,28 +1125,17 @@ function getDisplayValues(){ //calculate num and den for display
 		var displayUtonalArray = displaySum.map(value => {
 			return value < 0 ? Math.abs(value) : 0;
 		});
-	}	else if ($("#intervalInput").prop("checked")){
-		var displayOtonalArray = reducedOffsetInput[0];
-		var displayUtonalArray = reducedOffsetInput[1];
-	}
-	var integerMonzo1 = getValue(savedNumArray);
-	var integerMonzo2 = getValue(savedDenArray);
-	var integerMonzo3 = getValue(numArray);
-	var integerMonzo4 = getValue(denArray);
-	var remainderOffsetNum = reducedSavedNum / integerMonzo1;
-	var remainderOffsetDen = reducedSavedDen / integerMonzo2; 
-	var remainderInputNum = inputNumReduced / integerMonzo3;
-	var remainderInputDen = inputDenReduced / integerMonzo4; 
-	var ratioRemainderNum = remainderOffsetNum * remainderInputNum;
-	var ratioRemainderDen = remainderOffsetDen * remainderInputDen; 
-	reducedRatioRemainder = reduce(ratioRemainderNum,ratioRemainderDen);
-	if ($("#ratioInput").prop("checked")){
-		displayNumValue = getValue(displayOtonalArray) * reducedRatioRemainder[0];
-		displayDenValue = getValue(displayUtonalArray) * reducedRatioRemainder[1];
-	} else {
-		displayNumValue = getValue(displayOtonalArray);
-		displayDenValue = getValue(displayUtonalArray);
-	}
+	} else if ($("#intervalInput").prop("checked")){
+	        var displayOtonalArray = inputSum.map(value => { // Derive from inputSum
+	            return value < 0 ? 0 : value;
+	        });
+	        var displayUtonalArray = inputSum.map(value => { // Derive from inputSum
+	            return value < 0 ? Math.abs(value) : 0;
+	        });
+		}
+	    displayNumValue = getValue(displayOtonalArray);
+	    displayDenValue = getValue(displayUtonalArray);
+	
 	//optionally normalizes output 
 	if ($("#normalize").prop("checked")){
 		var normTest = Math.log2(Math.abs(displayNumValue / displayDenValue));
@@ -1318,7 +1322,7 @@ function getSavedInputSum(){
 
 
 
-function clearSave(){
+function clearRatio1(){
 	savedNum = 1;
 	savedDen = 1;
 	savedInputSum = reference;
@@ -1331,11 +1335,27 @@ function clearSave(){
 
 
 
-function clearInputRatio() {
+function clearRatio2() {
 	inputNum = 1;
 	inputDen = 1;
 	$("#inputNum").val(inputNum);
 	$("#inputDen").val(inputDen);
+	doCalc();
+}
+
+function loadCurrentPitch2(){
+	inputNum2 = displayNumValue;
+	inputDen2 = displayDenValue;
+	$("#inputNum2").val(inputNum2);
+	$("#inputDen2").val(inputDen2);
+	doCalc(); 
+}
+
+function clearRatio3() {
+	inputNum2 = 1;
+	inputDen2 = 1;
+	$("#inputNum2").val(inputNum2);
+	$("#inputDen2").val(inputDen2);
 	doCalc();
 }
 
@@ -1380,7 +1400,7 @@ function getMelodicRatio(){
 }
 
 // clear all values stored in calc other than reference information
-function doClear() {
+function clearAllIntervals() {
 	$("#paletteInput").click();
 	$("#Anatural").click();
 	$("#defaultOctave").click();
