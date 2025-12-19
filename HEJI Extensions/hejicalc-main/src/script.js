@@ -918,17 +918,10 @@ $(document).ready(function(){
         const content = item.querySelector('.settings-content');
         const toggleIcon = header.querySelector('.toggle-icon');
 
-        // Initially collapse all sections except the first one (REFERENCE PITCH)
-        if (item !== document.querySelector('.settings-menu-item')) {
-            header.classList.add('collapsed');
-            content.style.display = 'none'; // Set display to none for collapsed state
-            toggleIcon.textContent = ''; // Hide the toggle icon
-        } else {
-            // For the first item, ensure it's expanded
-            header.classList.remove('collapsed');
-            content.style.display = 'grid'; // Set display to grid for expanded state
-            toggleIcon.textContent = '▼'; // Show the toggle icon
-        }
+        // Ensure all sections are expanded by default
+        header.classList.remove('collapsed');
+        content.style.display = 'grid'; // Set display to grid for expanded state
+        toggleIcon.textContent = '▼'; // Show the toggle icon
 
         header.addEventListener('click', () => {
             const isCollapsed = header.classList.toggle('collapsed');
