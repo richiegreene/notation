@@ -358,29 +358,28 @@
 
 		<div class="settings-menu-item">
             <div class="toggle-header-placement">
-                <input type="radio" name="inputType" id="ratioInput"> <label for="ratioInput">Ratio Entry</label>
+                <input type="radio" name="inputType" id="intervalInput"> <label for="intervalInput">Interval Entry</label>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="settings-content">
-                <div class="ratiobox">
-                    <br>
-        			<em>offset ratio</em>
+                <div class="ratiobox"> <!-- Still keeping ratiobox class for potential generic styling -->
+        			<div class="interval-entry-layout">
+        				<div class="interval-column">
+        					<input type="number" class="ratioIn" id="savedNum" value="1"></input>
+        					<input type="number" class="ratioIn" id="savedDen" value="1"></input>
+        					<button id="getCurrentPitch" class="getCurrentPitch" onclick="getCurrentPitch()">load</button>
+        					<button id="clearSave" class="clearSave" onclick="clearSave()">reset</button>
+        				</div>
+        				<div class="times-symbol">×</div>
+        				<div class="interval-column">
+        					<input type="number" class="ratioIn" id="inputNum" minlength="1" required value="1"></input>
+        					<input type="number" class="ratioIn" id="inputDen"  minlength="1" required value="1"></input>
+        					<button id="loadCurrentPitch" class="getCurrentPitch" onclick="loadCurrentPitch()">load</button>
+        					<button id="clearInputRatio" class="clearInputRatio" onclick="clearInputRatio()">reset</button>
+        				</div>
+        			</div>
         			<br>
-        			<input style="border-bottom: solid 1px black;" type="number" class="ratioIn" id="savedNum" value="1"></input>
-        			<br>
-        			<input type="number" class="ratioIn" id="savedDen" value="1"></input>
-        			<br>
-        			<button id="getCurrentPitch" class="getCurrentPitch" onclick="getCurrentPitch()">load output</button>&nbsp;
-        			<button id="clearSave" class="clearSave" onclick="clearSave()">reset</button>
-        			<br>
-        			<em>input ratio</em>
-        			<br>
-        			<input style="border-bottom: solid 1px black;" type="number" class="ratioIn" id="inputNum" minlength="1" required value="1"></input>
-        			<br>
-        			<input type="number" class="ratioIn" id="inputDen"  minlength="1" required value="1"></input>
-        			<br>
-        			<button id="loadCurrentPitch" class="getCurrentPitch" onclick="loadCurrentPitch()">load output</button>&nbsp;
-        			<button id="clearInputRatio" class="clearInputRatio" onclick="clearInputRatio()">reset</button>
+        			<button class="clear" onclick="doClear()">Reset Intervals</button>
         			<script>
         				document.querySelectorAll("input[type=number]" && "input[class=ratioIn]").forEach(function (input) {
         					input.addEventListener("change", function (e) {
@@ -392,10 +391,6 @@
         					})
         				})
         			</script>
-        			<br>
-        			<br>
-        			<br>
-        			<button class="clear" onclick="doClear()">reset inputs</button>
                 </div>
             </div>
         </div>

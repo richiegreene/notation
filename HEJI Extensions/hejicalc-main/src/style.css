@@ -531,3 +531,30 @@ table.enharmonic-table > tr, td, th {
     font-size: 1.2rem;
     margin-right: 0.5em;
 }
+
+/* Styling for the new Interval Entry layout */
+.interval-entry-layout {
+    display: flex;
+    justify-content: center; /* Center the whole layout */
+    align-items: flex-start; /* Align items to the top of each column */
+    gap: 20px; /* Space between columns */
+    margin-bottom: 10px;
+}
+
+.interval-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items within the column */
+    gap: 5px; /* Space between elements in the column */
+}
+
+.times-symbol {
+    font-size: 2rem; /* Make '×' prominent */
+    font-weight: bold;
+    align-self: center; /* Vertically center the '×' */
+}
+
+input.ratioIn {
+    width: 50px; /* Reduced width */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+}

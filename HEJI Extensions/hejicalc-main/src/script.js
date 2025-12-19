@@ -877,7 +877,7 @@ $(document).ready(function(){
 		doCalc();
 		getPC();
 	});
-	$("#ratioInput").click(function(c){
+	$("#intervalInput").click(function(c){
 		doCalc();
 		getPC();
 	});
@@ -1030,8 +1030,7 @@ function getInputSum(){
 		.SumArray(seventyNine[getSeventyNine()])
 		.SumArray(eightyThree[getEightyThree()])
 		.SumArray(eightyNine[getEightyNine()]);
-		reducedRatioRemainder = [1,1];
-	} else if ($("#ratioInput").prop("checked")){ 
+} else if ($("#intervalInput").prop("checked")){ 
 		smallestTerms = reduce(inputNum,inputDen);
 		inputNumReduced =  smallestTerms[0];
 		inputDenReduced = smallestTerms[1];
@@ -1111,7 +1110,7 @@ function getDisplayValues(){ //calculate num and den for display
 		var displayUtonalArray = displaySum.map(value => {
 			return value < 0 ? Math.abs(value) : 0;
 		});
-	}	else if ($("#ratioInput").prop("checked")){
+	}	else if ($("#intervalInput").prop("checked")){
 		var displayOtonalArray = reducedOffsetInput[0];
 		var displayUtonalArray = reducedOffsetInput[1];
 	}
@@ -1152,6 +1151,7 @@ function getDisplayValues(){ //calculate num and den for display
 	if (displayNumValue <= 9007199254740991 && displayDenValue <= 9007199254740991){
 		$("#num").text(displayNumValue);
 		$("#den").text(displayDenValue);
+        $("#ratioCopyHelper").text(displayNumValue + '/' + displayDenValue);
 		var displayNumArray = getArray(displayNumValue);
 		var displayDenArray = getArray(displayDenValue);
 		var displayMeldoicSum = displayNumArray.DiffArray(displayDenArray);
@@ -1168,6 +1168,7 @@ function getDisplayValues(){ //calculate num and den for display
 		var float = displayNumValue / displayDenValue;
 		$("#num").text(float);
 		$("#den").text(1);
+        $("#ratioCopyHelper").text(float + '/' + 1);
 		$("#monzo").text("stack overflow");
 		$("#over31Message").text("");
 	}
@@ -1179,7 +1180,7 @@ function getCentDeviation(){ //calculate cent deviation, interval to ref (correc
 		.SumArray(refOctave[getRefOctave()]) 
 		.SumArray(refNote[getRefNote()]) 
 		.SumArray(refAccidental[getRefAccidental()]);
-	} else if ($("#ratioInput").prop("checked")){ 
+	} else if ($("#intervalInput").prop("checked")){ 
 		var centsSum = inputSum;
 	}
 	var centsOtonalArray = centsSum.map(value => {
@@ -1190,7 +1191,7 @@ function getCentDeviation(){ //calculate cent deviation, interval to ref (correc
 	});
 	var centsNumValue = getValue(centsOtonalArray);
 	var centsDenValue = getValue(centsUtonalArray);
-	if ($("#ratioInput").prop("checked")){
+	if ($("#intervalInput").prop("checked")){
 			jiCents = 1200*Math.log2((displayNumValue) / (displayDenValue) 
 			/ (kammerTon 
 			/ (freq1to1
@@ -1237,7 +1238,7 @@ function getCentDeviation(){ //calculate cent deviation, interval to ref (correc
 		$("#cents").text(centDeviation.toFixed(precision));
 	}
 	getBend();
-	if ($("#ratioInput").prop("checked")){
+	if ($("#intervalInput").prop("checked")){
 			cents_toRef = 1200*Math.log2((displayNumValue) / (displayDenValue));
 	} else {
 		cents_toRef = 1200*Math.log2((centsNumValue) / (centsDenValue));
@@ -1465,7 +1466,7 @@ function getPC(){
 
 	if ($("#paletteInput").prop("checked")){
 		tonalArray = inputSum.ProductArray(tonalIdentity);
-	} else if ($("#ratioInput").prop("checked")){
+	} else if ($("#intervalInput").prop("checked")){
 		tonalArray = inverseSum.ProductArray(tonalIdentity);
 	}
 	var refArraySum = sum(refArray);
@@ -2016,7 +2017,7 @@ function getPC(){
 
 	var notationString;
 	var undefinedNotation;
-	if ($("#ratioInput").prop("checked") && (eightyNine == null || eightyThree == null || seventyNine == null || seventyThree == null || seventyOne == null || sixtySeven == null || sixtyOne == null || fiftyNine == null || fiftyThree == null || fortySeven == null || fortyThree == null || fortyOne == null || thirtySeven == null || thirtyOne == null || twentyNine == null || twentyThree == null || nineteen == null || seventeen == null || tridecimal == null || undecimal == null || septimal == null || pythag == null || natural == null || reducedRatioRemainder[0] > 1 || reducedRatioRemainder[1] > 1)) {
+	if ($("#intervalInput").prop("checked") && (eightyNine == null || eightyThree == null || seventyNine == null || seventyThree == null || seventyOne == null || sixtySeven == null || sixtyOne == null || fiftyNine == null || fiftyThree == null || fortySeven == null || fortyThree == null || fortyOne == null || thirtySeven == null || thirtyOne == null || twentyNine == null || twentyThree == null || nineteen == null || seventeen == null || tridecimal == null || undecimal == null || septimal == null || pythag == null || natural == null || reducedRatioRemainder[0] > 1 || reducedRatioRemainder[1] > 1)) {
 		notationString = "";
 		outputDiatonic = "";
 		undefinedNotation = "undefined";
