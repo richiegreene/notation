@@ -914,23 +914,30 @@ $(document).ready(function(){
 
     // Collapsible menu functionality
     document.querySelectorAll('.settings-menu-item').forEach(item => {
-        const header = item.querySelector('.settings-header');
+        let headerToClick = item.querySelector('.toggle-header-placement') || item.querySelector('.settings-header');
+        let toggleIconSpan = item.querySelector('.toggle-icon');
+
         const content = item.querySelector('.settings-content');
-        const toggleIcon = header.querySelector('.toggle-icon');
+
+        // Ensure headerToClick and toggleIconSpan are found before proceeding
+        if (!headerToClick || !toggleIconSpan) {
+            console.error("Could not find header or toggle icon for item:", item);
+            return; // Skip this item if elements are missing
+        }
 
         // Ensure all sections are expanded by default
-        header.classList.remove('collapsed');
-        content.style.display = 'grid'; // Set display to grid for expanded state
-        toggleIcon.textContent = '▼'; // Show the toggle icon
+        headerToClick.classList.remove('collapsed');
+        content.style.display = 'grid';
+        toggleIconSpan.textContent = '▼';
 
-        header.addEventListener('click', () => {
-            const isCollapsed = header.classList.toggle('collapsed');
+        headerToClick.addEventListener('click', () => {
+            const isCollapsed = headerToClick.classList.toggle('collapsed');
             if (isCollapsed) {
-                content.style.display = 'none'; // Collapse
-                toggleIcon.textContent = ''; // Hide icon
+                content.style.display = 'none';
+                toggleIconSpan.textContent = '';
             } else {
-                content.style.display = 'grid'; // Expand
-                toggleIcon.textContent = '▼'; // Show icon
+                content.style.display = 'grid';
+                toggleIconSpan.textContent = '▼';
             }
         });
     });
@@ -939,7 +946,7 @@ $(document).ready(function(){
     var el = document.querySelector('.calc-container');
     var sortable = Sortable.create(el, {
         animation: 150,
-        handle: '.settings-header', // Only drag by the header
+        handle: '.settings-header, .toggle-header-placement', // Only drag by the header
         ghostClass: 'sortable-ghost' // Class name for the drop placeholder
     });
 

@@ -484,3 +484,19 @@ table.enharmonic-table > tr, td, th {
 #refAccidentalDropdown option {
     font-family: "HEJI2" !important;
 }
+
+.toggle-header-placement {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    font-weight: bold;
+    justify-content: flex-start; /* Align content to the start */
+}
+
+.toggle-header-placement .toggle-icon {
+    margin-left: auto; /* Push toggle icon to the far right */
+}
+
+.toggle-header-placement input[type="radio"] {
+    margin-right: 5px; /* Space between radio button and label */
+}
