@@ -70,6 +70,7 @@ body {
     font-family: monospace;
     margin: 10px; /* Space around each item */
     min-width: auto; /* Allow content to define min-width */
+    min-height: 2.5rem; /* Added min-height */
     max-width: 440px; /* Prevent items from becoming too wide on very large screens */
 }
 
