@@ -58,8 +58,10 @@
                     <br>
                     <h3>Tuning Meter Settings</h3>
                     <br>
-                    <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked> <em>1/1&plusmn;0c</em><br>
-                    <input type="radio" name="refInput" id="refFrequencyFreeRadio"> <em>A4 &plusmn;0c</em><br>
+                    <div class="ref-frequency-toggles">
+                        <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked> <label for="refFrequencyLinkedRadio">1/1&plusmn;0c</label>
+                        <input type="radio" name="refInput" id="refFrequencyFreeRadio"> <label for="refFrequencyFreeRadio">A4 &plusmn;0c</label>
+                    </div>
                     <br>
                     <div class="row">
                         <em>A4 (Hz)</em><br>
@@ -409,9 +411,8 @@
         			<div class="output-content">
         				<em>tuning meter</em>
         				<br>
-        				<b><div id="midiNote"></div></b>
-        				<b><div id="cents" value="0"></div></b>
-        			</div>
+        				        		        				<span id="midiNote"></span><span id="midiAccidental"></span>
+        				        		        				<b><span id="cents" value="0"></span></b>        			</div>
         			<div class="output-content">
         	            <em>frequency</em>
         	            <b><div type="text" id="frequency" value="440"></div></b>

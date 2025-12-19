@@ -500,3 +500,26 @@ table.enharmonic-table > tr, td, th {
 .toggle-header-placement input[type="radio"] {
     margin-right: 5px; /* Space between radio button and label */
 }
+
+.ref-frequency-toggles {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between the two radio button groups */
+    justify-content: center; /* Center the group within its parent */
+    margin-bottom: 10px; /* Add some space below this row */
+}
+
+.ref-frequency-toggles input[type="radio"] {
+    margin-right: 5px; /* Space between radio button and its label */
+}
+
+#midiAccidental {
+    font-family: "HEJI2";
+    font-size: 1.2rem;
+    vertical-align: middle;
+}
+
+#midiNote {
+    font-family: monospace;
+    font-size: 1.2rem;
+}

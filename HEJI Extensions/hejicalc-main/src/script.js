@@ -1243,6 +1243,32 @@ function getOutputFrequency(){
 	$("#frequency").text(outputFreq.toFixed(precision)+" Hz");
 }
 
+// Helper function to parse MIDI note output
+function parseMidiNoteOutput(midiNoteString) {
+    let letter = '';
+    let accidentalCode = '';
+
+    const primaryPart = midiNoteString.split(' | ')[0]; // Take the first part for ambiguous cases
+
+    const accidentalMatch = primaryPart.match(/^\*(\w{2})/);
+    if (accidentalMatch) {
+        accidentalCode = accidentalMatch[1];
+        letter = primaryPart.substring(3); // Remove "*nt" part
+    } else {
+        letter = primaryPart; // Fallback, though current data should always have code
+    }
+
+    let heji2Accidental = '';
+    switch (accidentalCode) {
+        case 'nt': heji2Accidental = 'j'; break; // Natural
+        case 'st': heji2Accidental = 'z'; break; // Sharp
+        case 'ft': heji2Accidental = 'a'; break; // Flat
+        default: heji2Accidental = ''; break;
+    }
+
+    return { letter: letter, accidental: heji2Accidental };
+}
+
 // get/clear output values for ratio input / melodic distance check 
 function getCurrentPitch(){
 	savedNum = displayNumValue;
@@ -1987,7 +2013,9 @@ function getPC(){
 	$("#notationOutput").html(notationString);
 	$("#noteName").html(outputDiatonic);
 	$("#undefinedNotation").html(undefinedNotation);
-	$("#midiNote").text(refMidiNoteOutput);
+    const parsedMidiNote = parseMidiNoteOutput(refMidiNoteOutput);
+	$("#midiNote").text(parsedMidiNote.letter);
+	$("#midiAccidental").text(parsedMidiNote.accidental);
 }
 
 function getBend() {
