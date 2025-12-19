@@ -337,12 +337,19 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
     font-size: 1.2rem;
     text-decoration:underline;
     text-underline-offset: 0.175rem;
+    margin-bottom: 2px;
+    text-align: center;
 }
 
 #den {
     margin-top: -0.3125rem;
     color: var(--color-text);
     font-size: 1.2rem;
+    text-align: center;
+}
+
+.ratio-display-container {
+    text-align: center;
 }
 
 .noteName{

@@ -67,6 +67,19 @@
                         <em>A4 (Hz)</em><br>
                         <input type="number" id="frequencyA4" value="440.0000"></input>
                     </div>
+        			<br> <!-- Add a line break for spacing -->
+                    <div class="ref-pitch-controls-centered" id="precision-select-row"> <!-- Re-use centering class, give ID for specificity -->
+                        <label for="precision">decimal places</label>
+                        <select id="precision">
+                            <option value="6">6</option>
+                            <option value="5">5</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1</option>
+                            <option value="0" selected>0</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -395,7 +408,7 @@
             <div class="settings-content">
                 <div class="outputbox">
                     <label><input type="checkbox" name="inputType" id="normalize"> normalise</label><br>
-        			    <em>HEJI notation</em>
+
                     <em><div id="undefinedNotation"></div></em>
                     <div class="notation-display-container">
                         <div class="noteName" id="noteName"></div><!--
@@ -403,7 +416,7 @@
                     </div>
                     <br>
         			<div class="output-content">
-        				<em>ratio</em>
+
         				<br>
                         <div class="ratio-display-container">
             				<div id="num" value="1"></div>
@@ -412,30 +425,19 @@
                         </div>
         			</div>
         			<div class="output-content">
-        				<em>tuning meter</em>
+
         				<br>
         				        		        				<span id="midiNote"></span><span id="midiAccidental"></span>
         				        		        				<b><span id="cents" value="0"></span></b>        			</div>
         			<div class="output-content">
-        	            <em>frequency</em>
+
         	            <b><div type="text" id="frequency" value="440"></div></b>
         			</div>
         			<div class="output-content">
-        	            <em>cents from reference</em>
+
         	            <b><div id="JIgross" value="0">0</div></b>
                		</div>
-                    <div class="output-content">
-                        <label for="decimals"></label>
-                        <select id="precision">
-                            <option value="6">6</option>
-                            <option value="5">5</option>
-                            <option value="4">4</option>
-                            <option value="3">3</option>
-                            <option value="2">2</option>
-                            <option value="1">1</option>
-                            <option value="0" selected>0</option>
-                        </select> decimal places
-                    </div>
+
 
                     
                     
