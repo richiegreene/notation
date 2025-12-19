@@ -432,10 +432,10 @@ var offsetDenRemainder = 1;
 var inputNumRemainder = 1;
 var inputDenRemainder = 1;
 var precision = 1;
-var kammerTon = 440.000000;
+var kammerTon = 440.0000;
 var jiCents = 0;
 var cents_toRef = 0;
-var freq1to1 = 440.000000;
+var freq1to1 = 261.6256;
 var reducedOffsetInput;
 var freq = 440.000000; 
 var ref12acc = 0;
@@ -472,11 +472,11 @@ var edoQuantisation = 53;
 
 // Functions to retrieve input values 
 function getRefOctave(){
-	return $(".refOctave.selected").attr("value");
+	return $("#octaveDropdown").val();
 }
 
 function getRefNote(){
-	return $(".refNote.selected").attr("value");
+	return $("#diatonicNoteDropdown").val();
 }
 
 function getRefAccidental(){
@@ -484,11 +484,11 @@ function getRefAccidental(){
 }
 
 function getFrequencyOctave(){
-	return $(".refOctave.selected").attr("value");
+	return $("#octaveDropdown").val();
 }
 
 function getFrequencyNote(){
-	return $(".refNote.selected").attr("value");
+	return $("#diatonicNoteDropdown").val();
 }
 
 function getFrequencyAccidental(){
@@ -642,6 +642,18 @@ $(document).ready(function(){
 		getPC();
 		getSavedInputSum();
 	})
+	$("#octaveDropdown").change(function(c){
+		// No need to manage 'selected' class for dropdowns
+		getFrequency1to1();
+		doCalc();
+		getPC();
+	});
+	$("#diatonicNoteDropdown").change(function(c){
+		// No need to manage 'selected' class for dropdowns
+		getFrequency1to1();
+		doCalc();
+		getPC();
+	});
 	$(".refOctave").click(function(c){
 		$(".refOctave").removeClass("selected");
 		$(this).addClass("selected");

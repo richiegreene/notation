@@ -18,48 +18,57 @@
             </div>
             <div class="settings-content">
                 <div class="refbox">
-                    <h3>notation & frequency of 1/1</h3>
+                    <h3>Defining 1/1</h3>
                     <br>
-                    <em>octave (Middle C = C4)</em>
+                    <div class="row">
+                        <label for="diatonicNoteDropdown">Note:</label>
+                        <select id="diatonicNoteDropdown">
+                            <option value="0">F</option>
+                            <option value="1" selected>C</option>
+                            <option value="2">G</option>
+                            <option value="3">D</option>
+                            <option value="4">A</option>
+                            <option value="5">E</option>
+                            <option value="6">B</option>
+                        </select>
+                        <button id="refflat" class="refAccidental" value="0">a</button><!--
+                        --><button id="defaultRefAccidental" class="refAccidental selected" value="1">j</button><!--
+                        --><button id="refsharp" class="refAccidental" value="2">z</button>
+                    </div>
                     <br>
-                       <button class="refOctave" value="1">-4</button><!--
-                    --><button class="refOctave" value="2">-3</button><!--
-                    --><button class="refOctave" value="3">-2</button><!--
-                    --><button class="refOctave" value="4">-1</button><!--
-                    --><button class="refOctave" value="5">0</button><!--
-                    --><button class="refOctave" value="6">1</button><!--
-                    --><button class="refOctave" value="7">2</button><!--
-                    --><button class="refOctave" value="8">3</button><!--
-                    --><button id="defaultRefoctave" class="refOctave selected" value="9">4</button><!--
-                    --><button class="refOctave" value="10">5</button><!--
-                    --><button class="refOctave" value="11">6</button><!--
-                    --><button class="refOctave" value="12">7</button><br>
-                    <em>12edo diatonic note</em><br>
-                       <button class="refNote" value="0">F</button><!--
-                    --><button class="refNote selected" value="1">C</button><!--
-                    --><button class="refNote" value="2">G</button><!--
-                    --><button class="refNote" value="3">D</button><!--
-                    --><button id="defaultRefNote" class="refNote" value="4">A</button><!--
-                    --><button class="refNote" value="5">E</button><!--
-                    --><button class="refNote" value="6">B</button><br>
-                    <em>12edo accidental</em><br>
-                       <button id="refflat" class="refAccidental" value="0">a</button><!--
-                    --><button id="defaultRefAccidental" class="refAccidental selected" value="1">j</button><!--
-                    --><button id="refsharp" class="refAccidental" value="2">z</button><br>
+                    <div class="row">
+                        <label for="octaveDropdown">Octave (SPN):</label>
+                        <select id="octaveDropdown">
+                            <option value="1">-4</option>
+                            <option value="2">-3</option>
+                            <option value="3">-2</option>
+                            <option value="4">-1</option>
+                            <option value="5">0</option>
+                            <option value="6">1</option>
+                            <option value="7">2</option>
+                            <option value="8">3</option>
+                            <option value="9" selected>4</option>
+                            <option value="10">5</option>
+                            <option value="11">6</option>
+                            <option value="12">7</option>
+                        </select>
+                    </div>
                     <br>
-                    <em>1/1 frequency (Hz)</em><br>
-                    <input type="number" id="1to1Frequency" value="440.000000"></input><br><br>
+                    <div class="row">
+                        <em>1/1 (Hz)</em><br>
+                        <input type="number" id="1to1Frequency" value="261.6256"></input>
+                    </div>
                     <br>
-                    <h3>tuning meter setting</h3>
                     <br>
-                    <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked> <em>1/1 = 0 cents</em><br>
-                    <input type="radio" name="refInput" id="refFrequencyFreeRadio"> <em>tuning meter A4 frequency = 0 cents</em><br>
+                    <h3>Tuning Meter Settings</h3>
                     <br>
-                    <em>tuning meter A4 frequency</em><br>
-                    <input type="number" id="frequencyA4" value="440.000000"></input><br>
-        			<br>
-        			<br>
-                    <button id="clearFreq" class="clear" onclick="clearFreq()">reset reference</button>
+                    <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked> <em>1/1&plusmn;0c</em><br>
+                    <input type="radio" name="refInput" id="refFrequencyFreeRadio"> <em>A4 &plusmn;0c</em><br>
+                    <br>
+                    <div class="row">
+                        <em>A4 (Hz)</em><br>
+                        <input type="number" id="frequencyA4" value="440.0000"></input>
+                    </div>
                 </div>
             </div>
         </div>
