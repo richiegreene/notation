@@ -537,7 +537,7 @@ table.enharmonic-table > tr, td, th {
     display: flex;
     justify-content: center; /* Center the whole layout */
     align-items: flex-start; /* Align items to the top of each column */
-    gap: 20px; /* Space between columns */
+    gap: 10px; /* Space between columns */
     margin-bottom: 10px;
 }
 
@@ -550,10 +550,10 @@ table.enharmonic-table > tr, td, th {
 
 .times-symbol {
     font-size: 1.5rem;
-    align-self: center;
+    margin-top: 25px;
 }
 
 input.ratioIn {
-    width: 50px; /* Reduced width */
+    width: 80px; /* Reduced width */
     box-sizing: border-box; /* Include padding and border in width calculation */
 }
