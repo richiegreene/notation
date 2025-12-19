@@ -425,7 +425,7 @@ table.enharmonic-table > tr, td, th {
 }
 
 #cents {
-    font-family: "Plainsound Text", sans-serif;
+    font-family: monospace;
 }
 
 #midiNote {
@@ -522,4 +522,5 @@ table.enharmonic-table > tr, td, th {
 #midiNote {
     font-family: monospace;
     font-size: 1.2rem;
+    margin-right: 0.5em;
 }

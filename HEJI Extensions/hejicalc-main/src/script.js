@@ -1213,13 +1213,13 @@ function getCentDeviation(){ //calculate cent deviation, interval to ref (correc
 		centDeviation = -(100.0 - centDeviation);
 	}
 	if (centDeviation < 50) {
-		$("#cents").text("+" + centDeviation.toFixed(precision) + " cents");
+		$("#cents").text("+" + centDeviation.toFixed(precision));
 	} 
 	if (centDeviation == 0){
-		$("#cents").text("±" + centDeviation.toFixed(precision) + " cents");
+		$("#cents").text("±" + centDeviation.toFixed(precision));
 	}
 	if (centDeviation < 0){
-		$("#cents").text(centDeviation.toFixed(precision) + " cents");
+		$("#cents").text(centDeviation.toFixed(precision));
 	}
 	getBend();
 	if ($("#ratioInput").prop("checked")){
