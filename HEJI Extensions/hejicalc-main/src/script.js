@@ -959,6 +959,21 @@ $(document).ready(function(){
         event.stopPropagation();
     });
 
+    // Add a copy event listener to the output-content div to handle ratio copy
+    $('.output-content').on('copy', function(event) {
+        const selection = window.getSelection();
+        const numValue = $('#num').text();
+        const denValue = $('#den').text();
+        const combinedValue = numValue + '/' + denValue;
+
+        // Check if the selection includes content from #num and #den
+        if (selection.toString().includes(numValue) && selection.toString().includes(denValue)) {
+            event.preventDefault(); // Prevent default copy behavior
+            const clipboardData = event.originalEvent.clipboardData || window.clipboardData;
+            clipboardData.setData('text/plain', combinedValue);
+        }
+    });
+
 });
 
 
