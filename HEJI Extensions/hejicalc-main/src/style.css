@@ -480,3 +480,7 @@ table.enharmonic-table > tr, td, th {
     vertical-align: middle;
     height: 2.5rem;
 }
+
+#refAccidentalDropdown option {
+    font-family: "HEJI2" !important;
+}
