@@ -69,8 +69,7 @@ body {
     color: var(--color-text);
     font-family: monospace;
     margin: 10px; /* Space around each item */
-    flex: 1 1 340px; /* Allow items to grow, shrink, and have a base width of 350px */
-    min-width: 340px; /* Ensure items don't get too small */
+    min-width: auto; /* Allow content to define min-width */
     max-width: 440px; /* Prevent items from becoming too wide on very large screens */
 }
 
