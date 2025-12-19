@@ -349,7 +349,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 }
 
 .ratio-display-container {
-    text-align: center;
+    text-align: left;
 }
 
 .noteName{
@@ -363,6 +363,14 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 .clear {
     font-size: 1.1rem;
 }
+
+#clearOutputButton {
+    font-size: 14px;
+    margin: 10px 0; /* Only vertical margin */
+    display: block;
+    width: 100%; /* Make it full width */
+}
+
 
 select {
     border: 1px solid var(--border-button); /* Changed border */
@@ -398,6 +406,7 @@ select {
 
 .output-content {
     padding-bottom: 0.5rem;
+    text-align: left; /* Added to left align contents */
 }
 
 
@@ -433,7 +442,18 @@ table.enharmonic-table > tr, td, th {
 
 #cents {
     font-family: monospace;
+    color: var(--color-text); /* Reverted to white */
 }
+
+#frequency {
+    color: var(--bg-button); /* Retained unticked button grey */
+}
+
+#JIgross {
+    color: var(--bg-button); /* Added for unticked button grey */
+}
+
+
 
 #midiNote {
     font-family: "Plainsound Text", sans-serif;

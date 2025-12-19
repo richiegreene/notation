@@ -1251,9 +1251,9 @@ function getCentDeviation(){ //calculate cent deviation, interval to ref (correc
 		cents_toRef = mod(cents_toRef,1200);
 	}
 	if (cents_toRef > 0) {
-		$("#JIgross").text("+"+cents_toRef.toFixed(precision) + " cents");
+		$("#JIgross").text("+"+cents_toRef.toFixed(precision) + "c");
 	} else{
-		$("#JIgross").text(cents_toRef.toFixed(precision) + " cents");
+		$("#JIgross").text(cents_toRef.toFixed(precision) + "c");
 	}
 	//getEDOSteps();
 }
@@ -1401,31 +1401,13 @@ function getMelodicRatio(){
 
 // clear all values stored in calc other than reference information
 function clearAllIntervals() {
-	$("#paletteInput").click();
-	$("#Anatural").click();
-	$("#defaultOctave").click();
-	$("#default3").click();
-	$("#default5").click();
-	$("#default7").click();
-	$("#default11").click();
-	$("#default13").click();
-	$("#default17").click();
-	$("#default19").click();
-	$("#default23").click();
-	$("#default29").click();
-	$("#default31").click();
-	$("#default37").click();
-	$("#default41").click();
-	$("#default43").click();
-	$("#default47").click();
-	savedNum = 1;
-	savedDen = 1;
-	$("#savedNum").val(savedNum);
-	$("#savedDen").val(savedDen);
-	inputNum = 1;
-	inputDen = 1;
-	$("#inputNum").val(inputNum);
-	$("#inputDen").val(inputDen);
+    document.getElementById("savedNum").value = 1;
+    document.getElementById("savedDen").value = 1;
+    document.getElementById("inputNum").value = 1;
+    document.getElementById("inputDen").value = 1;
+    document.getElementById("inputNum2").value = 1; // Add this line
+    document.getElementById("inputDen2").value = 1; // Add this line
+    sendA();
 }
 
 function clearFreq(){
