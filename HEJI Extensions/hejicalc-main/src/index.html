@@ -367,22 +367,28 @@
         				<div class="interval-column">
         					<input type="number" class="ratioIn" id="savedNum" value="1"></input>
         					<input type="number" class="ratioIn" id="savedDen" value="1"></input>
-        					<button id="getCurrentPitch" class="getCurrentPitch" onclick="getCurrentPitch()">load</button>
-        					<button id="clearRatio1" class="clearSave" onclick="clearRatio1()">clear</button>
+        					<div class="interval-button-group">
+        						<button id="getCurrentPitch" class="getCurrentPitch interval-button" onclick="getCurrentPitch()">load</button>
+        						<button id="clearRatio1" class="clearSave interval-button" onclick="clearRatio1()">clear</button>
+        					</div>
         				</div>
         				<div class="times-symbol">×</div>
         				<div class="interval-column">
         					<input type="number" class="ratioIn" id="inputNum" minlength="1" required value="1"></input>
         					<input type="number" class="ratioIn" id="inputDen"  minlength="1" required value="1"></input>
-        					<button id="loadCurrentPitch" class="getCurrentPitch" onclick="loadCurrentPitch()">load</button>
-        					<button id="clearRatio2" class="clearInputRatio" onclick="clearRatio2()">clear</button>
+        					<div class="interval-button-group">
+        						<button id="loadCurrentPitch" class="getCurrentPitch interval-button" onclick="loadCurrentPitch()">load</button>
+        						<button id="clearRatio2" class="clearInputRatio interval-button" onclick="clearRatio2()">clear</button>
+        					</div>
         				</div>
         				<div class="times-symbol">×</div> <!-- New times symbol -->
         				<div class="interval-column"> <!-- New column for Ratio 3 -->
         					<input type="number" class="ratioIn" id="inputNum2" minlength="1" required value="1"></input>
         					<input type="number" class="ratioIn" id="inputDen2"  minlength="1" required value="1"></input>
-        					<button id="loadCurrentPitch2" class="getCurrentPitch" onclick="loadCurrentPitch2()">load</button>
-        					<button id="clearRatio3" class="clearInputRatio" onclick="clearRatio3()">clear</button>
+        					<div class="interval-button-group">
+        						<button id="loadCurrentPitch2" class="getCurrentPitch interval-button" onclick="loadCurrentPitch2()">load</button>
+        						<button id="clearRatio3" class="clearInputRatio interval-button" onclick="clearRatio3()">clear</button>
+        					</div>
         				</div>
         			</div>
         			<br>

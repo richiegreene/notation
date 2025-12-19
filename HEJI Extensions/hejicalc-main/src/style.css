@@ -400,6 +400,17 @@ select {
     border: 1px solid var(--border-button); /* Changed border thickness */
 }
 
+.interval-button {
+    font-size: 0.75rem; /* Reduced font size */
+    padding: 2px 4px; /* Reduced padding */
+}
+
+.interval-button-group {
+    display: flex;
+    gap: 5px; /* Space between buttons */
+}
+
+
 .header-content {
     display: inline-flex;
     align-items: center;
