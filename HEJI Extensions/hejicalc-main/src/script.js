@@ -492,7 +492,7 @@ function getFrequencyNote(){
 }
 
 function getFrequencyAccidental(){
-	return $(".refAccidental.selected").attr("value");
+	return $("#refAccidentalDropdown").val();
 }
 
 function getOctave(){
