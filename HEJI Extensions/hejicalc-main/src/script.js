@@ -93,7 +93,7 @@ function getArray(integer){ // get prime factorization of integer, output array 
 const primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89]; // prime integers 2-89 (89-limit)
 const reference = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];  // harmonic space coordinates of 1/1 
 const autoOffsetToA = [4,-3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
-const tonalIdentity = [0,1,4,-2,-1,3,7,-3,6,-2,0,2,4,-1,1,-4,1,-2,-7,3,-1,-5,0,5]; // distance in fifths for each prime partial (including 89-limit)
+const tonalIdentity = [0,1,4,-2,-1,3,7,-3,6,-2,0,2,4,-1,1,3,1,-2,-7,3,-1,-5,0,5]; // distance in fifths for each prime partial (including 89-limit)
 const negIdentity = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
 
 // Reference pitch harmonic space coordinates, spelling  (NB: all opposite sign)
