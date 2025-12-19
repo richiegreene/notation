@@ -950,7 +950,14 @@ $(document).ready(function(){
         ghostClass: 'sortable-ghost' // Class name for the drop placeholder
     });
 
-    
+    // Prevent clicks on radio buttons and their labels from collapsing/expanding the section
+    $('.toggle-header-placement input[type="radio"]').on('click', function(event) {
+        event.stopPropagation();
+    });
+
+    $('.toggle-header-placement label').on('click', function(event) {
+        event.stopPropagation();
+    });
 
 });
 
