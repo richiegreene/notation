@@ -20,8 +20,7 @@
                 <div class="refbox">
                     <h3>Defining 1/1</h3>
                     <br>
-                    <div class="row">
-                        <label for="diatonicNoteDropdown">Note:</label>
+                    <div class="ref-pitch-controls-centered">
                         <select id="diatonicNoteDropdown">
                             <option value="0">F</option>
                             <option value="1" selected>C</option>
@@ -31,13 +30,11 @@
                             <option value="5">E</option>
                             <option value="6">B</option>
                         </select>
-                        <button id="refflat" class="refAccidental" value="0">a</button><!--
-                        --><button id="defaultRefAccidental" class="refAccidental selected" value="1">j</button><!--
-                        --><button id="refsharp" class="refAccidental" value="2">z</button>
-                    </div>
-                    <br>
-                    <div class="row">
-                        <label for="octaveDropdown">Octave (SPN):</label>
+                        <select id="refAccidentalDropdown">
+                            <option value="0">&nbsp;a&nbsp;</option>
+                            <option value="1" selected>&nbsp;j&nbsp;</option>
+                            <option value="2">&nbsp;z&nbsp;</option>
+                        </select>
                         <select id="octaveDropdown">
                             <option value="1">-4</option>
                             <option value="2">-3</option>

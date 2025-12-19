@@ -466,3 +466,17 @@ table.enharmonic-table > tr, td, th {
 .palette .label {
     color: var(--bg-button);
 }
+
+.ref-pitch-controls-centered {
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    gap: 10px; /* Add some space between the dropdowns/buttons */
+    margin-bottom: 10px; /* Add some space below this row */
+}
+
+#refAccidentalDropdown {
+    font-family: "HEJI2";
+    font-size: 1.67rem;
+    vertical-align: middle;
+    height: 2.5rem;
+}

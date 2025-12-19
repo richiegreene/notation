@@ -480,7 +480,7 @@ function getRefNote(){
 }
 
 function getRefAccidental(){
-	return $(".refAccidental.selected").attr("value");
+	return $("#refAccidentalDropdown").val();
 }
 
 function getFrequencyOctave(){
@@ -654,6 +654,11 @@ $(document).ready(function(){
 		doCalc();
 		getPC();
 	});
+	$("#refAccidentalDropdown").change(function(c){
+		getFrequency1to1();
+		doCalc();
+		getPC();
+	});
 	$("#hejiOctaveDropdown").change(function(c){
 		doCalc();
 		getPC();
@@ -676,13 +681,7 @@ $(document).ready(function(){
 		doCalc();
 		getPC();
 	});
-	$(".refAccidental").click(function(c){
-		$(".refAccidental").removeClass("selected");
-		$(this).addClass("selected");
-		getFrequency1to1();
-		doCalc();
-		getPC();
-	});
+
 
 	$(".accidental").click(function(c){
 		$(".accidental").removeClass("selected");
