@@ -496,11 +496,11 @@ function getFrequencyAccidental(){
 }
 
 function getOctave(){
-	return $(".octave.selected").attr("value");
+	return $("#hejiOctaveDropdown").val();
 }
 
 function getNote(){
-	return $(".notes.selected").attr("value");
+	return $("#hejiDiatonicNoteDropdown").val();
 }
 
 function getChromatic(){
@@ -654,6 +654,14 @@ $(document).ready(function(){
 		doCalc();
 		getPC();
 	});
+	$("#hejiOctaveDropdown").change(function(c){
+		doCalc();
+		getPC();
+	});
+	$("#hejiDiatonicNoteDropdown").change(function(c){
+		doCalc();
+		getPC();
+	});
 	$(".refOctave").click(function(c){
 		$(".refOctave").removeClass("selected");
 		$(this).addClass("selected");
@@ -675,24 +683,14 @@ $(document).ready(function(){
 		doCalc();
 		getPC();
 	});
-	$(".octave").click(function(c){
-		$(".octave").removeClass("selected");
-		$(this).addClass("selected");
-		doCalc();
-		getPC();
-	});
+
 	$(".accidental").click(function(c){
 		$(".accidental").removeClass("selected");
 		$(this).addClass("selected");
 		doCalc();
 		getPC();
 	});
-	$(".notes").click(function(c){
-		$(".notes").removeClass("selected");
-		$(this).addClass("selected");
-		doCalc();
-		getPC();
-	});
+
 	$(".chromatic").click(function(c){
 		$(".chromatic").removeClass("selected");
 		$(this).addClass("selected");

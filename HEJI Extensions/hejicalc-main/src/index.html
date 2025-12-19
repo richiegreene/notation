@@ -83,42 +83,42 @@
                     <h3><br><input type="radio" name="inputType" id="paletteInput" checked>HEJI notation</h3>
                     <br>
         			<div class="palette">
-        				<h2></h2>
-        				<em>octave</em>
-        				<br>
-        					<button class="octave" value="1">-4</button><!--
-        				--><button class="octave" value="2">-3</button><!--
-        				--><button class="octave" value="3">-2</button><!--
-        				--><button class="octave" value="4">-1</button><!--
-        				--><button class="octave" value="5">0</button><!--
-        				--><button class="octave" value="6">1</button><!--
-        				--><button class="octave" value="7">2</button><!--
-        				--><button class="octave" value="8">3</button><!--
-        				--><button id="defaultOctave" class="octave selected" value="9">4</button><!--
-        				--><button class="octave" value="10">5</button><!--
-        				--><button class="octave" value="11">6</button><!--
-        				--><button class="octave" value="12">7</button>
-        				<br>
-        				<em>Pythagorean diatonic note</em>
-        				<br>
-        					<button class="notes" value="0">F</button><!--
-        				--><button class="notes selected" value="1">C</button><!--
-        				--><button class="notes" value="2">G</button><!--
-        				--><button class="notes" value="3">D</button><!--
-        				--><button id="Anatural" class="notes" value="4">A</button><!--
-        				--><button class="notes" value="5">E</button><!--
-        				--><button class="notes" value="6">B</button> 
-        				<br> 
-        				<em>HEJI accidentals</em>
-        				<br>
-        					<span class="label">&nbsp;&nbsp;&nbsp;&nbsp;</span><button class="chromatic" value="0">eE</button><!-- 
-        				--><button class="chromatic" value="1">E</button><!-- 
-        				--><button class="chromatic" value="2">e</button><!-- 
-        				--><button id="default3" class="chromatic selected" value="3">n</button><!-- 
-        				--><button class="chromatic" value="4">v</button><!-- 
-        				--><button class="chromatic" value="5">V</button><!-- 
-        				--><button class="chromatic" value="6">vV</button><span class="label">&nbsp;&nbsp;&nbsp;&nbsp;</span> 
-        				<br>
+        				        				        				        				<h2></h2>
+        				        				        				                        <div class="heji-dropdowns-centered">
+        				        				        				                            <select id="hejiDiatonicNoteDropdown">
+        				        				        				                                <option value="0">F</option>
+        				        				        				                                <option value="1" selected>C</option>
+        				        				        				                                <option value="2">G</option>
+        				        				        				                                <option value="3">D</option>
+        				        				        				                                <option value="4">A</option>
+        				        				        				                                <option value="5">E</option>
+        				        				        				                                <option value="6">B</option>
+        				        				        				                            </select>
+        				        				        				                            <select id="hejiOctaveDropdown">
+        				        				        				                                <option value="1">-4</option>
+        				        				        				                                <option value="2">-3</option>
+        				        				        				                                <option value="3">-2</option>
+        				        				        				                                <option value="4">-1</option>
+        				        				        				                                <option value="5">0</option>
+        				        				        				                                <option value="6">1</option>
+        				        				        				                                <option value="7">2</option>
+        				        				        				                                <option value="8">3</option>
+        				        				        				                                <option value="9" selected>4</option>
+        				        				        				                                <option value="10">5</option>
+        				        				        				                                <option value="11">6</option>
+        				        				        				                                <option value="12">7</option>
+        				        				        				                            </select>
+        				        				        				                        </div>
+        				        				        				        				<br>
+        				        				        				        				<em>HEJI accidentals</em>
+        				        				        				        				<br>
+        				        				        				        					<span class="label">&nbsp;&nbsp;&nbsp;&nbsp;</span><button class="chromatic" value="0">eE</button><!--
+        				        				        				        				--><button class="chromatic" value="1">E</button><!--
+        				        				        				        				--><button class="chromatic" value="2">e</button><!--
+        				        				        				        				--><button id="default3" class="chromatic selected" value="3">n</button><!--
+        				        				        				        				--><button class="chromatic" value="4">v</button><!--
+        				        				        				        				--><button class="chromatic" value="5">V</button><!--
+        				        				        				        				--><button class="chromatic" value="6">vV</button><span class="label">&nbsp;&nbsp;&nbsp;&nbsp;</span>        				<br>
         				<span class="label">&nbsp;5/
         					<button class="syntonic" value="0">$</button><!-- 
         				--><button class="syntonic" value="1">%</button><!-- 
