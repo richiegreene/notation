@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/icon" href="../images/plainsound_favicon.png"/>
+    <link href="style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+	<script src="script.js"></script>
+</head>
+<body onload="sendA();">
+    <div class="calc-container">
+        <div class="settings-menu-item" id="ref-pitch-item">
+            <div class="settings-header">
+                <span>Reference Pitch</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="refbox">
+                    <h3>Defining 1/1</h3>
+                    <br>
+                    <div class="ref-pitch-controls-centered">
+                        <select id="diatonicNoteDropdown">
+                            <option value="0">F</option>
+                            <option value="1" selected>C</option>
+                            <option value="2">G</option>
+                            <option value="3">D</option>
+                            <option value="4">A</option>
+                            <option value="5">E</option>
+                            <option value="6">B</option>
+                        </select>
+                        <select id="refAccidentalDropdown">
+                            <option value="0">&nbsp;a&nbsp;</option>
+                            <option value="1" selected>&nbsp;j&nbsp;</option>
+                            <option value="2">&nbsp;z&nbsp;</option>
+                        </select>
+                        <select id="octaveDropdown">
+                            <option value="1">-4</option>
+                            <option value="2">-3</option>
+                            <option value="3">-2</option>
+                            <option value="4">-1</option>
+                            <option value="5">0</option>
+                            <option value="6">1</option>
+                            <option value="7">2</option>
+                            <option value="8">3</option>
+                            <option value="9" selected>4</option>
+                            <option value="10">5</option>
+                            <option value="11">6</option>
+                            <option value="12">7</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <em>1/1 (Hz)</em><br>
+                        <input type="number" id="1to1Frequency" value="261.6256"></input>
+                    </div>
+                    <br>
+                    <br>
+                    <h3>Tuning Meter Settings</h3>
+                    <br>
+                    <div class="ref-frequency-toggles">
+                        <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked> <label for="refFrequencyLinkedRadio">1/1&plusmn;0c</label>
+                        <input type="radio" name="refInput" id="refFrequencyFreeRadio"> <label for="refFrequencyFreeRadio">A4 &plusmn;0c</label>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <em>A4 (Hz)</em><br>
+                        <input type="number" id="frequencyA4" value="440.0000"></input>
+                    </div>
+        			<br> <!-- Add a line break for spacing -->
+                    <div class="ref-pitch-controls-centered" id="precision-select-row"> <!-- Re-use centering class, give ID for specificity -->
+                        <label for="precision">decimal places</label>
+                        <select id="precision">
+                            <option value="6">6</option>
+                            <option value="5">5</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1</option>
+                            <option value="0" selected>0</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                                <div class="settings-menu-item" id="heji-entry-item">
+
+                                    <div class="toggle-header-placement">
+
+                                        <input type="radio" name="inputType" id="paletteInput" checked> <label for="paletteInput">HEJI Entry</label>
+
+                                        <span class="toggle-icon">▼</span>
+
+                                    </div>
+
+                                    <div class="settings-content">
+
+                                        <div class="palettebox">
+
+                            			<div class="palette">
+
+                            				<h2></h2>        				        				        				                        <div class="heji-dropdowns-centered">
+        				        				        				                            <select id="hejiDiatonicNoteDropdown">
+        				        				        				                                <option value="0">F</option>
+        				        				        				                                <option value="1" selected>C</option>
+        				        				        				                                <option value="2">G</option>
+        				        				        				                                <option value="3">D</option>
+        				        				        				                                <option value="4">A</option>
+        				        				        				                                <option value="5">E</option>
+        				        				        				                                <option value="6">B</option>
+        				        				        				                            </select>
+        				        				        				                            <select id="hejiOctaveDropdown">
+        				        				        				                                <option value="1">-4</option>
+        				        				        				                                <option value="2">-3</option>
+        				        				        				                                <option value="3">-2</option>
+        				        				        				                                <option value="4">-1</option>
+        				        				        				                                <option value="5">0</option>
+        				        				        				                                <option value="6">1</option>
+        				        				        				                                <option value="7">2</option>
+        				        				        				                                <option value="8">3</option>
+        				        				        				                                <option value="9" selected>4</option>
+        				        				        				                                <option value="10">5</option>
+        				        				        				                                <option value="11">6</option>
+        				        				        				                                <option value="12">7</option>
+        				        				        				                            </select>
+        				        				        				                        </div>
+        				        				        				        				        					<span class="label">&nbsp;&nbsp;&nbsp;&nbsp;</span><button class="chromatic" value="0">eE</button><!--        				        				        				        				--><button class="chromatic" value="1">E</button><!--
+        				        				        				        				--><button class="chromatic" value="2">e</button><!--
+        				        				        				        				--><button id="default3" class="chromatic selected" value="3">n</button><!--
+        				        				        				        				--><button class="chromatic" value="4">v</button><!--
+        				        				        				        				--><button class="chromatic" value="5">V</button><!--
+        				        				        				        				--><button class="chromatic" value="6">vV</button><span class="label">&nbsp;&nbsp;&nbsp;&nbsp;</span>        				<br>
+        				<span class="label">&nbsp;5/
+        					<button class="syntonic" value="0">$</button><!-- 
+        				--><button class="syntonic" value="1">%</button><!-- 
+        				--><button class="syntonic" value="2">&</button><!-- 
+        				--><button id="default5" class="syntonic selected" value="3">n</button><!-- 
+        				--><button class="syntonic" value="4">!</button><!-- 
+        				--><button class="syntonic" value="5">"</button><!--
+        				--><button class="syntonic" value="6">#</button>
+        				<span class="label">/5&nbsp;
+        				<br>
+        				<span class="label">&nbsp;7/
+        					<button class="septimal" value="0"><,</button><!--
+        				--><button class="septimal" value="1">,</button><!-- 
+        				--><button class="septimal" value="2"><</button><!-- 
+        				--><button id="default7" class="septimal selected" value="3">n</button><!-- 
+        				--><button class="septimal" value="4">></button><!-- 
+        				--><button class="septimal" value="5">.</button><!--
+        				--><button class="septimal" value="6">>.</button>
+        				<span class="label">/7&nbsp;
+        				<br>
+        				<span class="label">/11
+        					<button class="undecimal" value="0">555</button><!-- 
+        				--><button class="undecimal" value="1">55</button><!-- 
+        				--><button class="undecimal" value="2">5</button><!-- 
+        				--><button id="default11" class="undecimal selected" value="3">n</button><!-- 
+        				--><button class="undecimal" value="4">4</button><!-- 
+        				--><button class="undecimal" value="5">44</button><!--
+        				--><button class="undecimal" value="6">444</button>
+        				<span class="label">11/
+        				<br>
+        				<span class="label">13/
+        					<button class="tridecimal" value="0">000</button><!-- 
+        				--><button class="tridecimal" value="1">00</button><!-- 
+        				--><button class="tridecimal" value="2">0</button><!-- 
+        				--><button id="default13" class="tridecimal selected" value="3">n</button><!-- 
+        				--><button class="tridecimal" value="4">9</button><!-- 
+        				--><button class="tridecimal" value="5">99</button><!--
+        				--><button class="tridecimal" value="6">999</button>
+        				<span class="label">/13
+        				<br>
+        				<span class="label">17/
+        					<button class="seventeen" value="0">:::</button><!-- 
+        				--><button class="seventeen" value="1">::</button><!-- 
+        				--><button class="seventeen" value="2">:</button><!-- 
+        				--><button id="default17" class="seventeen selected" value="3">n</button><!-- 
+        				--><button class="seventeen" value="4">;</button><!-- 
+        				--><button class="seventeen" value="5">;;</button><!-- 
+        				--><button class="seventeen" value="6">;;;</button> 
+        				<span class="label">/17
+        				<br>
+        				<span class="label">/19
+        					<button class="nineteen" value="0">***</button><!-- 
+        				--><button class="nineteen" value="1">**</button><!-- 
+        				--><button class="nineteen" value="2">*</button><!-- 
+        				--><button id="default19" class="nineteen selected" value="3">n</button><!-- 
+        				--><button class="nineteen" value="4">/</button><!-- 
+        				--><button class="nineteen" value="5">//</button><!--
+        				--><button class="nineteen" value="6">///</button>
+        				<span class="label">19/
+        				<br>
+        				<span class="label">/23
+        					<button class="twentyThree" value="0">666</button><!-- 
+        				--><button class="twentyThree" value="1">66</button><!--  
+        				--><button class="twentyThree" value="2">6</button><!-- 
+        				--><button id="default23" class="twentyThree selected" value="3">n</button><!-- 
+        				--><button class="twentyThree" value="4">3</button><!-- 
+        				--><button class="twentyThree" value="5">33</button><!-- 
+        				--><button class="twentyThree" value="6">333</button> 
+        				<span class="label">23/
+        				<br>
+        				<span class="label">/29
+        					<button class="twentyNine" value="0">777</button><!-- 
+        				--><button class="twentyNine" value="1">77</button><!-- 
+        				--><button class="twentyNine" value="2">7</button><!-- 
+        				--><button id="default29" class="twentyNine selected" value="3">n</button><!-- 
+        				--><button class="twentyNine" value="4">2</button><!-- 
+        				--><button class="twentyNine" value="5">22</button><!-- 
+        				--><button class="twentyNine" value="6">222</button> 
+        				<span class="label">29/
+        				<br>
+        				<span class="label">31/
+        					<button class="thirtyOne" value="0">111</button><!-- 
+        				--><button class="thirtyOne" value="1">11</button><!-- 
+        				--><button class="thirtyOne" value="2">1</button><!-- 
+        				--><button id="default31" class="thirtyOne selected" value="3">n</button><!-- 
+        				--><button class="thirtyOne" value="4">8</button><!-- 
+        				--><button class="thirtyOne" value="5">88</button><!-- 
+        				--><button class="thirtyOne" value="6">888</button>
+        				<span class="label">/31
+        				<br>
+        				<span class="label">/37
+        					<button class="thirtySeven" value="0">ààà</button><!-- 
+        				--><button class="thirtySeven" value="1">àà</button><!-- 
+        				--><button class="thirtySeven" value="2">à</button><!-- 
+        				--><button id="default37" class="thirtySeven selected" value="3">n</button><!-- 
+        				--><button class="thirtySeven" value="4">á</button><!-- 
+        				--><button class="thirtySeven" value="5">áá</button><!-- 
+        				--><button class="thirtySeven" value="6">ááá</button>
+        				<span class="label">37/
+        				<br>
+        				<span class="label">/41
+        					<button class="fortyOne" value="0">---</button><!-- 
+        				--><button class="fortyOne" value="1">--</button><!-- 
+        				--><button class="fortyOne" value="2">-</button><!-- 
+        				--><button id="default41" class="fortyOne selected" value="3">n</button><!-- 
+        				--><button class="fortyOne" value="4">+</button><!-- 
+        				--><button class="fortyOne" value="5">++</button><!-- 
+        				--><button class="fortyOne" value="6">+++</button>
+        				<span class="label">41/
+        				<br>
+        				<span class="label">/43
+        					<button class="fortyThree" value="0">èèè</button><!-- 
+        				--><button class="fortyThree" value="1">èè</button><!-- 
+        				--><button class="fortyThree" value="2">è</button><!-- 
+        				--><button id="default43" class="fortyThree selected" value="3">n</button><!-- 
+        				--><button class="fortyThree" value="4">é</button><!-- 
+        				--><button class="fortyThree" value="5">éé</button><!-- 
+        				--><button class="fortyThree" value="6">ééé</button>
+        				<span class="label">43/
+        				<br>
+        				<span class="label">47/
+        					<button class="fortySeven" value="0">&#xee5a;&#xee5a;&#xee5a;</button><!-- 
+        				--><button class="fortySeven" value="1">&#xee5a;&#xee5a;</button><!-- 
+        				--><button class="fortySeven" value="2">&#xee5a;</button><!-- 
+        				--><button id="default47" class="fortySeven selected" value="3">n</button><!-- 
+        				--><button class="fortySeven" value="4">&#xee5b;</button><!-- 
+        				--><button class="fortySeven" value="5">&#xee5b;&#xee5b;</button><!-- 
+        				--><button class="fortySeven" value="6">&#xee5b;&#xee5b;&#xee5b;</button>
+        				<span class="label">/47
+        				<br>
+        				<span class="label">53/
+        					<button class="fiftyThree" value="0">!!!</button><!-- 
+        				--><button class="fiftyThree" value="1">!!</button><!-- 
+        				--><button class="fiftyThree" value="2">!</button><!-- 
+        				--><button id="default53" class="fiftyThree selected" value="3">n</button><!-- 
+        				--><button class="fiftyThree" value="4">"</button><!-- 
+        				--><button class="fiftyThree" value="5">""</button><!-- 
+        				--><button class="fiftyThree" value="6">"""</button>
+        				<span class="label">/53
+        				<br>
+        				<span class="label">59/
+        					<button class="fiftyNine" value="0">###</button><!-- 
+        				--><button class="fiftyNine" value="1">##</button><!-- 
+        				--><button class="fiftyNine" value="2">#</button><!-- 
+        				--><button id="default59" class="fiftyNine selected" value="3">n</button><!-- 
+        				--><button class="fiftyNine" value="4">$</button><!-- 
+        				--><button class="fiftyNine" value="5">$</button><!-- 
+        				--><button class="fiftyNine" value="6">$$</button>
+        				<span class="label">/59
+        				<br>
+        				<span class="label">/61
+        					<button class="sixtyOne" value="0">&&&</button><!-- 
+        				--><button class="sixtyOne" value="1">&&</button><!-- 
+        				--><button class="sixtyOne" value="2">&</button><!-- 
+        				--><button id="default61" class="sixtyOne selected" value="3">n</button><!-- 
+        				--><button class="sixtyOne" value="4">%</button><!-- 
+        				--><button class="sixtyOne" value="5">%%</button><!-- 
+        				--><button class="sixtyOne" value="6">%%%</button>
+        				<span class="label">/61
+        				<br>
+        				<span class="label">67/
+        					<button class="sixtySeven" value="0">'''</button><!-- 
+        				--><button class="sixtySeven" value="1">''</button><!-- 
+        				--><button class="sixtySeven" value="2">'</button><!-- 
+        				--><button id="default67" class="sixtySeven selected" value="3">n</button><!-- 
+        				--><button class="sixtySeven" value="4">(</button><!-- 
+        				--><button class="sixtySeven" value="5">(( </button><!-- 
+        				--><button class="sixtySeven" value="6">((( </button>
+        				<span class="label">/67
+        				<br>
+        				<span class="label">71/
+        					<button class="seventyOne" value="0">)))</button><!-- 
+        				--><button class="seventyOne" value="1">))</button><!-- 
+        				--><button class="seventyOne" value="2">)</button><!-- 
+        				--><button id="default71" class="seventyOne selected" value="3">n</button><!-- 
+        				--><button class="seventyOne" value="4">0</button><!-- 
+        				--><button class="seventyOne" value="5">00</button><!-- 
+        				--><button class="seventyOne" value="6">000</button>
+        				<span class="label">/71
+        				<br>
+        				<span class="label">/73
+        					<button class="seventyThree" value="0">222</button><!-- 
+        				--><button class="seventyThree" value="1">22</button><!-- 
+        				--><button class="seventyThree" value="2">2</button><!-- 
+        				--><button id="default73" class="seventyThree selected" value="3">n</button><!-- 
+        				--><button class="seventyThree" value="4">1</button><!-- 
+        				--><button class="seventyThree" value="5">11</button><!-- 
+        				--><button class="seventyThree" value="6">111</button>
+        				<span class="label">73/
+        				<br>
+        				<span class="label">79/
+        					<button class="seventyNine" value="0">444</button><!-- 
+        				--><button class="seventyNine" value="1">44</button><!-- 
+        				--><button class="seventyNine" value="2">4</button><!-- 
+        				--><button id="default79" class="seventyNine selected" value="3">n</button><!-- 
+        				--><button class="seventyNine" value="4">3</button><!-- 
+        				--><button class="seventyNine" value="5">33</button><!-- 
+        				--><button class="seventyNine" value="6">333</button>
+        				<span class="label">/79
+        				<br>
+        				<span class="label">83/
+        					<button class="eightyThree" value="0">555</button><!-- 
+        				--><button class="eightyThree" value="1">55</button><!-- 
+        				--><button class="eightyThree" value="2">5</button><!-- 
+        				--><button id="default83" class="eightyThree selected" value="3">n</button><!-- 
+        				--><button class="eightyThree" value="4">6</button><!-- 
+        				--><button class="eightyThree" value="5">66</button><!-- 
+        				--><button class="eightyThree" value="6">666</button>
+        				<span class="label">/83
+        				<br>
+        				<span class="label">89/
+        					<button class="eightyNine" value="0">777</button><!-- 
+        				--><button class="eightyNine" value="1">77</button><!-- 
+        				--><button class="eightyNine" value="2">7</button><!-- 
+        				--><button id="default89" class="eightyNine selected" value="3">n</button><!-- 
+        				--><button class="eightyNine" value="4">8</button><!-- 
+        				--><button class="eightyNine" value="5">88</button><!-- 
+        				--><button class="eightyNine" value="6">888</button>
+        				<span class="label">/89
+        				<br>
+                    </div>
+        		</div>
+            </div>
+        </div>
+
+		<div class="settings-menu-item" id="interval-entry-item">
+            <div class="toggle-header-placement">
+                <input type="radio" name="inputType" id="intervalInput"> <label for="intervalInput">Interval Entry</label>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="ratiobox">
+        			<div class="interval-entry-layout">
+        				<div class="interval-column">
+        					<input type="number" class="ratioIn" id="savedNum" value="1"></input>
+        					<input type="number" class="ratioIn" id="savedDen" value="1"></input>
+        					<div class="interval-button-group">
+        						<button id="getCurrentPitch" class="getCurrentPitch interval-button" onclick="getCurrentPitch()">load</button>
+        						<button id="clearRatio1" class="clearSave interval-button" onclick="clearRatio1()">clear</button>
+        					</div>
+        				</div>
+        				<div class="times-symbol">×</div>
+        				<div class="interval-column">
+        					<input type="number" class="ratioIn" id="inputNum" minlength="1" required value="1"></input>
+        					<input type="number" class="ratioIn" id="inputDen"  minlength="1" required value="1"></input>
+        					<div class="interval-button-group">
+        						<button id="loadCurrentPitch" class="getCurrentPitch interval-button" onclick="loadCurrentPitch()">load</button>
+        						<button id="clearRatio2" class="clearInputRatio interval-button" onclick="clearRatio2()">clear</button>
+        					</div>
+        				</div>
+        				<div class="times-symbol">×</div> <!-- New times symbol -->
+        				<div class="interval-column"> <!-- New column for Ratio 3 -->
+        					<input type="number" class="ratioIn" id="inputNum2" minlength="1" required value="1"></input>
+        					<input type="number" class="ratioIn" id="inputDen2"  minlength="1" required value="1"></input>
+        					<div class="interval-button-group">
+        						<button id="loadCurrentPitch2" class="getCurrentPitch interval-button" onclick="loadCurrentPitch2()">load</button>
+        						<button id="clearRatio3" class="clearInputRatio interval-button" onclick="clearRatio3()">clear</button>
+        					</div>
+        				</div>
+        			</div>
+        			<br>
+        			<script>
+        				document.querySelectorAll("input[type=number]" && "input[class=ratioIn]").forEach(function (input) {
+        					input.addEventListener("change", function (e) {
+        						if (e.target.value == "") {
+        							e.target.value = 1;
+        						} else if (e.target.value <= 0) {
+        							e.target.value = 1;
+        						}
+        					})
+        				})
+        			</script>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-menu-item" id="output-item">
+            <div class="settings-header">
+                <span>Output</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="outputbox">
+                    <label><input type="checkbox" name="inputType" id="normalize"> normalise</label><br>
+
+                    <em><div id="undefinedNotation"></div></em>
+                    <div class="notation-display-container">
+                        <div class="noteName" id="noteName"></div><!--
+                        --><div class="notationOutput" id="notationOutput"></div>
+                    </div>
+                    <br>
+        			<div class="output-content">
+
+        				<br>
+                        <div class="ratio-display-container">
+            				<div id="num" value="1"></div>
+            				<div id="den" value="1"></div>
+                            <span id="ratioCopyHelper" style="position: absolute; left: -9999px;"></span>
+                        </div>
+        			</div>
+        			<div class="output-content">
+
+        				<br>
+        				        		        				<span id="midiNote"></span><span id="midiAccidental"></span>
+        				        		        				<b><span id="cents" value="0"></span></b>        			</div>
+        			<div class="output-content">
+
+        	            <b><div type="text" id="frequency" value="440"></div></b>
+        			</div>
+        			<div class="output-content">
+
+        	            <b><div id="JIgross" value="0">0</div></b>
+               		</div>
+                    <button id="clearOutputButton" class="clear" onclick="clearAllIntervals()">clear</button>
+
+
+                    
+                    
+                </div>
+            </div>
+        </div>
+            				</div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        
+
+    </div>
+    
+	    
+</body>
+</html>
+
+<script>
+	document.querySelectorAll("input[type=number]" && "input[class=ratioIn]").forEach(function (input) {
+		input.addEventListener("change", function (e) {
+			if (e.target.value == "") {
+				e.target.value = 1;
+			} else if (e.target.value <= 0) {
+				e.target.value = 1;
+			}
+		})
+	})
+    document.querySelectorAll("input[type=number]" && "input[class=mod1200]").forEach(function (input) {
+        input.addEventListener("change", function (e) {
+            if (e.target.value == "") {
+                e.target.value = 0;
+            } else if (e.target.value > 1200.0) {
+                e.target.value = e.target.value % 1200.0;
+            } 
+            if (e.target.value < 0.0){
+                e.target.value = 1200 - Math.abs(e.target.value);
+            }
+        })
+    })
+    document.querySelectorAll("input[type=number]" && "input[class=positive]").forEach(function (input) {
+        input.addEventListener("change", function (e) {
+            if (e.target.value == "") {
+                e.target.value = 0;
+            }
+            while (e.target.value < 0.0){
+                e.target.value = 0.0;
+            }
+        })
+    })
+    document.querySelectorAll("input[type=number]" && "input[class=naturalnumberbox]").forEach(function (input) {
+        input.addEventListener("change", function (e) {
+            if (e.target.value == "") {
+                e.target.value = 1;
+            } 
+            while (e.target.value < 1){
+                e.target.value = 1;
+            }
+            e.target.value = Math.floor(e.target.value);
+        })
+    })
+    document.querySelectorAll("input[type=number]" && "input[class=integerbox]").forEach(function (input) {
+        input.addEventListener("change", function (e) {
+            if (e.target.value == "") {
+                e.target.value = 0;
+            }
+            if (e.target.value < 0.0) {
+                e.target.value = Math.trunc(e.target.value);
+            }
+            if (e.target.value > 0.0) {
+                e.target.value = Math.floor(e.target.value);
+            }
+        })
+	})
+	document.querySelectorAll("input[type=number]" && "input[class=edo]").forEach(function (input) {
+		input.addEventListener("change", function (e) {
+			if (e.target.value == "") {
+				e.target.value = 53;
+			}
+			if (e.target.value < 0) {
+				e.target.value = 1;
+			}
+			if (e.target.value == 0)	{
+				e.target.value = 1;
+			}
+			e.target.value = Math.round(e.target.value)
+		})
+	})
+</script>
