@@ -934,15 +934,18 @@ $(document).ready(function(){
         headerToClick.classList.remove('collapsed');
         content.style.display = 'grid';
         toggleIconSpan.textContent = '▼';
+        item.classList.remove('collapsed-item'); // Make sure it's not collapsed initially
 
         headerToClick.addEventListener('click', () => {
             const isCollapsed = headerToClick.classList.toggle('collapsed');
             if (isCollapsed) {
                 content.style.display = 'none';
                 toggleIconSpan.textContent = '';
+                item.classList.add('collapsed-item');
             } else {
                 content.style.display = 'grid';
                 toggleIconSpan.textContent = '▼';
+                item.classList.remove('collapsed-item');
             }
         });
     });

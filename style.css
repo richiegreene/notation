@@ -81,6 +81,7 @@ body {
     justify-content: space-between;
     align-items: center;
     min-width: 15px;
+    height: 40px;
 }
 
 .settings-header span {
@@ -414,11 +415,6 @@ select {
     padding-top: 3rem;
 }
 
-table.enharmonic-table {
-    margin-left:auto; 
-    margin-right:auto;
-}
-
 table.enharmonic-table > tr, td, th {
     padding: 1rem;
 }
@@ -514,6 +510,7 @@ table.enharmonic-table > tr, td, th {
     padding: 8px 12px;
     font-weight: bold;
     justify-content: flex-start; /* Align content to the start */
+    height: 40px;
 }
 
 .toggle-header-placement .toggle-icon {
@@ -588,4 +585,10 @@ input.ratioIn {
 
 #output-item {
     grid-row: span 10;
+}
+
+.settings-menu-item.collapsed-item {
+    height: 50px; /* Fixed height for collapsed items */
+    grid-row-end: span 1; /* Occupy only one row in the grid */
+    overflow: hidden; /* Hide any overflowing content */
 }
