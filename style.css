@@ -415,6 +415,11 @@ select {
     padding-top: 3rem;
 }
 
+table.enharmonic-table {
+    margin-left:auto; 
+    margin-right:auto;
+}
+
 table.enharmonic-table > tr, td, th {
     padding: 1rem;
 }
@@ -587,8 +592,9 @@ input.ratioIn {
     grid-row: span 10;
 }
 
-.settings-menu-item.collapsed-item {
-    height: 50px; /* Fixed height for collapsed items */
-    grid-row-end: span 1; /* Occupy only one row in the grid */
-    overflow: hidden; /* Hide any overflowing content */
+#ref-pitch-item.collapsed-item,
+#heji-entry-item.collapsed-item,
+#interval-entry-item.collapsed-item,
+#output-item.collapsed-item {
+    grid-row: span 1;
 }
