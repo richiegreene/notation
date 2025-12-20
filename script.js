@@ -2862,7 +2862,7 @@ function getEnharmonics(){ //search for enharmonic proximities
 	} 
 }
 
-function getCurrentCents(){ //load the current pitch (normalised) into the enharmonic search cent input box
+function getCurrentCents(){ //load the current pitch (normalised/octave reduced) into the enharmonic search cent input box
 	currentCents = cents_toRef % 1200;
 	while (currentCents < 0){
 		currentCents = currentCents + 1200.0;
@@ -2870,7 +2870,7 @@ function getCurrentCents(){ //load the current pitch (normalised) into the enhar
 	$("#centreCents").val(currentCents.toFixed(precision));
 }
 
-function getMelodicCents(){ //load the current melodic step (normalised) into the enharmonic search cent input box
+function getMelodicCents(){ //load the current melodic step (normalised/octave reduce) into the enharmonic search cent input box
 	currentCents = melodicCents % 1200;
 	while (currentCents < 0){
 		currentCents = currentCents + 1200.0;
