@@ -1,0 +1,3 @@
+# Notation
+
+A browser-based application designed to assist microtonal music reading musicians. Notation serves as a powerful resource for converting HEJI notation to and from frequency ratios, making complex microtonal systems more accessible. Our goal is to expand this functionality, becoming a central hub for various notation methods, offering comprehensive music notation conversion and translation services.
