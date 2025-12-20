@@ -70,7 +70,7 @@ body {
     font-family: monospace;
     margin: 10px; /* Space around each item */
     min-width: auto; /* Allow content to define min-width */
-    min-height: 2.5rem; /* Added min-height */
+    
     max-width: 440px; /* Prevent items from becoming too wide on very large screens */
 }
 
@@ -143,10 +143,6 @@ span {
     color: var(--color-text);
 }
 
-em {
-    /* Removed color */
-}
-
 strong {
     color: var(--color-text);
 }
@@ -170,16 +166,10 @@ a:hover {
     color: var(--color-link-hover);
 }
 
-
-
 .precision {
     color: var(--color-text);
     text-align: center;
     padding: 1rem;
-}
-
-label {
-    /* Removed color */
 }
 
 input {
@@ -229,10 +219,6 @@ div.version {
     }
 }
 
-.calc-container > div {
-    /* Removed text-align: center; as it's now handled by settings-content */
-}
-
 .refbox, .palettebox, .ratiobox, .outputbox, .melodicbox, .scalabox {
     min-width: unset; /* Remove min-width */
     /* text-align: center; - This is now handled by the settings-content div */
@@ -240,10 +226,6 @@ div.version {
 
 .outputbox p {
     padding-top: 0.2rem;
-}
-
-.melodicbox {
-    /* min-width: 182px; - Removed */
 }
 
 .scalabox{
