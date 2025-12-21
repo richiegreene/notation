@@ -3011,7 +3011,7 @@ function generateOutputColumns(numColumns) {
                 </div>
                 <div class="output-content">
                     <br>
-                    <span id="midiNote_${i}"></span><span id="midiAccidental_${i}"></span>
+                    <span id="midiNote_${i}"></span><span id="midiAccidental_${i}" class="midiAccidental"></span>
                     <b><span id="cents_${i}" value="0"></span></b>
                 </div>
                 <div class="output-content">
