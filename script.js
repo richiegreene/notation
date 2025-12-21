@@ -967,6 +967,14 @@ $(document).ready(function(){
         event.stopPropagation();
     });
 
+    $("#output-columns-input").change(function(c){
+        let numColumns = $(this).val();
+        generateOutputColumns(numColumns);
+        doCalc();
+    });
+
+    generateOutputColumns($("#output-columns-input").val());
+
     // Add a copy event listener to the output-content div to handle ratio copy
     $('.output-content').on('copy', function(event) {
         const selection = window.getSelection();
@@ -1155,10 +1163,22 @@ function getDisplayValues(){ //calculate num and den for display
 		displayNumValue = reduceNormalized[0];
 		displayDenValue = reduceNormalized[1];
 	}
+
+    let numColumns = $("#output-columns-input").val();
+    for (let i = 1; i <= numColumns; i++) {
+        if (displayNumValue <= 9007199254740991 && displayDenValue <= 9007199254740991){
+            $("#num_" + i).text(displayNumValue);
+            $("#den_" + i).text(displayDenValue);
+            $("#ratioCopyHelper_" + i).text(displayNumValue + '/' + displayDenValue);
+        } else {
+            var float = displayNumValue / displayDenValue;
+            $("#num_" + i).text(float);
+            $("#den_" + i).text(1);
+            $("#ratioCopyHelper_" + i).text(float + '/' + 1);
+        }
+    }
+
 	if (displayNumValue <= 9007199254740991 && displayDenValue <= 9007199254740991){
-		$("#num").text(displayNumValue);
-		$("#den").text(displayDenValue);
-        $("#ratioCopyHelper").text(displayNumValue + '/' + displayDenValue);
 		var displayNumArray = getArray(displayNumValue);
 		var displayDenArray = getArray(displayDenValue);
 		var displayMeldoicSum = displayNumArray.DiffArray(displayDenArray);
@@ -1172,10 +1192,6 @@ function getDisplayValues(){ //calculate num and den for display
 		}
 		$("#over31Message").text(monzoMessage);
 	} else {
-		var float = displayNumValue / displayDenValue;
-		$("#num").text(float);
-		$("#den").text(1);
-        $("#ratioCopyHelper").text(float + '/' + 1);
 		$("#monzo").text("stack overflow");
 		$("#over31Message").text("");
 	}
@@ -1235,15 +1251,19 @@ function getCentDeviation(){ //calculate cent deviation, interval to ref (correc
 	if (centDeviation > 50){
 		centDeviation = -(100.0 - centDeviation);
 	}
-	if (centDeviation < 50) {
-		$("#cents").text("+" + centDeviation.toFixed(precision));
-	} 
-	if (centDeviation == 0){
-		$("#cents").text("±" + centDeviation.toFixed(precision));
-	}
-	if (centDeviation < 0){
-		$("#cents").text(centDeviation.toFixed(precision));
-	}
+
+    let numColumns = $("#output-columns-input").val();
+    for (let i = 1; i <= numColumns; i++) {
+        if (centDeviation < 50) {
+            $("#cents_" + i).text("+" + centDeviation.toFixed(precision));
+        } 
+        if (centDeviation == 0){
+            $("#cents_" + i).text("±" + centDeviation.toFixed(precision));
+        }
+        if (centDeviation < 0){
+            $("#cents_" + i).text(centDeviation.toFixed(precision));
+        }
+    }
 	getBend();
 	if ($("#intervalInput").prop("checked")){
 			cents_toRef = 1200*Math.log2((displayNumValue) / (displayDenValue));
@@ -1253,17 +1273,23 @@ function getCentDeviation(){ //calculate cent deviation, interval to ref (correc
 	if ($("#normalize").prop("checked")){
 		cents_toRef = mod(cents_toRef,1200);
 	}
-	if (cents_toRef > 0) {
-		$("#JIgross").text("+"+cents_toRef.toFixed(precision) + "c");
-	} else{
-		$("#JIgross").text(cents_toRef.toFixed(precision) + "c");
-	}
+
+    for (let i = 1; i <= numColumns; i++) {
+        if (cents_toRef > 0) {
+            $("#JIgross_" + i).text("+"+cents_toRef.toFixed(precision) + "c");
+        } else{
+            $("#JIgross_" + i).text(cents_toRef.toFixed(precision) + "c");
+        }
+    }
 	//getEDOSteps();
 }
 
 function getOutputFrequency(){
 	var outputFreq = freq1to1 * (displayNumValue / displayDenValue);
-	$("#frequency").text(outputFreq.toFixed(precision)+" Hz");
+    let numColumns = $("#output-columns-input").val();
+    for (let i = 1; i <= numColumns; i++) {
+	    $("#frequency_" + i).text(outputFreq.toFixed(precision)+" Hz");
+    }
 }
 
 // Helper function to parse MIDI note output
@@ -2009,11 +2035,11 @@ function getPC(){
 
 	if (isHejiExtOnly) {
 		// State: HEJI Extensions only
-		$('#noteName').css('top', '1rem');
+		$('.noteName').css('top', '1rem');
 		$('.notation-display-container').css('padding-bottom', '2rem');
 	} else {
 		// Default state: HEJI2 only, or both together
-		$('#noteName').css('top', '0rem');
+		$('.noteName').css('top', '0rem');
 		$('.notation-display-container').css('padding-bottom', '0rem');
 	}
 
@@ -2031,12 +2057,16 @@ function getPC(){
 		undefinedNotation = "";
 		monzoMessage = "";
 	}
-	$("#notationOutput").html(notationString);
-	$("#noteName").html(outputDiatonic);
-	$("#undefinedNotation").html(undefinedNotation);
-    const parsedMidiNote = parseMidiNoteOutput(refMidiNoteOutput);
-	$("#midiNote").text(parsedMidiNote.letter);
-	$("#midiAccidental").text(parsedMidiNote.accidental);
+
+    let numColumns = $("#output-columns-input").val();
+    for (let i = 1; i <= numColumns; i++) {
+        $("#notationOutput_" + i).html(notationString);
+        $("#noteName_" + i).html(outputDiatonic);
+        $("#undefinedNotation_" + i).html(undefinedNotation);
+        const parsedMidiNote = parseMidiNoteOutput(refMidiNoteOutput);
+        $("#midiNote_" + i).text(parsedMidiNote.letter);
+        $("#midiAccidental_" + i).text(parsedMidiNote.accidental);
+    }
 }
 
 function getBend() {
@@ -2956,4 +2986,42 @@ function wipeEnharmonics(){
 	// replacing the body of <tbody> of <table>
 	document.getElementById("data").innerHTML = html;	
 	getEnharmonics();
+}
+
+function generateOutputColumns(numColumns) {
+    let outputContainer = $(".output-container");
+    outputContainer.empty(); // Clear existing columns
+
+    for (let i = 1; i <= numColumns; i++) {
+        let columnHtml = `
+            <div class="output-column">
+                <em><div id="undefinedNotation_${i}"></div></em>
+                <div class="notation-display-container">
+                    <div class="noteName" id="noteName_${i}"></div><!--
+                    --><div class="notationOutput" id="notationOutput_${i}"></div>
+                </div>
+                <br>
+                <div class="output-content">
+                    <br>
+                    <div class="ratio-display-container">
+                        <div id="num_${i}" value="1"></div>
+                        <div id="den_${i}" value="1"></div>
+                        <span id="ratioCopyHelper_${i}" style="position: absolute; left: -9999px;"></span>
+                    </div>
+                </div>
+                <div class="output-content">
+                    <br>
+                    <span id="midiNote_${i}"></span><span id="midiAccidental_${i}"></span>
+                    <b><span id="cents_${i}" value="0"></span></b>
+                </div>
+                <div class="output-content">
+                    <b><div type="text" id="frequency_${i}" value="440"></div></b>
+                </div>
+                <div class="output-content">
+                    <b><div id="JIgross_${i}" value="0">0</div></b>
+                </div>
+            </div>
+        `;
+        outputContainer.append(columnHtml);
+    }
 }

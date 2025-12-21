@@ -229,6 +229,10 @@ div.version {
     padding-top: 0.2rem;
 }
 
+.output-columns-box {
+    text-align: center;
+}
+
 .scalabox{
     display: none;
     /* min-width: 176px; - Removed */
@@ -316,7 +320,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
     align-items: center;
 }
 
-#num {
+.num {
     color: var(--color-text);
     font-size: 1.6rem; /* Increased font size */
     text-decoration:underline;
@@ -326,7 +330,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
     padding: 0.2rem; /* Added padding */
 }
 
-#den {
+.den {
     margin-top: -0.3125rem;
     color: var(--color-text);
     font-size: 1.6rem; /* Increased font size */
@@ -437,22 +441,22 @@ table.enharmonic-table > tr, td, th {
     white-space: nowrap;
 }
 
-#cents {
+.cents {
     font-family: monospace;
     color: var(--color-text); /* Reverted to white */
 }
 
-#frequency {
+.frequency {
     color: var(--bg-button); /* Retained unticked button grey */
 }
 
-#JIgross {
+.JIgross {
     color: var(--bg-button); /* Added for unticked button grey */
 }
 
 
 
-#midiNote {
+.midiNote {
     font-family: "Plainsound Text", sans-serif;
 }
 
@@ -469,6 +473,18 @@ table.enharmonic-table > tr, td, th {
     font-size: 6rem;
     position: relative;
 }
+
+.output-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.output-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .sortable-ghost {
     opacity: 0.4;
     background-color: #f0f0f0; /* Light background for visibility */
@@ -538,13 +554,13 @@ table.enharmonic-table > tr, td, th {
     margin-right: 5px; /* Space between radio button and its label */
 }
 
-#midiAccidental {
+.midiAccidental {
     font-family: "HEJI2";
     font-size: 1.2rem;
     vertical-align: middle;
 }
 
-#midiNote {
+.midiNote {
     font-family: monospace;
     font-size: 1.2rem;
     margin-right: 0.5em;
@@ -586,6 +602,10 @@ input.ratioIn {
 
 #interval-entry-item {
     grid-row: span 3;
+}
+
+#output-columns-item {
+    grid-row: span 2;
 }
 
 #output-item {
