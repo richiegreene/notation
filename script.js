@@ -409,6 +409,9 @@ var parsedMidiNoteGlobal; // Global variable to store parsed MIDI note informati
 var centsSum; // Global variable for centsSum
 var centsNumValue; // Global variable for centsNumValue
 var centsDenValue; // Global variable for centsDenValue
+var hasPrimeGreaterThan89 = false; // Flag for primes > 89
+var currentTotalNum = 1; // Accumulates product of all input numerators
+var currentTotalDen = 1; // Accumulates product of all input denominators
 
 // Global Variables
 var numValue = 1; 
@@ -1040,6 +1043,10 @@ function generateStackingRatioFields(numFields) {
 
 // retrieval of prime powers based on each comma
 function getInputSum(){
+	hasPrimeGreaterThan89 = false; // Reset flag
+	currentTotalNum = 1; // Reset total numerator
+	currentTotalDen = 1; // Reset total denominator
+
 	if ($("#paletteInput").prop("checked")){ 
 		inputSum = autoOffsetToA
 		.SumArray(octave[getOctave()])
@@ -1068,18 +1075,25 @@ function getInputSum(){
 		.SumArray(eightyThree[getEightyThree()])
 		.SumArray(eightyNine[getEightyNine()]);
 } else if ($("#intervalInput").prop("checked")){ 
-    // Calculate Monzo for Ratio 1 (savedNum/savedDen)
-    var r1Monzo = savedNumArray.DiffArray(savedDenArray);
-    inputSum = r1Monzo; // Start with the saved ratio
+    // Start with a fresh inputSum for interval entry
+    inputSum = reference; // Initialize to all zeros (1/1)
 
     let numStackingFields = $("#stacking-input").val();
     for (let i = 1; i <= numStackingFields; i++) {
-        let currentInputNum = $(`#inputNum_${i}`).val();
-        let currentInputDen = $(`#inputDen_${i}`).val();
+        let currentInputNum = parseInt($(`#inputNum_${i}`).val()); // Parse as int
+        let currentInputDen = parseInt($(`#inputDen_${i}`).val()); // Parse as int
 
         // Ensure values are not empty or invalid
-        if (!currentInputNum || isNaN(currentInputNum)) currentInputNum = 1;
-        if (!currentInputDen || isNaN(currentInputDen)) currentInputDen = 1;
+        if (isNaN(currentInputNum) || currentInputNum <= 0) currentInputNum = 1;
+        if (isNaN(currentInputDen) || currentInputDen <= 0) currentInputDen = 1;
+
+        // Accumulate total input for display
+        currentTotalNum *= currentInputNum;
+        currentTotalDen *= currentInputDen;
+
+        // Check for primes > 89
+        if (currentInputNum > 1 && getValue(getArray(currentInputNum)) !== currentInputNum) { hasPrimeGreaterThan89 = true; }
+        if (currentInputDen > 1 && getValue(getArray(currentInputDen)) !== currentInputDen) { hasPrimeGreaterThan89 = true; }
 
         let smallestTerms = reduce(currentInputNum, currentInputDen);
         let numArray = getArray(smallestTerms[0]);
@@ -1098,8 +1112,15 @@ function getOandUArrays(){
 	var utonalArray = inputSum.map(value => {
 		return value < 0 ? Math.abs(value) : 0;
 	});
-	numValue = getValue(otonalArray);
-	denValue = getValue(utonalArray);
+
+	if (hasPrimeGreaterThan89) {
+		numValue = currentTotalNum;
+		denValue = currentTotalDen;
+	} else {
+		numValue = getValue(otonalArray);
+		denValue = getValue(utonalArray);
+	}
+	// reducedRatioRemainder calculation is now handled by hasPrimeGreaterThan89 flag
 }
 
 function getFrequency1to1(){ //determine the default 1/1 frequency as an equal tempered interval from the KammerTon based on palette input
@@ -2077,10 +2098,14 @@ function getPC(){
 
 	var notationString;
 	var undefinedNotation;
-	if ($("#intervalInput").prop("checked") && (eightyNine == null || eightyThree == null || seventyNine == null || seventyThree == null || seventyOne == null || sixtySeven == null || sixtyOne == null || fiftyNine == null || fiftyThree == null || fortySeven == null || fortyThree == null || fortyOne == null || thirtySeven == null || thirtyOne == null || twentyNine == null || twentyThree == null || nineteen == null || seventeen == null || tridecimal == null || undecimal == null || septimal == null || pythag == null || natural == null || reducedRatioRemainder[0] > 1 || reducedRatioRemainder[1] > 1)) {
-		notationString = "";
+	// Check if HEJI notation is uncalculatable
+	if ($("#intervalInput").prop("checked") && (
+		hasPrimeGreaterThan89 || // If prime > 89 is present
+		(heji2String.trim().length === 0 && hejiExtensionsPath.trim().length === 0 && natural.trim().length === 0) // Or if no HEJI symbols are found
+	)) {
+		notationString = "<span style='font-family: monospace;'>n/a</span>"; // Apply monospace font
 		outputDiatonic = "";
-		undefinedNotation = "undefined";
+		undefinedNotation = ""; // Clear undefinedNotation as we are explicitly showing n/a
 	} else {
 		notationString = '<span class="heji-extensions">' + hejiExtensionsPath + '</span>' + '<span class="heji2">' + heji2String + '</span>';
 		undefinedNotation = "";
