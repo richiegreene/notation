@@ -1013,8 +1013,11 @@ function generateStackingRatioFields(numFields) {
     container.empty(); // Clear existing dynamic fields
 
     for (let i = 1; i <= numFields; i++) {
-        let ratioHtml = `
-            <div class="times-symbol">×</div>
+        let ratioHtml = ``;
+        if (i > 1) { // Only add "×" for subsequent fields
+            ratioHtml += `<div class="times-symbol">×</div>`;
+        }
+        ratioHtml += `
             <div class="interval-column">
                 <input type="number" class="ratioIn" id="inputNum_${i}" minlength="1" required value="1"></input>
                 <input type="number" class="ratioIn" id="inputDen_${i}"  minlength="1" required value="1"></input>
