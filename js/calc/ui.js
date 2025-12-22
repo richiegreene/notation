@@ -220,7 +220,7 @@ export function getPC(){
     let tonalArray;
 	if ($("#paletteInput").prop("checked")){
 		tonalArray = U.productArray(state.inputSum, C.tonalIdentity);
-	} else if ($("#intervalInput").prop("checked")){
+	} else if ($("#intervalInput").prop("checked") || $("#chordInput").prop("checked")){
 		tonalArray = U.productArray(inverseSum, C.tonalIdentity);
 	}
 	var refArraySum = U.sum(refArray);
@@ -772,7 +772,7 @@ export function getPC(){
 	var notationString;
 	var undefinedNotation;
 	// Check if HEJI notation is uncalculatable
-	if ($("#intervalInput").prop("checked") && (
+	if (($("#intervalInput").prop("checked") || $("#chordInput").prop("checked")) && (
 		state.hasPrimeGreaterThan89 || // If prime > 89 is present
 		(heji2String.trim().length === 0 && hejiExtensionsPath.trim().length === 0 && natural.trim().length === 0) // Or if no HEJI symbols are found
 	)) {
@@ -785,7 +785,7 @@ export function getPC(){
 		state.monzoMessage = "";
 	}
 
-    let numColumns = $("#output-columns-input").val();
+    let numColumns = $("#chord-size-input").val();
     const parsedMidiNote = parseMidiNoteOutput(refMidiNoteOutput); // Calculate once
     state.parsedMidiNoteGlobal = parsedMidiNote; // Assign to global variable
 
@@ -871,4 +871,27 @@ export function parseMidiNoteOutput(midiNoteString) {
     }
 
     return { letter: letter, accidental: heji2Accidental };
+}
+
+export function generateChordRatioFields(numFields) {
+    let container = $("#chord-ratio-fields-container");
+    container.empty();
+
+    for (let i = 1; i <= numFields; i++) {
+        let ratioHtml = ``;
+        if (i > 1) {
+            ratioHtml += `<div class="times-symbol">×</div>`;
+        }
+        ratioHtml += `
+            <div class="interval-column">
+                <input type="number" class="ratioIn chord-ratio-in" id="chordInputNum_${i}" value="1"></input>
+                <input type="number" class="ratioIn chord-ratio-in" id="chordInputDen_${i}" value="1"></input>
+                <div class="interval-button-group">
+                    <button class="getCurrentPitch interval-button" onclick="loadCurrentPitchToChord(${i})">load</button>
+                    <button class="clearInputRatio interval-button" onclick="clearChordRatio(${i})">clear</button>
+                </div>
+            </div>
+        `;
+        container.append(ratioHtml);
+    }
 }

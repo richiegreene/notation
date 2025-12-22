@@ -1,4 +1,3 @@
-
 import * as C from './calc/constants.js';
 import * as U from './calc/utils.js';
 import { state } from './calc/state.js';
@@ -39,17 +38,33 @@ window.getCurrentPitch = function() {
 	window.loadCurrentPitch(); // Call loadCurrentPitch without an index for the static saved ratio
 }
 
+window.loadCurrentPitchToChord = function(index) {
+    $(`#chordInputNum_${index}`).val(state.displayNumValue);
+    $(`#chordInputDen_${index}`).val(state.displayDenValue);
+    Calc.doCalc();
+}
+
+window.clearChordRatio = function(index) {
+    $(`#chordInputNum_${index}`).val(1);
+    $(`#chordInputDen_${index}`).val(1);
+    Calc.doCalc();
+}
+
 window.clearAllIntervals = function() {
     // Reset Interval Entry fields
     $("#stacking-input").val(1);
-    $("#stacking-input").trigger("change"); // This will call generateStackingRatioFields(1) and doCalc()
+    $("#stacking-input").trigger("change"); 
+
+    // Reset Chord Entry fields
+    $("#chord-size-input").val(1);
+    $("#chord-size-input").trigger("change");
 
     // Reset HEJI Entry fields and trigger calculations
     sendA();
 }
 
 window.sendA = function() {
-	$("#intervalInput").click(); // Trigger Interval Entry as default
+	$("#chordInput").click(); // Trigger Chord Entry as default
 	$(".notes[value='1']").click();
 	$("#defaultOctave").click();
 	$("#default3").click();
@@ -89,13 +104,11 @@ $(document).ready(function(){
 	sendA();
 	UI.getPC();
 	$("#octaveDropdown").change(function(c){
-		// No need to manage 'selected' class for dropdowns
 		Calc.getFrequency1to1();
 		Calc.doCalc();
 		UI.getPC();
 	});
 	$("#diatonicNoteDropdown").change(function(c){
-		// No need to manage 'selected' class for dropdowns
 		Calc.getFrequency1to1();
 		Calc.doCalc();
 		UI.getPC();
@@ -316,6 +329,8 @@ $(document).ready(function(){
 		state.savedDen = parseInt($(this).val());
 		Calc.getSavedInputSum();
 	});
+
+    // Input type radio buttons
 	$("#paletteInput").click(function(c){
 		Calc.doCalc();
 		UI.getPC();
@@ -324,6 +339,12 @@ $(document).ready(function(){
 		Calc.doCalc();
 		UI.getPC();
 	});
+    $("#chordInput").click(function(c){
+        Calc.doCalc();
+        UI.getPC();
+    });
+
+
 	$("#normalize").click(function(c){
 		Calc.doCalc();
 		UI.getPC();
@@ -362,17 +383,14 @@ $(document).ready(function(){
 
         const content = item.querySelector('.settings-content');
 
-        // Ensure headerToClick and toggleIconSpan are found before proceeding
         if (!headerToClick || !toggleIconSpan) {
-            console.error("Could not find header or toggle icon for item:", item);
-            return; // Skip this item if elements are missing
+            return; 
         }
 
-        // Ensure all sections are expanded by default
         headerToClick.classList.remove('collapsed');
         content.style.display = 'grid';
         toggleIconSpan.textContent = '▼';
-        item.classList.remove('collapsed-item'); // Make sure it's not collapsed initially
+        item.classList.remove('collapsed-item');
 
         headerToClick.addEventListener('click', () => {
             const isCollapsed = headerToClick.classList.toggle('collapsed');
@@ -392,8 +410,8 @@ $(document).ready(function(){
     var el = document.querySelector('.calc-container');
     var sortable = Sortable.create(el, {
         animation: 150,
-        handle: '.settings-header, .toggle-header-placement', // Only drag by the header
-        ghostClass: 'sortable-ghost' // Class name for the drop placeholder
+        handle: '.settings-header, .toggle-header-placement',
+        ghostClass: 'sortable-ghost'
     });
 
     // Prevent clicks on radio buttons and their labels from collapsing/expanding the section
@@ -405,25 +423,26 @@ $(document).ready(function(){
         event.stopPropagation();
     });
 
-    $("#output-columns-input").change(function(c){
-        let numColumns = $(this).val();
-        UI.generateOutputColumns(numColumns);
+    $("#chord-size-input").change(function() {
+        let numFields = $(this).val();
+        UI.generateOutputColumns(numFields);
+        UI.generateChordRatioFields(numFields);
         Calc.doCalc();
     });
 
     $("#stacking-input").change(function() {
         let numStackingFields = $(this).val();
         UI.generateStackingRatioFields(numStackingFields);
-        Calc.doCalc(); // Recalculate after generating new fields
+        Calc.doCalc();
     });
 
-    UI.generateOutputColumns($("#output-columns-input").val());
-    UI.generateStackingRatioFields(1); // Initial call with 1 field
-    clearRatio1(); // Ensure savedNum and savedDen are internally 1/1
-    $("#stacking-input").trigger("change"); // Trigger change event to reflect initial state
+    // Initial setup
+    $("#chord-size-input").trigger("change");
+    $("#stacking-input").trigger("change");
+    clearRatio1();
 
     // Event listener for dynamically generated ratio input fields
-    $("#dynamic-ratio-fields-container").on("change", "input.ratioIn", function() {
+    $("#dynamic-ratio-fields-container, #chord-ratio-fields-container").on("change", "input.ratioIn", function() {
         Calc.doCalc();
     });
 });

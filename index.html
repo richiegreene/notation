@@ -358,7 +358,7 @@
 
 		<div class="settings-menu-item" id="interval-entry-item">
             <div class="toggle-header-placement">
-                <input type="radio" name="inputType" id="intervalInput" checked> <label for="intervalInput">Interval Entry</label>
+                <input type="radio" name="inputType" id="intervalInput"> <label for="intervalInput">Interval Entry</label>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="settings-content">
@@ -394,15 +394,20 @@
             </div>
         </div>
 
-        <div class="settings-menu-item" id="output-columns-item">
-            <div class="settings-header">
-                <span>Chord Entry</span>
+        <div class="settings-menu-item" id="chord-entry-item">
+            <div class="toggle-header-placement">
+                <input type="radio" name="inputType" id="chordInput" checked> <label for="chordInput">Chord Entry</label>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="settings-content">
-                <div class="output-columns-box">
-                    <label for="output-columns-input">Chord Size: </label>
-                    <input type="number" id="output-columns-input" value="1" min="1" max="16">
+                <div class="ratiobox">
+                    <div class="chord-size-container">
+                        <label for="chord-size-input">Chord Size: </label>
+                        <input type="number" id="chord-size-input" value="1" min="1" max="16">
+                    </div>
+                    <div class="interval-entry-layout" id="chord-ratio-fields-container">
+                        <!-- Dynamic fields will be inserted here by JS -->
+                    </div>
                 </div>
             </div>
         </div>

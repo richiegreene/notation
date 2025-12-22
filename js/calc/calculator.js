@@ -78,6 +78,30 @@ export function getInputSum(){
         let currentMonzo = U.diffArray(numArray, denArray);
         state.inputSum = U.sumArray(state.inputSum, currentMonzo);
     }
+} else if ($("#chordInput").prop("checked")){
+    // Logic for chord entry
+    state.inputSum = C.reference; // Initialize to 1/1
+
+    let numChordFields = $("#chord-size-input").val();
+    for (let i = 1; i <= numChordFields; i++) {
+        let currentInputNum = parseInt($(`#chordInputNum_${i}`).val());
+        let currentInputDen = parseInt($(`#chordInputDen_${i}`).val());
+
+        if (isNaN(currentInputNum) || currentInputNum <= 0) currentInputNum = 1;
+        if (isNaN(currentInputDen) || currentInputDen <= 0) currentInputDen = 1;
+
+        state.currentTotalNum *= currentInputNum;
+        state.currentTotalDen *= currentInputDen;
+
+        if (currentInputNum > 1 && U.getValue(U.getArray(currentInputNum)) !== currentInputNum) { state.hasPrimeGreaterThan89 = true; }
+        if (currentInputDen > 1 && U.getValue(U.getArray(currentInputDen)) !== currentInputDen) { state.hasPrimeGreaterThan89 = true; }
+
+        let smallestTerms = U.reduce(currentInputNum, currentInputDen);
+        let numArray = U.getArray(smallestTerms[0]);
+        let denArray = U.getArray(smallestTerms[1]);
+        let currentMonzo = U.diffArray(numArray, denArray);
+        state.inputSum = U.sumArray(state.inputSum, currentMonzo);
+    }
 }
 }
 
@@ -165,7 +189,7 @@ export function getDisplayValues(){ //calculate num and den for display
 		state.displayDenValue = reduceNormalized[1];
 	}
 
-    let numColumns = $("#output-columns-input").val();
+    let numColumns = $("#chord-size-input").val();
     for (let i = 1; i <= numColumns; i++) {
         if (state.displayNumValue <= 9007199254740991 && state.displayDenValue <= 9007199254740991){
             $("#num_" + i).text(state.displayNumValue);
@@ -199,6 +223,8 @@ export function prepareCentsCalculationData() {
         sum = U.sumArray(sum, C.refNote[UI.getRefNote()]);
         state.centsSum = U.sumArray(sum, C.refAccidental[UI.getRefAccidental()]);
     } else if ($("#intervalInput").prop("checked")){ 
+        state.centsSum = state.inputSum;
+    } else if ($("#chordInput").prop("checked")){
         state.centsSum = state.inputSum;
     }
     var centsOtonalArray = state.centsSum.map(value => {
@@ -255,7 +281,7 @@ export function getCentDeviation(){ //calculate cent deviation, interval to ref 
 		state.centDeviation = -(100.0 - state.centDeviation);
 	}
 
-    let numColumns = $("#output-columns-input").val();
+    let numColumns = $("#chord-size-input").val();
     for (let i = 1; i <= numColumns; i++) {
         let centsText;
         if (Math.round(state.centDeviation * 1e9) / 1e9 === 0) {
@@ -296,7 +322,7 @@ export function getCentDeviation(){ //calculate cent deviation, interval to ref 
 
 export function getOutputFrequency(){
 	var outputFreq = state.freq1to1 * (state.displayNumValue / state.displayDenValue);
-    let numColumns = $("#output-columns-input").val();
+    let numColumns = $("#chord-size-input").val();
     for (let i = 1; i <= numColumns; i++) {
 	    $("#frequency_" + i).text(outputFreq.toFixed(state.precision)+"Hz");
     }
