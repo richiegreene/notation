@@ -957,7 +957,7 @@ $("#stacking-input").change(function() {
 });
 
     generateOutputColumns($("#output-columns-input").val());
-    generateStackingRatioFields($("#stacking-input").val()); // Initial call
+    generateStackingRatioFields(0); // Initial call
 
     // Add a copy event listener to the output-content div to handle ratio copy
     $('.output-content').on('copy', function(event) {
