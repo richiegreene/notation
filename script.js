@@ -405,6 +405,8 @@ const eightyNineSymbols = ["888","88","8","","7","77","777"]; // 7/8: 89-limit
 // Print-out of closest MIDI note (12-ED2)
 const refMidiNote = ["*ntC", "*stC | *ftD","*ntD","*stD | *ftE","*ntE","*ntF","*stF | *ftG","*ntG","*stG | *ftA","*ntA","*stA | *ftB","*ntB"];
 
+var parsedMidiNoteGlobal; // Global variable to store parsed MIDI note information
+
 // Global Variables
 var numValue = 1; 
 var denValue = 1; 
@@ -1002,9 +1004,9 @@ function doCalc() {
 	getOandUArrays();
 	getDisplaySum();
 	getDisplayValues();
+	getPC(); // Call getPC() before getCentDeviation()
 	getCentDeviation();
 	getOutputFrequency();
-	getPC();
 	getCurrentCents();
 }
 
@@ -1266,15 +1268,18 @@ function getCentDeviation(){ //calculate cent deviation, interval to ref (correc
 
     let numColumns = $("#output-columns-input").val();
     for (let i = 1; i <= numColumns; i++) {
+        let centsText;
         if (centDeviation < 50) {
-            $("#cents_" + i).text("+" + centDeviation.toFixed(precision));
+            centsText = "+" + centDeviation.toFixed(precision);
         } 
         if (centDeviation == 0){
-            $("#cents_" + i).text("±" + centDeviation.toFixed(precision));
+            centsText = "±" + centDeviation.toFixed(precision);
         }
         if (centDeviation < 0){
-            $("#cents_" + i).text(centDeviation.toFixed(precision));
+            centsText = centDeviation.toFixed(precision);
         }
+        // Combine midi note, accidental, and cents
+        $("#midiCentsOutput_" + i).text(parsedMidiNoteGlobal.letter + parsedMidiNoteGlobal.accidental + centsText);
     }
 	getBend();
 	if ($("#intervalInput").prop("checked")){
@@ -1300,7 +1305,7 @@ function getOutputFrequency(){
 	var outputFreq = freq1to1 * (displayNumValue / displayDenValue);
     let numColumns = $("#output-columns-input").val();
     for (let i = 1; i <= numColumns; i++) {
-	    $("#frequency_" + i).text(outputFreq.toFixed(precision)+" Hz");
+	    $("#frequency_" + i).text(outputFreq.toFixed(precision)+"Hz");
     }
 }
 
@@ -2064,13 +2069,14 @@ function getPC(){
 	}
 
     let numColumns = $("#output-columns-input").val();
+    const parsedMidiNote = parseMidiNoteOutput(refMidiNoteOutput); // Calculate once
+    parsedMidiNoteGlobal = parsedMidiNote; // Assign to global variable
+
     for (let i = 1; i <= numColumns; i++) {
         $("#notationOutput_" + i).html(notationString);
         $("#noteName_" + i).html(outputDiatonic);
         $("#undefinedNotation_" + i).html(undefinedNotation);
-        const parsedMidiNote = parseMidiNoteOutput(refMidiNoteOutput);
-        $("#midiNote_" + i).text(parsedMidiNote.letter);
-        $("#midiAccidental_" + i).text(parsedMidiNote.accidental);
+        // Removed lines that updated #midiNote_ and #midiAccidental_
     }
 }
 
@@ -3005,9 +3011,7 @@ function generateOutputColumns(numColumns) {
                     <div class="noteName" id="noteName_${i}"></div><!--
                     --><div class="notationOutput" id="notationOutput_${i}"></div>
                 </div>
-                <br>
                 <div class="output-content">
-                    <br>
                     <div class="ratio-display-container">
                         <div id="num_${i}" value="1"></div>
                         <div id="den_${i}" value="1"></div>
@@ -3015,15 +3019,13 @@ function generateOutputColumns(numColumns) {
                     </div>
                 </div>
                 <div class="output-content">
-                    <br>
-                    <span id="midiNote_${i}"></span><span id="midiAccidental_${i}" class="midiAccidental"></span>
-                    <b><span id="cents_${i}" value="0"></span></b>
+                    <span id="midiCentsOutput_${i}"></span>
                 </div>
                 <div class="output-content">
-                    <b><div type="text" id="frequency_${i}" value="440"></div></b>
+                    <div type="text" id="frequency_${i}" value="440"></div>
                 </div>
                 <div class="output-content">
-                    <b><div id="JIgross_${i}" value="0">0</div></b>
+                    <div id="JIgross_${i}" value="0">0</div>
                 </div>
             </div>
         `;
