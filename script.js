@@ -1169,23 +1169,8 @@ function getDisplaySum(){
 }
 
 function getDisplayValues(){ //calculate num and den for display
-	if ($("#paletteInput").prop("checked")){ 
-		var displayOtonalArray = displaySum.map(value => {
-			return value < 0 ? 0 : value;
-		});
-		var displayUtonalArray = displaySum.map(value => {
-			return value < 0 ? Math.abs(value) : 0;
-		});
-	} else if ($("#intervalInput").prop("checked")){
-	        var displayOtonalArray = inputSum.map(value => { // Derive from inputSum
-	            return value < 0 ? 0 : value;
-	        });
-	        var displayUtonalArray = inputSum.map(value => { // Derive from inputSum
-	            return value < 0 ? Math.abs(value) : 0;
-	        });
-		}
-	    displayNumValue = getValue(displayOtonalArray);
-	    displayDenValue = getValue(displayUtonalArray);
+	displayNumValue = numValue; // Directly assign numValue
+	displayDenValue = denValue; // Directly assign denValue
 	
 	//optionally normalizes output 
 	if ($("#normalize").prop("checked")){
@@ -1223,13 +1208,8 @@ function getDisplayValues(){ //calculate num and den for display
 		var displayDenArray = getArray(displayDenValue);
 		var displayMeldoicSum = displayNumArray.DiffArray(displayDenArray);
 		$("#monzo").text(displayMeldoicSum);
-		if (reducedRatioRemainder[0] > 1 && reducedRatioRemainder[1] > 1){
-			monzoMessage = "× ( " + reducedRatioRemainder[0] + " / " + reducedRatioRemainder[1] + " )";
-		} else if (reducedRatioRemainder[0] > 1) {
-			monzoMessage = "× ( " + reducedRatioRemainder[0] + " / 1 )";
-		} else if (reducedRatioRemainder[1] > 1) {
-			monzoMessage = "× ( 1 / " + reducedRatioRemainder[1] + " )";
-		}
+		// Removed reducedRatioRemainder logic here as hasPrimeGreaterThan89 handles it
+		monzoMessage = ""; // Clear monzoMessage if not used
 		$("#over31Message").text(monzoMessage);
 	} else {
 		$("#monzo").text("stack overflow");
