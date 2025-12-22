@@ -1,5 +1,0 @@
-- Redesigning the Output window so that is displays a "Mirrored" second instance the current entry readout. This duplicate readout process should be scalable to potentially allow for chord/harmonic output. - COMPLETED
- 
- - create a changing/scaling number of readouts in output, set via a number entry field/etc to troubleshoot and test the expandable Output window when seeing many simultaneous output instances - COMPLETED
-
- - Building the final Chord Entry field/window which sends its info to the scaling output window - PENDING
