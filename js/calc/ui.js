@@ -185,8 +185,8 @@ export function generateOutputColumns(numColumns) {
                 </div>
                 <div class="output-content">
                     <div class="ratio-display-container">
-                        <div id="num_${i}" value="1"></div>
-                        <div id="den_${i}" value="1"></div>
+                        <div id="num_${i}" class="num" value="1"></div>
+                        <div id="den_${i}" class="den" value="1"></div>
                         <span id="ratioCopyHelper_${i}" style="position: absolute; left: -9999px;"></span>
                     </div>
                 </div>
