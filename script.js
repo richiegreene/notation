@@ -1278,8 +1278,10 @@ function getCentDeviation(){ //calculate cent deviation, interval to ref (correc
         if (centDeviation < 0){
             centsText = centDeviation.toFixed(precision);
         }
-        // Combine midi note, accidental, and cents
-        $("#midiCentsOutput_" + i).text(parsedMidiNoteGlobal.letter + parsedMidiNoteGlobal.accidental + centsText);
+        // Update individual spans
+        $("#midiNote_" + i).text(parsedMidiNoteGlobal.letter);
+        $("#midiAccidental_" + i).text(parsedMidiNoteGlobal.accidental);
+        $("#cents_" + i).text(centsText);
     }
 	getBend();
 	if ($("#intervalInput").prop("checked")){
@@ -3019,7 +3021,8 @@ function generateOutputColumns(numColumns) {
                     </div>
                 </div>
                 <div class="output-content">
-                    <span id="midiCentsOutput_${i}"></span>
+                    <span id="midiNote_${i}"></span><span id="midiAccidental_${i}" class="midiAccidental"></span>
+                    <span id="cents_${i}" value="0"></span>
                 </div>
                 <div class="output-content">
                     <div type="text" id="frequency_${i}" value="440"></div>
