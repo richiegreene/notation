@@ -1427,12 +1427,11 @@ function getMelodicRatio(){
 
 // clear all values stored in calc other than reference information
 function clearAllIntervals() {
-    document.getElementById("savedNum").value = 1;
-    document.getElementById("savedDen").value = 1;
-    document.getElementById("inputNum").value = 1;
-    document.getElementById("inputDen").value = 1;
-    document.getElementById("inputNum2").value = 1; // Add this line
-    document.getElementById("inputDen2").value = 1; // Add this line
+    // Reset Interval Entry fields
+    $("#stacking-input").val(1);
+    $("#stacking-input").trigger("change"); // This will call generateStackingRatioFields(1) and doCalc()
+
+    // Reset HEJI Entry fields and trigger calculations
     sendA();
 }
 
