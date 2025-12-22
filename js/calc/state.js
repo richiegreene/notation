@@ -27,7 +27,7 @@ export let state = {
     offsetDenRemainder: 1,
     inputNumRemainder: 1,
     inputDenRemainder: 1,
-    precision: 1,
+    precision: 0,
     kammerTon: 440.0000,
     jiCents: 0,
     cents_toRef: 0,

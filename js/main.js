@@ -85,6 +85,7 @@ window.sendA = function() {
 
 $(document).ready(function(){
 	state.kammerTon = $("#frequencyA4").val();
+	state.precision = $("#precision").val();
 	sendA();
 	UI.getPC();
 	$("#octaveDropdown").change(function(c){
