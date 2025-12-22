@@ -406,6 +406,9 @@ const eightyNineSymbols = ["888","88","8","","7","77","777"]; // 7/8: 89-limit
 const refMidiNote = ["*ntC", "*stC | *ftD","*ntD","*stD | *ftE","*ntE","*ntF","*stF | *ftG","*ntG","*stG | *ftA","*ntA","*stA | *ftB","*ntB"];
 
 var parsedMidiNoteGlobal; // Global variable to store parsed MIDI note information
+var centsSum; // Global variable for centsSum
+var centsNumValue; // Global variable for centsNumValue
+var centsDenValue; // Global variable for centsDenValue
 
 // Global Variables
 var numValue = 1; 
@@ -1004,7 +1007,9 @@ function doCalc() {
 	getOandUArrays();
 	getDisplaySum();
 	getDisplayValues();
-	getPC(); // Call getPC() before getCentDeviation()
+	prepareCentsCalculationData(); // New call
+	calculateJiCents(); 
+	getPC(); 
 	getCentDeviation();
 	getOutputFrequency();
 	getCurrentCents();
@@ -1211,38 +1216,46 @@ function getDisplayValues(){ //calculate num and den for display
 	}
 }
 
-function getCentDeviation(){ //calculate cent deviation, interval to ref (corrected if tuning metre setting is unlinked)
-	if ($("#paletteInput").prop("checked")){ 
-		var centsSum = inputSum
-		.SumArray(refOctave[getRefOctave()]) 
-		.SumArray(refNote[getRefNote()]) 
-		.SumArray(refAccidental[getRefAccidental()]);
-	} else if ($("#intervalInput").prop("checked")){ 
-		var centsSum = inputSum;
-	}
-	var centsOtonalArray = centsSum.map(value => {
-		return value < 0 ? 0 : value;
-	});
-	var centsUtonalArray = centsSum.map(value => {
-		return value < 0 ? Math.abs(value) : 0;
-	});
-	var centsNumValue = getValue(centsOtonalArray);
-	var centsDenValue = getValue(centsUtonalArray);
+function prepareCentsCalculationData() {
+    if ($("#paletteInput").prop("checked")){ 
+        centsSum = inputSum
+        .SumArray(refOctave[getRefOctave()]) 
+        .SumArray(refNote[getRefNote()]) 
+        .SumArray(refAccidental[getRefAccidental()]);
+    } else if ($("#intervalInput").prop("checked")){ 
+        centsSum = inputSum;
+    }
+    var centsOtonalArray = centsSum.map(value => {
+        return value < 0 ? 0 : value;
+    });
+    var centsUtonalArray = centsSum.map(value => {
+        return value < 0 ? Math.abs(value) : 0;
+    });
+    centsNumValue = getValue(centsOtonalArray);
+    centsDenValue = getValue(centsUtonalArray);
+}
+
+function calculateJiCents(){
 	if ($("#intervalInput").prop("checked")){
-			jiCents = 1200*Math.log2((displayNumValue) / (displayDenValue) 
-			/ (kammerTon 
-			/ (freq1to1
-			/ Math.pow(2, (frequencyOctave[getFrequencyOctave()] / 12)) 
-			/ Math.pow(2, (frequencyNote[getFrequencyNote()] / 12)) 
-			/ Math.pow(2, (frequencyAccidental[getFrequencyAccidental()] / 12))))); 
-	} else {
-		jiCents = 1200*Math.log2((centsNumValue) / (centsDenValue)
-			/ (kammerTon 
-			/ (freq1to1
-			/ Math.pow(2, (frequencyOctave[getFrequencyOctave()] / 12)) 
-			/ Math.pow(2, (frequencyNote[getFrequencyNote()] / 12)) 
-			/ Math.pow(2, (frequencyAccidental[getFrequencyAccidental()] / 12))))); 
-	}
+            jiCents = 1200*Math.log2((displayNumValue) / (displayDenValue) 
+            / (kammerTon 
+            / (freq1to1
+            / Math.pow(2, (frequencyOctave[getFrequencyOctave()] / 12)) 
+            / Math.pow(2, (frequencyNote[getFrequencyNote()] / 12)) 
+            / Math.pow(2, (frequencyAccidental[getFrequencyAccidental()] / 12))))); 
+    } else {
+        jiCents = 1200*Math.log2((centsNumValue) / (centsDenValue)
+            / (kammerTon 
+            / (freq1to1
+            / Math.pow(2, (frequencyOctave[getFrequencyOctave()] / 12)) 
+            / Math.pow(2, (frequencyNote[getFrequencyNote()] / 12)) 
+            / Math.pow(2, (frequencyAccidental[getFrequencyAccidental()] / 12))))); 
+    }
+}
+
+function getCentDeviation(){ //calculate cent deviation, interval to ref (corrected if tuning metre setting is unlinked)
+	// centsSum, centsNumValue, centsDenValue are now global and prepared by prepareCentsCalculationData()
+	// jiCents calculation moved to calculateJiCents()
 	// harmonic series as number of 12-ED2 semitones
 	var et2 = (centsSum[0] * 12);
 	var et3 = (centsSum[1] * 19);
@@ -1280,7 +1293,11 @@ function getCentDeviation(){ //calculate cent deviation, interval to ref (correc
         }
         // Update individual spans
         $("#midiNote_" + i).text(parsedMidiNoteGlobal.letter);
-        $("#midiAccidental_" + i).text(parsedMidiNoteGlobal.accidental);
+        if (parsedMidiNoteGlobal.accidental === "j") {
+            $("#midiAccidental_" + i).text(""); // Hide "j" accidental
+        } else {
+            $("#midiAccidental_" + i).text(parsedMidiNoteGlobal.accidental);
+        }
         $("#cents_" + i).text(centsText);
     }
 	getBend();
