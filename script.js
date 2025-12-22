@@ -974,6 +974,11 @@ $("#stacking-input").change(function() {
         }
     });
 
+    // Event listener for dynamically generated ratio input fields
+    $("#dynamic-ratio-fields-container").on("change", "input.ratioIn", function() {
+        doCalc();
+    });
+
 });
 
 
