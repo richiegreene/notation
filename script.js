@@ -1470,6 +1470,15 @@ function sendA(){
 	$("#default41").click();
 	$("#default43").click();
 	$("#default47").click();
+	$("#default53").click();
+	$("#default59").click();
+	$("#default61").click();
+	$("#default67").click();
+	$("#default71").click();
+	$("#default73").click();
+	$("#default79").click();
+	$("#default83").click();
+	$("#default89").click();
 	doCalc();
 	getFrequency1to1();
 	getFrequencyKammerTon();
