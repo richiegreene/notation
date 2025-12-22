@@ -968,10 +968,20 @@ $(document).ready(function(){
     });
 
     $("#output-columns-input").change(function(c){
-        let numColumns = $(this).val();
-        generateOutputColumns(numColumns);
-        doCalc();
-    });
+    let numColumns = $(this).val();
+    generateOutputColumns(numColumns);
+    doCalc();
+});
+
+$("#inputNum2").change(function() {
+    inputNum2 = $(this).val();
+    doCalc();
+});
+
+$("#inputDen2").change(function() {
+    inputDen2 = $(this).val();
+    doCalc();
+});
 
     generateOutputColumns($("#output-columns-input").val());
 
