@@ -848,11 +848,11 @@ $(document).ready(function(){
 		//getEDOSteps();
 	});
 	$("#savedNum").change(function(c){
-		savedNum = $(this).val();
+		savedNum = parseInt($(this).val());
 		getSavedInputSum();
 	});
 	$("#savedDen").change(function(c){
-		savedDen = $(this).val();
+		savedDen = parseInt($(this).val());
 		getSavedInputSum();
 	});
 	$("#paletteInput").click(function(c){
@@ -957,8 +957,9 @@ $("#stacking-input").change(function() {
 });
 
     generateOutputColumns($("#output-columns-input").val());
-    generateStackingRatioFields(0); // Initial call
-    getSavedInputSum(); // Initialize saved ratio arrays
+    generateStackingRatioFields(1); // Initial call with 1 field
+    clearRatio1(); // Ensure savedNum and savedDen are internally 1/1
+    $("#stacking-input").trigger("change"); // Trigger change event to reflect initial state
 
     // Add a copy event listener to the output-content div to handle ratio copy
     $('.output-content').on('copy', function(event) {
@@ -1009,19 +1010,7 @@ function doCalc() {
 
 function generateStackingRatioFields(numFields) {
     let container = $("#dynamic-ratio-fields-container");
-    // Keep the first interval-column (saved ratio) static
-    let staticRatioHtml = `
-        <div class="interval-column">
-            <input type="number" class="ratioIn" id="savedNum" value="1"></input>
-            <input type="number" class="ratioIn" id="savedDen" value="1"></input>
-            <div class="interval-button-group">
-                <button id="getCurrentPitch" class="getCurrentPitch interval-button" onclick="getCurrentPitch()">load</button>
-                <button id="clearRatio1" class="clearSave interval-button" onclick="clearRatio1()">clear</button>
-            </div>
-        </div>
-    `;
     container.empty(); // Clear existing dynamic fields
-    container.append(staticRatioHtml); // Add back the static ratio
 
     for (let i = 1; i <= numFields; i++) {
         let ratioHtml = `
