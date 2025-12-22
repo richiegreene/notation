@@ -1478,7 +1478,7 @@ function clearFreq(){
 
 // Load page with A-natural "input"
 function sendA(){
-	$("#paletteInput").click();
+	$("#intervalInput").click(); // Trigger Interval Entry as default
 	$(".notes[value='1']").click();
 	$("#defaultOctave").click();
 	$("#default3").click();
