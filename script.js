@@ -411,21 +411,12 @@ var denValue = 1;
 var displayNumValue = 1;
 var displayDenValue = 1;
 
-var inputNum = 1; 
-var inputDen = 1; 
-var inputNumReduced = 1;
-var inputDenReduced = 1;
 var savedNum = 1; 
 var savedDen = 1;
 var numArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var denArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var savedNumArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var savedDenArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var inputNum2 = 1;
-var inputDen2 = 1;
-var savedNumArray2 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var savedDenArray2 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var inputSum2 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var reducedSavedNum = 1;
 var reducedSavedDen = 1;
 var reducedRatioRemainder = [1,1];
@@ -631,22 +622,8 @@ function getInputDen(){
 
 $(document).ready(function(){
 	kammerTon = $("#frequencyA4").val();
-	inputNum = $("#inputNum").val();
-	inputDen = $("#inputDen").val();
 	sendA();
 	getPC();
-	$("#inputNum").change(function(c){
-		inputNum = $(this).val();
-		doCalc();
-		getPC();
-		getSavedInputSum();
-	})
-	$("#inputDen").change(function(c){
-		inputDen = $(this).val();
-		doCalc();
-		getPC();
-		getSavedInputSum();
-	})
 	$("#octaveDropdown").change(function(c){
 		// No need to manage 'selected' class for dropdowns
 		getFrequency1to1();
@@ -973,17 +950,14 @@ $(document).ready(function(){
     doCalc();
 });
 
-$("#inputNum2").change(function() {
-    inputNum2 = $(this).val();
-    doCalc();
-});
-
-$("#inputDen2").change(function() {
-    inputDen2 = $(this).val();
-    doCalc();
+$("#stacking-input").change(function() {
+    let numStackingFields = $(this).val();
+    generateStackingRatioFields(numStackingFields);
+    doCalc(); // Recalculate after generating new fields
 });
 
     generateOutputColumns($("#output-columns-input").val());
+    generateStackingRatioFields($("#stacking-input").val()); // Initial call
 
     // Add a copy event listener to the output-content div to handle ratio copy
     $('.output-content').on('copy', function(event) {
@@ -1027,6 +1001,38 @@ function doCalc() {
 	getCurrentCents();
 }
 
+function generateStackingRatioFields(numFields) {
+    let container = $("#dynamic-ratio-fields-container");
+    // Keep the first interval-column (saved ratio) static
+    let staticRatioHtml = `
+        <div class="interval-column">
+            <input type="number" class="ratioIn" id="savedNum" value="1"></input>
+            <input type="number" class="ratioIn" id="savedDen" value="1"></input>
+            <div class="interval-button-group">
+                <button id="getCurrentPitch" class="getCurrentPitch interval-button" onclick="getCurrentPitch()">load</button>
+                <button id="clearRatio1" class="clearSave interval-button" onclick="clearRatio1()">clear</button>
+            </div>
+        </div>
+    `;
+    container.empty(); // Clear existing dynamic fields
+    container.append(staticRatioHtml); // Add back the static ratio
+
+    for (let i = 1; i <= numFields; i++) {
+        let ratioHtml = `
+            <div class="times-symbol">×</div>
+            <div class="interval-column">
+                <input type="number" class="ratioIn" id="inputNum_${i}" minlength="1" required value="1"></input>
+                <input type="number" class="ratioIn" id="inputDen_${i}"  minlength="1" required value="1"></input>
+                <div class="interval-button-group">
+                    <button id="loadCurrentPitch_${i}" class="getCurrentPitch interval-button" onclick="loadCurrentPitch(${i})">load</button>
+                    <button id="clearRatio_${i}" class="clearInputRatio interval-button" onclick="clearRatio(${i})">clear</button>
+                </div>
+            </div>
+        `;
+        container.append(ratioHtml);
+    }
+}
+
 // retrieval of prime powers based on each comma
 function getInputSum(){
 	if ($("#paletteInput").prop("checked")){ 
@@ -1057,28 +1063,26 @@ function getInputSum(){
 		.SumArray(eightyThree[getEightyThree()])
 		.SumArray(eightyNine[getEightyNine()]);
 } else if ($("#intervalInput").prop("checked")){ 
-        // Calculate Monzo for Ratio 1 (savedNum/savedDen)
-        var r1Monzo = savedNumArray.DiffArray(savedDenArray);
+    // Calculate Monzo for Ratio 1 (savedNum/savedDen)
+    var r1Monzo = savedNumArray.DiffArray(savedDenArray);
+    inputSum = r1Monzo; // Start with the saved ratio
 
-        // Calculate Monzo for Ratio 2 (inputNum/inputDen)
-		var smallestTermsInput = reduce(inputNum, inputDen);
-		var inputNumReduced = smallestTermsInput[0];
-		var inputDenReduced = smallestTermsInput[1];
-		var numArray = getArray(inputNumReduced);
-		var denArray = getArray(inputDenReduced);
-		var r2Monzo = numArray.DiffArray(denArray);
+    let numStackingFields = $("#stacking-input").val();
+    for (let i = 1; i <= numStackingFields; i++) {
+        let currentInputNum = $(`#inputNum_${i}`).val();
+        let currentInputDen = $(`#inputDen_${i}`).val();
 
-        // Calculate Monzo for Ratio 3 (inputNum2/inputDen2)
-        var smallestTermsInput2 = reduce(inputNum2, inputDen2);
-        var inputNumReduced2 = smallestTermsInput2[0];
-        var inputDenReduced2 = smallestTermsInput2[1];
-        var numArray2 = getArray(inputNumReduced2);
-        var denArray2 = getArray(inputDenReduced2);
-        var r3Monzo = numArray2.DiffArray(denArray2);
+        // Ensure values are not empty or invalid
+        if (!currentInputNum || isNaN(currentInputNum)) currentInputNum = 1;
+        if (!currentInputDen || isNaN(currentInputDen)) currentInputDen = 1;
 
-        // Chain multiply the monzos: (R1 * R2) * R3
-		inputSum = r1Monzo.SumArray(r2Monzo).SumArray(r3Monzo);
-	}
+        let smallestTerms = reduce(currentInputNum, currentInputDen);
+        let numArray = getArray(smallestTerms[0]);
+        let denArray = getArray(smallestTerms[1]);
+        let currentMonzo = numArray.DiffArray(denArray);
+        inputSum = inputSum.SumArray(currentMonzo);
+    }
+}
 }
 
 // convert nums and dens into positive int only arrays
@@ -1330,20 +1334,27 @@ function parseMidiNoteOutput(midiNoteString) {
 
 // get/clear output values for ratio input / melodic distance check 
 function getCurrentPitch(){
-	savedNum = displayNumValue;
-	savedDen = displayDenValue;
-	$("#savedNum").val(savedNum);
-	$("#savedDen").val(savedDen);
-	getSavedInputSum();
+	loadCurrentPitch(); // Call loadCurrentPitch without an index for the static saved ratio
 }
 
-function loadCurrentPitch(){
-	inputNum = displayNumValue;
-	inputDen = displayDenValue;
-	$("#inputNum").val(inputNum);
-	$("#inputDen").val(inputDen);
-	getInputSum();
-	doCalc(); 
+function loadCurrentPitch(index){
+    if (index === undefined) { // This is for the static "saved" ratio's load button
+        savedNum = displayNumValue;
+        savedDen = displayDenValue;
+        $("#savedNum").val(savedNum);
+        $("#savedDen").val(savedDen);
+        getSavedInputSum();
+    } else { // This is for dynamically generated ratios
+        $(`#inputNum_${index}`).val(displayNumValue);
+        $(`#inputDen_${index}`).val(displayDenValue);
+        doCalc();
+    }
+}
+
+function clearRatio(index) {
+    $(`#inputNum_${index}`).val(1);
+    $(`#inputDen_${index}`).val(1);
+    doCalc();
 }
 
 function getSavedInputSum(){
@@ -1374,29 +1385,7 @@ function clearRatio1(){
 
 
 
-function clearRatio2() {
-	inputNum = 1;
-	inputDen = 1;
-	$("#inputNum").val(inputNum);
-	$("#inputDen").val(inputDen);
-	doCalc();
-}
 
-function loadCurrentPitch2(){
-	inputNum2 = displayNumValue;
-	inputDen2 = displayDenValue;
-	$("#inputNum2").val(inputNum2);
-	$("#inputDen2").val(inputDen2);
-	doCalc(); 
-}
-
-function clearRatio3() {
-	inputNum2 = 1;
-	inputDen2 = 1;
-	$("#inputNum2").val(inputNum2);
-	$("#inputDen2").val(inputDen2);
-	doCalc();
-}
 
 // do the melodic distance calculation
 function getMelodicRatio(){
