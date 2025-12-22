@@ -258,13 +258,11 @@ export function getCentDeviation(){ //calculate cent deviation, interval to ref 
     let numColumns = $("#output-columns-input").val();
     for (let i = 1; i <= numColumns; i++) {
         let centsText;
-        if (state.centDeviation < 50) {
+        if (Math.round(state.centDeviation * 1e9) / 1e9 === 0) {
+            centsText = "";
+        } else if (state.centDeviation > 0) {
             centsText = "+" + state.centDeviation.toFixed(state.precision);
-        } 
-        if (state.centDeviation == 0){
-            centsText = "±" + state.centDeviation.toFixed(state.precision);
-        }
-        if (state.centDeviation < 0){
+        } else {
             centsText = state.centDeviation.toFixed(state.precision);
         }
         // Update individual spans
