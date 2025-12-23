@@ -207,8 +207,8 @@ export function generateOutputColumns(numColumns) {
 }
 
 // get HE notation output 
-export function getPC(){
-	var inverseSum = U.diffArray(state.inputSum, C.refOctave[getRefOctave()]);
+export function getPC(columnIndex){
+	var inverseSum = U.diffArray(state.displaySum, C.refOctave[getRefOctave()]);
     inverseSum = U.diffArray(inverseSum, C.refNote[getRefNote()]);
     inverseSum = U.diffArray(inverseSum, C.refAccidental[getRefAccidental()]);
 
@@ -219,7 +219,7 @@ export function getPC(){
 
     let tonalArray;
 	if ($("#paletteInput").prop("checked")){
-		tonalArray = U.productArray(state.inputSum, C.tonalIdentity);
+		tonalArray = U.productArray(state.displaySum, C.tonalIdentity);
 	} else if ($("#intervalInput").prop("checked") || $("#chordInput").prop("checked")){
 		tonalArray = U.productArray(inverseSum, C.tonalIdentity);
 	}
@@ -785,16 +785,18 @@ export function getPC(){
 		state.monzoMessage = "";
 	}
 
-    let numColumns = $("#chord-size-input").val();
-    const parsedMidiNote = parseMidiNoteOutput(refMidiNoteOutput); // Calculate once
-    state.parsedMidiNoteGlobal = parsedMidiNote; // Assign to global variable
-
-    for (let i = 1; i <= numColumns; i++) {
-        $("#notationOutput_" + i).html(notationString);
-        $("#noteName_" + i).html(outputDiatonic);
-        $("#undefinedNotation_" + i).html(undefinedNotation);
-        // Removed lines that updated #midiNote_ and #midiAccidental_
-    }
+	const parsedMidiNote = parseMidiNoteOutput(refMidiNoteOutput); // Calculate for this column
+	
+	// Update only this specific column's HEJI notation
+	$("#notationOutput_" + columnIndex).html(notationString);
+	$("#noteName_" + columnIndex).html(outputDiatonic);
+	$("#undefinedNotation_" + columnIndex).html(undefinedNotation);
+	$("#midiNote_" + columnIndex).text(parsedMidiNote.letter);
+	if (parsedMidiNote.accidental === "j") {
+		$("#midiAccidental_" + columnIndex).text("");
+	} else {
+		$("#midiAccidental_" + columnIndex).text(parsedMidiNote.accidental);
+	}
 }
 
 export function getBend() {

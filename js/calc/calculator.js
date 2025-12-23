@@ -317,12 +317,7 @@ export function getCentDeviation(columnIndex){
         centsText = state.centDeviation.toFixed(state.precision);
     }
     
-    $("#midiNote_" + columnIndex).text(state.parsedMidiNoteGlobal.letter);
-    if (state.parsedMidiNoteGlobal.accidental === "j") {
-        $("#midiAccidental_" + columnIndex).text("");
-    } else {
-        $("#midiAccidental_" + columnIndex).text(state.parsedMidiNoteGlobal.accidental);
-    }
+    // MIDI note is now handled in getPC() for each column
     $("#cents_" + columnIndex).text(centsText);
     
 	UI.getBend();
