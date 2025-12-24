@@ -38,11 +38,11 @@ function performCalculationsForColumn(columnIndex, inputSum) {
     // Run the calculation pipeline
     getOandUArrays();
     getDisplaySum();
-    prepareCentsCalculationData();
-    calculateJiCents();
     
     // Run the display functions for this specific column
     getDisplayValues(columnIndex);
+    prepareCentsCalculationData();
+    calculateJiCents();
     UI.getPC(columnIndex); 
     getCentDeviation(columnIndex);
     getOutputFrequency(columnIndex);
