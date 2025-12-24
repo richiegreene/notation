@@ -803,6 +803,22 @@ export function getPC(columnIndex){
 	} else {
 		$("#midiAccidental_" + columnIndex).text(parsedMidiNote.accidental);
 	}
+
+    // New logic for padding:
+    const noteNameElement = $("#noteName_" + columnIndex);
+    if (hejiExtensionsPath.trim().length === 0 && displayedHeji2String.trim().length === 0) {
+        // If only letter name is displayed, add padding
+        noteNameElement.css({
+            'padding-top': '10px', // Test value for 2/3rds upper padding
+            'padding-bottom': '10px' // Test value for 2/3rds lower padding
+        });
+    } else {
+        // Reset padding if not solo letter name (important for dynamic updates)
+        noteNameElement.css({
+            'padding-top': '0',
+            'padding-bottom': '0'
+        });
+    }
 }
 
 export function getBend() {
