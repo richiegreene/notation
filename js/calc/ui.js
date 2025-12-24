@@ -825,8 +825,8 @@ export function getPC(columnIndex){
     if (displayedHeji2String.trim().length === 0 && hejiExtensionsPath.trim().length > 0) {
         // If only HEJI Extension is displayed, add 10px padding
         notationOutputElement.css({
-            'padding-top': '10px',
-            'padding-bottom': '10px'
+            'padding-top': '12px',
+            'padding-bottom': '12px'
         });
     } else {
         // Reset padding if this condition is not met
