@@ -285,7 +285,7 @@ export function getPC(columnIndex){
 	var chromatic = tonalArraySum + 25;
 	// display natural on diatonic pitch classes 
 	if ((state.displaySum[1] - refNat + refpc - 4 == -4 || state.displaySum[1] - refNat + refpc - 4 == -3 || state.displaySum[1] - refNat + refpc - 4 == -2 || state.displaySum[1] - refNat + refpc - 4 == -1 || state.displaySum[1] - refNat + refpc - 4 == 0 || state.displaySum[1] - refNat + refpc - 4 == 1 || state.displaySum[1] - refNat + refpc - 4 == 2) && state.displaySum[2] == 0 && state.displaySum[3] == 0 && state.displaySum[4] == 0 && state.displaySum[5] == 0 && state.displaySum[6] == 0 && state.displaySum[7] == 0 && state.displaySum[8] == 0 && state.displaySum[9] == 0 && state.displaySum[10] == 0 && state.displaySum[11] == 0 && state.displaySum[12] == 0 && state.displaySum[13] == 0 && state.displaySum[14] == 0 && state.displaySum[15] == 0 && state.displaySum[16] == 0 && state.displaySum[17] == 0 && state.displaySum[18] == 0 && state.displaySum[19] == 0 && state.displaySum[20] == 0 && state.displaySum[21] == 0 && state.displaySum[22] == 0 && state.displaySum[23] == 0){
-		natural = "n"; 
+		natural = " "; 
 	} else {
 		natural = "";
 	}
