@@ -819,6 +819,22 @@ export function getPC(columnIndex){
             'padding-bottom': '0'
         });
     }
+
+    // New logic for padding for HEJI Extension only:
+    const notationOutputElement = $("#notationOutput_" + columnIndex);
+    if (displayedHeji2String.trim().length === 0 && hejiExtensionsPath.trim().length > 0) {
+        // If only HEJI Extension is displayed, add 10px padding
+        notationOutputElement.css({
+            'padding-top': '10px',
+            'padding-bottom': '10px'
+        });
+    } else {
+        // Reset padding if this condition is not met
+        notationOutputElement.css({
+            'padding-top': '0',
+            'padding-bottom': '0'
+        });
+    }
 }
 
 export function getBend() {
