@@ -782,7 +782,7 @@ export function getPC(columnIndex){
 		state.hasPrimeGreaterThan89 || // If prime > 89 is present
 		(heji2String.trim().length === 0 && hejiExtensionsPath.trim().length === 0 && natural.trim().length === 0) // Or if no HEJI symbols are found
 	)) {
-		notationString = "<span style='font-family: monospace;'>n/a</span>"; // Apply monospace font
+		notationString = "<span style='font-family: monospace; padding-top: 60px; padding-bottom: 60px;'>n/a</span>"; // Apply monospace font with padding
 		outputDiatonic = "";
 		undefinedNotation = ""; // Clear undefinedNotation as we are explicitly showing n/a
 	} else {
