@@ -809,8 +809,8 @@ export function getPC(columnIndex){
     if (hejiExtensionsPath.trim().length === 0 && displayedHeji2String.trim().length === 0) {
         // If only letter name is displayed, add padding
         noteNameElement.css({
-            'padding-top': '50px', // Test value for 2/3rds upper padding multiplied by 5
-            'padding-bottom': '50px' // Test value for 2/3rds lower padding multiplied by 5
+            'padding-top': '40px', //blank, "n" natural only padding for compensation formatting 
+            'padding-bottom': '40px' //blank, "n" natural only padding for compensation formatting (yeah same)
         });
     } else {
         // Reset padding if not solo letter name (important for dynamic updates)
