@@ -634,3 +634,25 @@ input.ratioIn {
 #chord-entry-item {
     grid-row: span 3;
 }
+
+.enumerated-chord-layout {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.enumerated-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.enumerated-chord-layout .times-symbol {
+    margin-top: 30px; /* Adjust to vertically center with the text input */
+}
+
+.enumerated-column #enumerated-chord-input {
+    margin-top: 2px; /* Align with top of ratio input */
+}

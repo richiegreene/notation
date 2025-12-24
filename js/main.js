@@ -451,12 +451,16 @@ $(document).ready(function(){
             $("#enumerated-chord-entry").hide();
             $("#note-by-note-entry").show();
         }
+        // Trigger a calculation when switching modes
+        $("#enumerated-chord-input").trigger('input');
     });
 
-    // Event listener for the enumerated chord input
-    $("#enumerated-chord-input").on('input', function() {
-        const input = $(this).val();
+    function calculateEnumeratedChord() {
+        const input = $("#enumerated-chord-input").val();
         const parts = input.split(':').map(s => s.trim()).filter(s => s.length > 0 && !isNaN(s));
+
+        const baseNum = parseInt($("#enumerated-base-num").val(), 10) || 1;
+        const baseDen = parseInt($("#enumerated-base-den").val(), 10) || 1;
 
         if (parts.length > 0) {
             const denominator = parseInt(parts[0], 10);
@@ -469,7 +473,12 @@ $(document).ready(function(){
 
             parts.forEach((part, index) => {
                 const numerator = parseInt(part, 10);
-                const reduced = U.reduce(numerator, denominator);
+                
+                // Multiply by the base ratio
+                const finalNum = numerator * baseNum;
+                const finalDen = denominator * baseDen;
+
+                const reduced = U.reduce(finalNum, finalDen);
                 
                 const fieldIndex = index + 1; // Use 1-based index for fields
                 
@@ -478,7 +487,29 @@ $(document).ready(function(){
             });
 
             Calc.doCalc();
+        } else {
+            // If the enumerated chord input is empty, clear the outputs
+            $("#chord-size-input").val(1).trigger('change');
+            $(`#chordInputNum_1`).val(baseNum);
+            $(`#chordInputDen_1`).val(baseDen);
+            Calc.doCalc();
         }
+    }
+
+    // Centralized calculation for the enumerated chord section
+    $("#enumerated-chord-entry").on('input', 'input', calculateEnumeratedChord);
+
+    // Event listeners for the new base ratio buttons
+    $("#clear-enumerated-base").click(function() {
+        $("#enumerated-base-num").val(1);
+        $("#enumerated-base-den").val(1);
+        calculateEnumeratedChord(); // Recalculate
+    });
+
+    $("#load-enumerated-base").click(function() {
+        $("#enumerated-base-num").val(state.displayNumValue);
+        $("#enumerated-base-den").val(state.displayDenValue);
+        calculateEnumeratedChord(); // Recalculate
     });
 
     // Event listener for dynamically generated ratio input fields
