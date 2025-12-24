@@ -441,6 +441,52 @@ $(document).ready(function(){
     $("#stacking-input").trigger("change");
     clearRatio1();
 
+    // Event listener for the chord entry type dropdown
+    $("#chord-entry-type-select").change(function() {
+        const selectedType = $(this).val();
+        if (selectedType === 'enumerated-chord') {
+            $("#enumerated-chord-entry").show();
+            $("#note-by-note-entry").hide();
+        } else {
+            $("#enumerated-chord-entry").hide();
+            $("#note-by-note-entry").show();
+        }
+    });
+
+    // Event listener for the enumerated chord input
+    $("#enumerated-chord-input").on('input', function() {
+        const input = $(this).val();
+        const parts = input.split(':').map(s => s.trim()).filter(s => s.length > 0 && !isNaN(s));
+
+        if (parts.length > 0) {
+            const denominator = parseInt(parts[0], 10);
+            if (denominator === 0) return; // Avoid division by zero
+
+            const chordSize = parts.length;
+            
+            // Update chord size and generate fields
+            $("#chord-size-input").val(chordSize).trigger('change');
+
+            // Create an array of ratios to be sorted
+            const ratios = parts.map(part => {
+                const numerator = parseInt(part, 10);
+                const reduced = U.reduce(numerator, denominator);
+                return { num: reduced[0], den: reduced[1], value: reduced[0] / reduced[1] };
+            });
+
+            // Sort the ratios by their value
+            ratios.sort((a, b) => a.value - b.value);
+
+            // Populate the fields with the sorted ratios
+            ratios.forEach((ratio, index) => {
+                $(`#chordInputNum_${index}`).val(ratio.num);
+                $(`#chordInputDen_${index}`).val(ratio.den);
+            });
+
+            Calc.doCalc();
+        }
+    });
+
     // Event listener for dynamically generated ratio input fields
     $("#dynamic-ratio-fields-container, #chord-ratio-fields-container").on("change", "input.ratioIn", function() {
         Calc.doCalc();

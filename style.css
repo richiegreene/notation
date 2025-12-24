@@ -618,3 +618,19 @@ input.ratioIn {
 #output-item.collapsed-item {
     grid-row: span 1;
 }
+
+.chord-entry-type-container, .enumerated-chord-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#enumerated-chord-input {
+    width: 150px;
+}
+
+#chord-entry-item {
+    grid-row: span 3;
+}
