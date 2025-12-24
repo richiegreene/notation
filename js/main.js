@@ -467,20 +467,14 @@ $(document).ready(function(){
             // Update chord size and generate fields
             $("#chord-size-input").val(chordSize).trigger('change');
 
-            // Create an array of ratios to be sorted
-            const ratios = parts.map(part => {
+            parts.forEach((part, index) => {
                 const numerator = parseInt(part, 10);
                 const reduced = U.reduce(numerator, denominator);
-                return { num: reduced[0], den: reduced[1], value: reduced[0] / reduced[1] };
-            });
-
-            // Sort the ratios by their value
-            ratios.sort((a, b) => a.value - b.value);
-
-            // Populate the fields with the sorted ratios
-            ratios.forEach((ratio, index) => {
-                $(`#chordInputNum_${index}`).val(ratio.num);
-                $(`#chordInputDen_${index}`).val(ratio.den);
+                
+                const fieldIndex = index + 1; // Use 1-based index for fields
+                
+                $(`#chordInputNum_${fieldIndex}`).val(reduced[0]);
+                $(`#chordInputDen_${fieldIndex}`).val(reduced[1]);
             });
 
             Calc.doCalc();
