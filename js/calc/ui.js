@@ -782,7 +782,7 @@ export function getPC(columnIndex){
 		state.hasPrimeGreaterThan89 || // If prime > 89 is present
 		(heji2String.trim().length === 0 && hejiExtensionsPath.trim().length === 0 && natural.trim().length === 0) // Or if no HEJI symbols are found
 	)) {
-		notationString = "<span style='font-family: monospace; padding-top: 60px; padding-bottom: 60px;'>n/a</span>"; // Apply monospace font with padding
+		notationString = "<span style='font-family: monospace; padding-top: 63px; padding-bottom: 63px;'>n/a</span>"; // Apply monospace font with padding
 		outputDiatonic = "";
 		undefinedNotation = ""; // Clear undefinedNotation as we are explicitly showing n/a
 	} else {
@@ -809,8 +809,8 @@ export function getPC(columnIndex){
     if (hejiExtensionsPath.trim().length === 0 && displayedHeji2String.trim().length === 0) {
         // If only letter name is displayed, add padding
         noteNameElement.css({
-            'padding-top': '40px', //blank, "n" natural only padding for compensation formatting 
-            'padding-bottom': '40px' //blank, "n" natural only padding for compensation formatting (yeah same)
+            'padding-top': '38px', //blank, "n" natural only padding for compensation formatting 
+            'padding-bottom': '38px' //blank, "n" natural only padding for compensation formatting (yeah same)
         });
     } else {
         // Reset padding if not solo letter name (important for dynamic updates)
