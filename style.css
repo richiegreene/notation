@@ -461,7 +461,7 @@ table.enharmonic-table > tr, td, th {
 }
 
 .heji-extensions {
-    font-family: "HEJIExtensions2022", sans-serif;
+    font-family: "HEJIExtensions2022", "HEJI2", sans-serif;
     letter-spacing: 0.05em;
     font-size: 6rem;
     position: relative;
@@ -579,7 +579,7 @@ table.enharmonic-table > tr, td, th {
     display: flex;
     flex-direction: column;
     align-items: center; /* Center items within the column */
-    gap: 5px; /* Space between elements in the column */
+    gap: 10px; /* Increased space between elements in the column */
 }
 
 .times-symbol {
@@ -707,4 +707,8 @@ input.ratioIn {
 
 .chord-entry-type-container {
     margin-bottom: 10px; /* Add slight padding below */
+}
+
+.enumerated-chord-layout > .enumerated-column:nth-child(2) {
+    margin-top: 10px; /* Small margin to push it down */
 }
