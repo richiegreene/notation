@@ -689,3 +689,22 @@ input.ratioIn {
     gap: 10px; /* Space between label and input */
     width: 100%; /* Ensure it takes full width for centering to work */
 }
+
+.enumerated-column {
+    display: flex;
+    flex-direction: column;
+    /* remove align-items: center; to allow input to take full width */
+    /* align-items: center; */ /* This was constraining the input width */
+    gap: 5px;
+}
+
+#enumerated-chord-input {
+    /* remove fixed width */
+    /* width: 150px; */
+    width: 100%; /* Make it fill the available space */
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+.chord-entry-type-container {
+    margin-bottom: 10px; /* Add slight padding below */
+}
