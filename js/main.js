@@ -3,6 +3,7 @@ import * as U from './calc/utils.js';
 import { state } from './calc/state.js';
 import * as Calc from './calc/calculator.js';
 import * as UI from './calc/ui.js';
+import { initAudio, updateWaveform, playFrequencies, stopAllFrequencies } from './audio-playback.js'; // Import audio functions
 
 // Functions that need to be globally accessible from HTML
 window.loadCurrentPitch = function(index) {
@@ -97,11 +98,17 @@ window.sendA = function() {
 	//getEDOSteps();
 }
 
+let isPlaying = false;
+
 $(document).ready(function(){
 	state.kammerTon = $("#frequencyA4").val();
 	state.precision = $("#precision").val();
 	sendA();
 	UI.getPC();
+
+    initAudio(); // Initialize the audio context
+    updateWaveform(parseFloat($("#timbreSlider").val())); // Set initial waveform
+
 	$("#octaveDropdown").change(function(c){
 		Calc.getFrequency1to1();
 		Calc.doCalc();
@@ -515,4 +522,49 @@ $(document).ready(function(){
     $("#dynamic-ratio-fields-container, #chord-ratio-fields-container").on("change", "input.ratioIn", function() {
         Calc.doCalc();
     });
+
+    // Timbre slider event listener
+    $("#timbreSlider").on("input", function() {
+        updateWaveform(parseFloat($(this).val()));
+    });
+
+    // Play button event listener
+    $("#playOutputButton").on("click", function() {
+        if (isPlaying) {
+            stopAllFrequencies(0.2); // Fade out over 0.2 seconds
+            isPlaying = false;
+            $(this).text("Play Output");
+        } else {
+            const chordSize = parseInt($("#chord-size-input").val());
+            const frequencies = [];
+            for (let i = 1; i <= chordSize; i++) {
+                const freqText = $(`#frequency_${i}`).text();
+                const freqValue = parseFloat(freqText.replace('Hz', ''));
+                if (!isNaN(freqValue)) {
+                    frequencies.push(freqValue);
+                }
+            }
+            if (frequencies.length > 0) {
+                playFrequencies(frequencies, 0.2); // Fade in over 0.2 seconds
+                isPlaying = true;
+                $(this).text("Stop Output");
+            } else {
+                console.warn("No frequencies to play.");
+            }
+        }
+    });
+
+    // Stop playback if chord size changes or any input changes that trigger doCalc
+    // This needs to be carefully managed to avoid stopping on every single UI update.
+    // A more robust solution might involve a dedicated "stop" when relevant inputs change.
+    // For now, let's stop playback whenever Calc.doCalc is invoked.
+    const originalDoCalc = Calc.doCalc;
+    Calc.doCalc = function() {
+        originalDoCalc();
+        if (isPlaying) {
+            stopAllFrequencies(0.1); // Quick fade out
+            isPlaying = false;
+            $("#playOutputButton").text("Play Output");
+        }
+    };
 });
