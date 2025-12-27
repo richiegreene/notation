@@ -530,29 +530,28 @@ $(document).ready(function(){
 
     // Play button event listener
     $("#playOutputButton").on("click", function() {
-        if (isPlaying) {
-            stopAllFrequencies(0.2); // Fade out over 0.2 seconds
-            isPlaying = false;
-            $(this).text("Play Output");
-        } else {
-            const chordSize = parseInt($("#chord-size-input").val());
-            const frequencies = [];
-            for (let i = 1; i <= chordSize; i++) {
-                const freqText = $(`#frequency_${i}`).text();
-                const freqValue = parseFloat(freqText.replace('Hz', ''));
-                if (!isNaN(freqValue)) {
-                    frequencies.push(freqValue);
-                }
-            }
-            if (frequencies.length > 0) {
-                playFrequencies(frequencies, 0.2); // Fade in over 0.2 seconds
-                isPlaying = true;
-                $(this).text("Stop Output");
-            } else {
-                console.warn("No frequencies to play.");
-            }
-        }
-    });
+                    if (isPlaying) {
+                        stopAllFrequencies(0.2); // Fade out over 0.2 seconds
+                        isPlaying = false;
+                        $(this).text("play").removeClass("playing-active");
+                    } else {
+                        const chordSize = parseInt($("#chord-size-input").val());
+                        const frequencies = [];
+                        for (let i = 1; i <= chordSize; i++) {
+                            const freqText = $(`#frequency_${i}`).text();
+                            const freqValue = parseFloat(freqText.replace('Hz', ''));
+                            if (!isNaN(freqValue)) {
+                                frequencies.push(freqValue);
+                            }
+                        }
+                        if (frequencies.length > 0) {
+                            playFrequencies(frequencies, 0.2); // Fade in over 0.2 seconds
+                            isPlaying = true;
+                            $(this).text("stop").addClass("playing-active");
+                        } else {
+                            console.warn("No frequencies to play.");
+                        }
+                    }    });
 
     // Stop playback if chord size changes or any input changes that trigger doCalc
     // This needs to be carefully managed to avoid stopping on every single UI update.
@@ -564,7 +563,7 @@ $(document).ready(function(){
         if (isPlaying) {
             stopAllFrequencies(0.1); // Quick fade out
             isPlaying = false;
-            $("#playOutputButton").text("Play Output");
+            $("#playOutputButton").text("play").removeClass("playing-active");
         }
     };
 });

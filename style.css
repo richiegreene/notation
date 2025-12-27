@@ -539,7 +539,7 @@ table.enharmonic-table > tr, td, th {
 }
 
 .toggle-header-placement input[type="radio"] {
-    margin-right: 5px; /* Space between radio button and label */
+    margin-right: 5px; /* Space between radio button and its label */
 }
 
 .ref-frequency-toggles {
@@ -612,46 +612,12 @@ input.ratioIn {
     grid-row: span 7;
 }
 
-.settings-menu-item.collapsed-item {
-    grid-row: span 1;
-}
-
-.chord-entry-type-container, .enumerated-chord-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-#enumerated-chord-input {
-    width: 150px;
-}
-
 #chord-entry-item {
     grid-row: span 6;
 }
 
-.enumerated-chord-layout {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 10px;
-}
-
-.enumerated-column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-.enumerated-chord-layout .times-symbol {
-    margin-top: 30px; /* Adjust to vertically center with the text input */
-}
-
-.enumerated-column #enumerated-chord-input {
-    margin-top: 2px; /* Align with top of ratio input */
+.settings-menu-item.collapsed-item {
+    grid-row: span 1;
 }
 /* Styles copied from Tetrads_Refference/style.css */
 #timbre-row {
@@ -703,4 +669,8 @@ input.ratioIn {
     border: 1px solid #555;
     background-color: #2a2a2a;
     border-radius: 4px;
+}
+#playOutputButton.playing-active {
+    background-color: var(--bg-button-selected);
+    border-color: var(--bg-button-selected);
 }
