@@ -81,6 +81,13 @@
                             <option value="0" selected>0</option>
                         </select>
                     </div>
+                    <br>
+                    <h3>Playback</h3>
+                    <br>
+                    <div class="settings-row" id="timbre-row">
+                        <input type="range" id="timbreSlider" min="0" max="3" value="1" step="0.01">
+                        <canvas id="waveformCanvas" width="60" height="30"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -458,21 +465,7 @@
                 </div>
             </div>
         </div>
-        <!-- NEW PLAYBACK SETTINGS START -->
-        <div class="settings-menu-item" id="playback-item">
-            <div class="settings-header">
-                <span>Playback</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="settings-row" id="timbre-row">
-                    <label for="timbreSlider">Timbre</label>
-                    <input type="range" id="timbreSlider" min="0" max="3" value="1" step="0.01">
-                    <canvas id="waveformCanvas" width="60" height="30"></canvas>
-                </div>
-            </div>
-        </div>
-        <!-- NEW PLAYBACK SETTINGS END -->
+        
 
 
         

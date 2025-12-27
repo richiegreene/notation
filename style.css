@@ -593,7 +593,7 @@ input.ratioIn {
 }
 /* Specific grid-row spans for each settings-menu-item */
 #ref-pitch-item {
-    grid-row: span 7;
+    grid-row: span 11;
 }
 
 #heji-entry-item {
@@ -609,13 +609,10 @@ input.ratioIn {
 }
 
 #output-item {
-    grid-row: span 10;
+    grid-row: span 7;
 }
 
-#ref-pitch-item.collapsed-item,
-#heji-entry-item.collapsed-item,
-#interval-entry-item.collapsed-item,
-#output-item.collapsed-item {
+.settings-menu-item.collapsed-item {
     grid-row: span 1;
 }
 
@@ -632,7 +629,7 @@ input.ratioIn {
 }
 
 #chord-entry-item {
-    grid-row: span 3;
+    grid-row: span 6;
 }
 
 .enumerated-chord-layout {
@@ -660,9 +657,8 @@ input.ratioIn {
 #timbre-row {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 35px;
+    grid-template-columns: 1fr auto; /* Only slider and canvas */
+    gap: 10px; /* Reduced gap */
     margin-top: 0;
 }
 
