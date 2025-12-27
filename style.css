@@ -624,7 +624,7 @@ input.ratioIn {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: 1fr auto; /* Only slider and canvas */
-    gap: 10px; /* Reduced gap */
+    gap: 20px; /* Increased gap to 20px */
     margin-top: 0;
 }
 
