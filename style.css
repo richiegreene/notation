@@ -680,3 +680,12 @@ input.ratioIn {
     font-size: 14px; /* Same as clearOutputButton */
     margin: 10px 0; /* Same as clearOutputButton */
 }
+
+/* New rule for centering stacking-input-container */
+.stacking-input-container, .chord-size-container {
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    gap: 10px; /* Space between label and input */
+    width: 100%; /* Ensure it takes full width for centering to work */
+}
