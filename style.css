@@ -674,3 +674,9 @@ input.ratioIn {
     background-color: var(--bg-button-selected);
     border-color: var(--bg-button-selected);
 }
+#playOutputButton {
+    display: block;
+    width: 100%;
+    font-size: 14px; /* Same as clearOutputButton */
+    margin: 10px 0; /* Same as clearOutputButton */
+}
