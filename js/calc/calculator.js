@@ -86,10 +86,11 @@ function getCombinedInputSum() {
 	state.hasPrimeGreaterThan89 = false;
 	state.currentTotalNum = 1;
 	state.currentTotalDen = 1;
+
     let combinedInputSum = C.reference;
 
-	if ($("#paletteInput").prop("checked")){ 
-		let sum = U.sumArray(C.autoOffsetToA, C.octave[UI.getOctave()]);
+	if ($("#paletteInput").prop("checked")){
+        let sum = C.octave[UI.getOctave()];
         sum = U.sumArray(sum, C.notes[UI.getNote()]);
         sum = U.sumArray(sum, C.chromatic[UI.getChromatic()]);
         sum = U.sumArray(sum, C.syntonic[UI.getSyntonic()]);
@@ -181,11 +182,6 @@ export function getFrequencyKammerTon(){
 // adjust monzo with respect to selected reference, calculate Tenney harmonic distance
 export function getDisplaySum(){
 	state.displaySum = state.inputSum;
-	if ($("#paletteInput").prop("checked")){
-		let sum = U.sumArray(state.inputSum, C.refOctave[UI.getRefOctave()]);
-        sum = U.sumArray(sum, C.refNote[UI.getRefNote()]);
-        state.displaySum = U.sumArray(sum, C.refAccidental[UI.getRefAccidental()]);
-	}
 	state.cat = state.displaySum;
 	var hdValue = 0;
 	if ($("#normalize").prop("checked")){
@@ -250,9 +246,7 @@ export function getDisplayValues(columnIndex){
 
 export function prepareCentsCalculationData() {
     if ($("#paletteInput").prop("checked")){ 
-        let sum = U.sumArray(state.inputSum, C.refOctave[UI.getRefOctave()]);
-        sum = U.sumArray(sum, C.refNote[UI.getRefNote()]);
-        state.centsSum = U.sumArray(sum, C.refAccidental[UI.getRefAccidental()]);
+        state.centsSum = state.inputSum; // Corrected: directly use inputSum for paletteInput
     } else if ($("#intervalInput").prop("checked") || $("#chordInput").prop("checked")){
         state.centsSum = state.inputSum;
     }

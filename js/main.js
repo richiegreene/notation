@@ -65,8 +65,7 @@ window.clearAllIntervals = function() {
 
 window.sendA = function() {
 	$("#chordInput").click(); // Trigger Chord Entry as default
-	$(".notes[value='1']").click();
-	$("#defaultOctave").click();
+
 	$("#default3").click();
 	$("#default5").click();
 	$("#default7").click();

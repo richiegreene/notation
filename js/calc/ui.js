@@ -226,7 +226,12 @@ export function getPC(columnIndex){
 	var refArraySum = U.sum(refArray);
 	var tonalArraySum = U.sum(tonalArray);
 	var refpc = U.mod((refArraySum + 4),7); 
-	var pc = U.mod((tonalArraySum + 4),7);
+	var pc;
+if ($("#paletteInput").prop("checked")){
+    pc = U.mod((tonalArraySum + 1),7); // For HEJI Entry, map 0 to C
+} else {
+    pc = U.mod((tonalArraySum + 4),7); // For other Entry areas, map -3 to C (original logic)
+}
 	var outputDiatonic = C.diatonicOutput[pc];
 	var ref12;
 	if (refpc == 0){
