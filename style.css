@@ -617,7 +617,7 @@ input.ratioIn {
 }
 
 .settings-menu-item.collapsed-item {
-    grid-row: span 1;
+    grid-row: span 1 !important;
 }
 /* Styles copied from Tetrads_Refference/style.css */
 #timbre-row {
