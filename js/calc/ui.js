@@ -925,7 +925,7 @@ export function generateChordRatioFields(numFields) {
     for (let i = 1; i <= numFields; i++) {
         let ratioHtml = ``;
         if (i > 1) {
-            ratioHtml += `<div class="times-symbol">+</div>`;
+            ratioHtml += `<div class="times-symbol">,</div>`;
         }
         ratioHtml += `
             <div class="interval-column">
