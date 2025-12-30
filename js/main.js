@@ -538,9 +538,8 @@ $(document).ready(function(){
                         const chordSize = parseInt($("#chord-size-input").val());
                         const frequencies = [];
                         for (let i = 1; i <= chordSize; i++) {
-                            const freqText = $(`#frequency_${i}`).text();
-                            const freqValue = parseFloat(freqText.replace('Hz', ''));
-                            if (!isNaN(freqValue)) {
+                            const freqValue = state.outputFrequencies[i]; // Get unrounded frequency directly from state
+                            if (freqValue !== undefined && !isNaN(freqValue)) {
                                 frequencies.push(freqValue);
                             }
                         }

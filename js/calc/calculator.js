@@ -334,6 +334,7 @@ export function getCentDeviation(columnIndex){
 
 export function getOutputFrequency(columnIndex){
 	var outputFreq = state.freq1to1 * (state.displayNumValue / state.displayDenValue);
+    state.outputFrequencies[columnIndex] = outputFreq; // Store the unrounded frequency
     $("#frequency_" + columnIndex).text(outputFreq.toFixed(state.precision)+"Hz");
 }
 
