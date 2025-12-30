@@ -98,9 +98,29 @@ window.sendA = function() {
 	//getEDOSteps();
 }
 
+// Function to apply the theme from localStorage or default to dark
+function applyStoredTheme() {
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme) {
+        document.documentElement.setAttribute("data-theme", storedTheme);
+    } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+    }
+}
+
 let isPlaying = false;
 
 $(document).ready(function(){
+    applyStoredTheme(); // Apply theme on load
+
+    // Theme toggle functionality
+    $("#theme-toggle").on("click", function() {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+    });
+
 	state.kammerTon = $("#frequencyA4").val();
 	state.precision = $("#precision").val();
 	sendA();

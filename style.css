@@ -712,3 +712,62 @@ input.ratioIn {
 .enumerated-chord-layout > .enumerated-column:nth-child(2) {
     margin-top: 10px; /* Small margin to push it down */
 }
+
+/* --- Theme Toggle Styles --- */
+.theme-toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 12px; /* Match settings-header and settings-content horizontal padding */
+}
+
+#theme-toggle {
+    background-color: var(--bg-button);
+    border: 1px solid var(--border-button);
+    border-radius: 50%; /* Make it circular */
+    width: 30px; /* Adjust size as needed */
+    height: 30px; /* Adjust size as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 0; /* Remove default padding */
+    font-size: 1.2rem; /* Size of the emoji icons */
+    line-height: 1; /* Ensure emoji is centered */
+}
+
+#theme-toggle .icon {
+    display: none; /* Hide all icons by default */
+}
+
+#theme-toggle .dark-icon {
+    display: block; /* Show dark icon in dark mode (default) */
+}
+
+html[data-theme="light"] {
+    --bg-main: #f0f0f0;
+    --bg-header: rgba(220, 220, 220, 0.8);
+    --bg-button: #e0e0e0;
+    --bg-button-selected: #007bff;
+    --bg-button-clear: #e0e0e0;
+    --bg-button-get: #e0e0e0;
+    --border-button: #bbb;
+    --color-palette-labels: #333;
+    --color-text: #333;
+    --color-em: #333;
+    --color-link: #007bff;
+    --color-link-hover: #0056b3;
+    --color-input: #fff;
+}
+
+html[data-theme="light"] #theme-toggle {
+    background-color: var(--bg-button);
+    border-color: var(--border-button);
+}
+
+html[data-theme="light"] #theme-toggle .dark-icon {
+    display: none; /* Hide dark icon in light mode */
+}
+
+html[data-theme="light"] #theme-toggle .light-icon {
+    display: block; /* Show light icon in light mode */
+}
