@@ -13,17 +13,33 @@
 <body>
     <div class="calc-container">
         <div class="settings-menu-item" id="ref-pitch-item">
-            <div class="settings-header">
+            <div class="toggle-header-placement">
                 <span>Settings</span>
                 <span class="toggle-icon">▼</span>
             </div>
-            <div class="theme-toggle-container">
-                <button id="theme-toggle" aria-label="Toggle theme">
-                    <span class="icon light-icon">●</span>
-                    <span class="icon dark-icon">⏾</span>
-                </button>
-            </div>
             <div class="settings-content">
+                <div class="display-options-row">
+                    <span>Display</span>
+                    <div class="theme-toggle-container">
+                        <button id="theme-toggle" aria-label="Toggle theme">
+                            <span class="icon light-icon">●</span>
+                            <span class="icon dark-icon">⏾</span>
+                        </button>
+                    </div>
+                    <div class="precision-control-group">
+                        <label for="precision">decimals</label>
+                        <select id="precision">
+                            <option value="6">6</option>
+                            <option value="5">5</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1</option>
+                            <option value="0" selected>0</option>
+                        </select>
+                    </div>
+                </div>
+                <br> <!-- Add a line break for spacing -->
                 <div class="refbox">
                     <h3>Defining 1/1</h3>
                     <br>
@@ -75,18 +91,6 @@
                         <input type="number" id="frequencyA4" value="440.0000"></input>
                     </div>
         			<br> <!-- Add a line break for spacing -->
-                    <div class="ref-pitch-controls-centered" id="precision-select-row"> <!-- Re-use centering class, give ID for specificity -->
-                        <label for="precision">decimal places</label>
-                        <select id="precision">
-                            <option value="6">6</option>
-                            <option value="5">5</option>
-                            <option value="4">4</option>
-                            <option value="3">3</option>
-                            <option value="2">2</option>
-                            <option value="1">1</option>
-                            <option value="0" selected>0</option>
-                        </select>
-                    </div>
                     <br>
                     <h3>Playback</h3>
                     <br>
