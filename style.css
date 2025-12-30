@@ -100,10 +100,9 @@ body {
 
 .settings-content {
     padding: 0 15px 15px 15px;
-    display: grid;
-    grid-template-columns: auto 1fr; /* Adjust as needed for content */
-    gap: 10px;
-    align-items: center;
+    display: flex; /* Changed to flex for proper layout of children */
+    flex-direction: column; /* Stack children vertically */
+    gap: 10px; /* Space between content sections */
     overflow: hidden; /* Hide overflowing content during transition */
     transition: max-height 0.3s ease-out; /* Smooth transition for max-height */
 }
@@ -712,12 +711,21 @@ input.ratioIn {
 .enumerated-chord-layout > .enumerated-column:nth-child(2) {
     margin-top: 10px; /* Small margin to push it down */
 }
-
-/* --- Theme Toggle Styles --- */
-.theme-toggle-container {
+/* --- Display Options Row --- */
+.display-options-row {
     display: flex;
-    justify-content: flex-end;
-    padding: 8px 12px; /* Match settings-header and settings-content horizontal padding */
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px; /* Space from the header */
+}
+
+.display-options-row span {
+    font-weight: bold;
+    font-size: 1rem; /* Label for "Display" */
+}
+
+.theme-toggle-container {
+    /* No specific positioning needed here, handled by .display-options-row flex */
 }
 
 #theme-toggle {
@@ -770,4 +778,15 @@ html[data-theme="light"] #theme-toggle .dark-icon {
 
 html[data-theme="light"] #theme-toggle .light-icon {
     display: block; /* Show light icon in light mode */
+}
+
+.precision-control-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.precision-control-group label {
+    font-size: 1rem; /* Match "Display" label font size */
+    font-weight: normal; /* Override bold if inherited from span */
 }
