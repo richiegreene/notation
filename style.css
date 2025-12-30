@@ -712,20 +712,25 @@ input.ratioIn {
     margin-top: 10px; /* Small margin to push it down */
 }
 /* --- Display Options Row --- */
-.display-options-row {
+.display-label-row {
+    /* New: to contain only the "Display" label */
+}
+
+.display-label-row span {
+    font-weight: normal; /* Unbold "Display" label */
+    font-size: 1rem;
+}
+
+.display-options-container {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 10px; /* Space from the header */
-}
-
-.display-options-row span {
-    font-weight: bold;
-    font-size: 1rem; /* Label for "Display" */
+    padding-left: 20px; /* Indent this row */
+    margin-top: 0; /* No extra space between "Display" and this row */
 }
 
 .theme-toggle-container {
-    /* No specific positioning needed here, handled by .display-options-row flex */
+    /* No specific positioning needed here, handled by .precision-control-group flex */
 }
 
 #theme-toggle {
