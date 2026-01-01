@@ -8,14 +8,16 @@ import * as UI from './ui.js';
  * Determines the input mode and triggers the appropriate calculation pipeline.
  */
 export function doCalc() {
+    UI.getPC(); // Ensure currentReferenceMonzo is up-to-date
     const chordSize = $("#chord-size-input").val();
     const isChordMode = $("#chordInput").prop("checked");
 
     if (isChordMode) {
         // In Chord Mode, calculate each column independently
         for (let i = 1; i <= chordSize; i++) {
-            const inputSumForColumn = getInputSumForColumn(i);
-            performCalculationsForColumn(i, inputSumForColumn);
+            const enteredRatioMonzo = getInputSumForColumn(i); // This is the monzo of the ratio itself
+            const inputMonzoAbsolute = U.sumArray(state.currentReferenceMonzo, enteredRatioMonzo); // Calculate absolute monzo
+            performCalculationsForColumn(i, inputMonzoAbsolute); // Pass the absolute monzo
         }
     } else {
         // In HEJI or Interval Mode, perform one calculation and display in all columns
@@ -31,10 +33,13 @@ export function doCalc() {
  * @param {number} columnIndex - The index of the output column to update.
  * @param {number[]} inputSum - The input monzo to calculate.
  */
-function performCalculationsForColumn(columnIndex, inputSum) {
-    // Set the global state for this column's calculation
-    state.inputSum = inputSum;
+function performCalculationsForColumn(columnIndex, inputMonzoAbsolute) {
+    // Store the absolute monzo
+    state.absoluteMonzoResult = inputMonzoAbsolute;
 
+    // Calculate the monzo relative to the defined 1/1 reference for ratio/notation display
+    state.inputSum = U.diffArray(state.absoluteMonzoResult, state.currentReferenceMonzo);
+    
     // Run the calculation pipeline
     getOandUArrays();
     getDisplaySum();
@@ -87,35 +92,39 @@ function getCombinedInputSum() {
 	state.currentTotalNum = 1;
 	state.currentTotalDen = 1;
 
-    let combinedInputSum = C.reference;
+    let monzoForCalculation = C.reference; // Default to absolute 0 if no input type selected?
 
-	if ($("#paletteInput").prop("checked")){
-        let sum = C.octave[UI.getOctave()];
-        sum = U.sumArray(sum, C.notes[UI.getNote()]);
-        sum = U.sumArray(sum, C.chromatic[UI.getChromatic()]);
-        sum = U.sumArray(sum, C.syntonic[UI.getSyntonic()]);
-        sum = U.sumArray(sum, C.septimal[UI.getSeptimal()]);
-        sum = U.sumArray(sum, C.undecimal[UI.getUndecimal()]);
-        sum = U.sumArray(sum, C.tridecimal[UI.getTridecimal()]);
-        sum = U.sumArray(sum, C.seventeen[UI.getSeventeen()]);
-        sum = U.sumArray(sum, C.nineteen[UI.getNineteen()]);
-        sum = U.sumArray(sum, C.twentyThree[UI.getTwentyThree()]);
-        sum = U.sumArray(sum, C.twentyNine[UI.getTwentyNine()]);
-        sum = U.sumArray(sum, C.thirtyOne[UI.getThirtyOne()]);
-        sum = U.sumArray(sum, C.thirtySeven[UI.getThirtySeven()]);
-        sum = U.sumArray(sum, C.fortyOne[UI.getFortyOne()]);
-        sum = U.sumArray(sum, C.fortyThree[UI.getFortyThree()]);
-        sum = U.sumArray(sum, C.fortySeven[UI.getFortySeven()]);
-        sum = U.sumArray(sum, C.fiftyThree[UI.getFiftyThree()]);
-        sum = U.sumArray(sum, C.fiftyNine[UI.getFiftyNine()]);
-        sum = U.sumArray(sum, C.sixtyOne[UI.getSixtyOne()]);
-        sum = U.sumArray(sum, C.sixtySevenths[UI.getSixtySeven()]);
-        sum = U.sumArray(sum, C.seventyOne[UI.getSeventyOne()]);
-        sum = U.sumArray(sum, C.seventyThree[UI.getSeventyThree()]);
-        sum = U.sumArray(sum, C.seventyNine[UI.getSeventyNine()]);
-        sum = U.sumArray(sum, C.eightyThree[UI.getEightyThree()]);
-        combinedInputSum = U.sumArray(sum, C.eightyNine[UI.getEightyNine()]);
-    } else if ($("#intervalInput").prop("checked")){ 
+	if ($("#paletteInput").prop("checked")){ // HEJI Entry
+        // Calculate the absolute monzo of the HEJI input
+        let hejiAbsoluteMonzo = C.octave[UI.getOctave()];
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.notes[UI.getNote()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.chromatic[UI.getChromatic()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.syntonic[UI.getSyntonic()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.septimal[UI.getSeptimal()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.undecimal[UI.getUndecimal()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.tridecimal[UI.getTridecimal()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.seventeen[UI.getSeventeen()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.nineteen[UI.getNineteen()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.twentyThree[UI.getTwentyThree()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.twentyNine[UI.getTwentyNine()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.thirtyOne[UI.getThirtyOne()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.thirtySeven[UI.getThirtySeven()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.fortyOne[UI.getFortyOne()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.fortyThree[UI.getFortyThree()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.fortySeven[UI.getFortySeven()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.fiftyThree[UI.getFiftyThree()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.fiftyNine[UI.getFiftyNine()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.sixtyOne[UI.getSixtyOne()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.sixtySevenths[UI.getSixtySeven()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.seventyOne[UI.getSeventyOne()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.seventyThree[UI.getSeventyThree()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.seventyNine[UI.getSeventyNine()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.eightyThree[UI.getEightyThree()]);
+        hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.eightyNine[UI.getEightyNine()]);
+
+        monzoForCalculation = hejiAbsoluteMonzo; // This is the absolute monzo of the HEJI note
+    } else if ($("#intervalInput").prop("checked")){ // Interval Entry
+        let intervalMonzo = C.reference; // Start with 0 monzo for interval (C.reference is all zeros)
         let numStackingFields = $("#stacking-input").val();
         for (let i = 1; i <= numStackingFields; i++) {
             let currentInputNum = parseInt($(`#inputNum_${i}`).val());
@@ -124,7 +133,7 @@ function getCombinedInputSum() {
             if (isNaN(currentInputNum) || currentInputNum <= 0) currentInputNum = 1;
             if (isNaN(currentInputDen) || currentInputDen <= 0) currentInputDen = 1;
 
-            state.currentTotalNum *= currentInputNum;
+            state.currentTotalNum *= currentInputNum; // Accumulate total ratio for hasPrimeGreaterThan89 check
             state.currentTotalDen *= currentInputDen;
 
             if (currentInputNum > 1 && U.getValue(U.getArray(currentInputNum)) !== currentInputNum) { state.hasPrimeGreaterThan89 = true; }
@@ -134,10 +143,16 @@ function getCombinedInputSum() {
             let numArray = U.getArray(smallestTerms[0]);
             let denArray = U.getArray(smallestTerms[1]);
             let currentMonzo = U.diffArray(numArray, denArray);
-            combinedInputSum = U.sumArray(combinedInputSum, currentMonzo);
+            intervalMonzo = U.sumArray(intervalMonzo, currentMonzo);
         }
+        // For interval input, the "absolute monzo" to be displayed is reference_monzo + interval_monzo
+        monzoForCalculation = U.sumArray(state.currentReferenceMonzo, intervalMonzo);
     }
-    return combinedInputSum;
+    // Chord input logic remains the same for now, it should already be calculating absolute monzos
+    // If no specific input type is checked, or for chord input, the initial monzoForCalculation (C.reference) will be used,
+    // but chord input uses getInputSumForColumn which overrides this.
+
+    return monzoForCalculation;
 }
 
 // This function is deprecated and will be removed after refactoring is complete.

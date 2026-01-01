@@ -60,6 +60,8 @@ export let state = {
     monzoMessage: "",
     cents_from_diatonic_tempered: 0,
     centDeviation: 0,
+    currentReferenceMonzo: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    absoluteMonzoResult: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     sibeliusRange: 200,
     midiRange: 1200,
     edoQuantisation: 53,
