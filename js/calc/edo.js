@@ -1,6 +1,3 @@
-// js/calc/edo.js
-
-// Utility for modulo operation that behaves like Python's (always positive result)
 function mod(n, m) {
     return ((n % m) + m) % m;
 }
@@ -42,7 +39,7 @@ function updown(edo, p5) {
     }
     const y3 = Math.round(Math.log(1.25) / Math.log(2) * edo);
     const sc = (p5 * 4) - (edo * 2) - y3;
-    return 1; // if sc == 0 else sc (simplified based on Python logic where sc is often non-zero for higher EDOS)
+    return 1; // if sc == 0 else sc
 }
 
 function verysharp(edo, p5) {
@@ -81,14 +78,13 @@ function trround(x) {
     return Math.round(x);
 }
 
-// In JavaScript, we'll return an object with the values
 function setsharpcounts(x, ap, ud) {
     let apc = x / ap;
     let ra = trround(apc);
     let udc = ((ra * ap) - x) / ud;
     let ru = trround(udc);
     let ldc = (ru * ud) - ((ra * ap) - x);
-    ru *= -1; // Python's internal logic
+    ru *= -1;
     return { ra: ra, ru: ru, ldc: ldc };
 }
 
@@ -126,7 +122,6 @@ function sharpnotes(notes, edo, p5, p2, ap, ud, penta) {
     }
 }
 
-// In JavaScript, we'll return an object with the values
 function setflatcounts(x, ap, ud) {
     let apc = x / ap;
     let ra = trround(apc);
@@ -198,12 +193,12 @@ function printsharp(sharps, half) {
     let result = "";
     if (half) {
         if (sharps % 2 !== 0) {
-            result += "^"; // Half sharp
+            result += "t"; // Half sharp
             sharps -= 1;
         }
         if (sharps % 4 !== 0) {
             if (result.endsWith("^")) {
-                result = result.slice(0, -1) + "^^^"; // Three half sharp
+                result = result.slice(0, -1) + "t#"; // Three half sharp
                 sharps -= 2;
             } else {
                 result += "#"; // Sharp
@@ -231,12 +226,12 @@ function printflat(flats, half) {
     let result = "";
     if (half) {
         if (flats % 2 !== 0) {
-            result += "v"; // Half flat
+            result += "d"; // Half flat
             flats -= 1;
         }
         if (flats % 4 !== 0) {
             if (result.endsWith("v")) {
-                result = result.slice(0, -1) + "vvv"; // Three half flat
+                result = result.slice(0, -1) + "db"; // Three half flat
                 flats -= 2;
             } else {
                 result += "b"; // Flat
@@ -264,7 +259,7 @@ function printnote(note, halves) {
     let flat_name;
 
     // Use current nominal for both sharp and flat names for simplicity if they are the same
-    // Otherwise, generate both and return "sharp_name, flat_name" (which is what the Python does for different nominals)
+    // Otherwise, generate both and return "sharp_name, flat_name"
     sharp_name = (
         printliftdrop(note.s_lifts) +
         printupdown(note.s_ups) +
