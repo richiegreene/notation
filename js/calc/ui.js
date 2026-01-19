@@ -1074,7 +1074,7 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
     });
     $(`#edoNotationOutput_${columnIndex}`).css({
         'font-family': 'monospace',
-        'font-size': '6rem' // Matching main output notation font size
+        'font-size': '4rem' // Matching main output font size
     });
     // Ensure no wrapping for EDO notation display
     $(`.edo-notation-display-container`).css('white-space', 'nowrap');

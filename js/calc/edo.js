@@ -283,7 +283,7 @@ function printnote(note, halves) {
             return flat_name;
         }
     } else {
-        return `${sharp_name}, ${flat_name}`;
+        return `${sharp_name},${flat_name}`;
     }
 }
 
