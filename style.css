@@ -772,6 +772,10 @@ html[data-theme="light"] {
     --color-input: #fff;
 }
 
+html[data-theme="light"] .palette .label {
+    color: #5a5a5a;
+}
+
 html[data-theme="light"] #theme-toggle {
     background-color: var(--bg-button);
     border-color: var(--border-button);
