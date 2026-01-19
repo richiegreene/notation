@@ -12,6 +12,12 @@ export function getRefNote(){
 	return $("#diatonicNoteDropdown").val();
 }
 
+export function getDiatonicNoteOffset(){
+    const defaultValue = 1; // C is the default value with an index of 1
+    const selectedValue = parseInt($("#diatonicNoteDropdown").val());
+    return selectedValue - defaultValue;
+}
+
 export function getRefAccidental(){
 	return $("#refAccidentalDropdown").val();
 }
@@ -290,7 +296,8 @@ if ($("#paletteInput").prop("checked")){
 	var eightyNine = "";
 	var chromatic;
 	if ($("#paletteInput").prop("checked")) {
-        chromatic = tonalArraySum + 22; // Adjusted for HEJI Entry
+        const diatonicOffset = getDiatonicNoteOffset();
+        chromatic = tonalArraySum + (22 + diatonicOffset); // Adjusted for HEJI Entry with dynamic offset
     } else {
         chromatic = tonalArraySum + 25; // Original logic for other Entry areas
     }
