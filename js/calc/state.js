@@ -38,6 +38,7 @@ export let state = {
     diat_to_refTempered: 0,
     currentCents: 0,
     outputFrequencies: {},
+    edoOutputFrequencies: {},
     cat: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     monzoArray: [],
     bigArray: [],

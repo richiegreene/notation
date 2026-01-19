@@ -48,9 +48,10 @@ function performCalculationsForColumn(columnIndex, inputMonzoAbsolute) {
     getDisplayValues(columnIndex);
     prepareCentsCalculationData();
     calculateJiCents();
-    UI.getPC(columnIndex); 
+    const ref12 = UI.getPC(columnIndex); // Capture ref12 here
     getCentDeviation(columnIndex);
     getOutputFrequency(columnIndex);
+    UI.updateEdoNotationDisplay(columnIndex, state.jiCents, state.edoQuantisation, $("#edoNormalize").prop("checked"), ref12); // Pass ref12
     
     // Only update the enharmonic search box for the first column to avoid confusion
     if (columnIndex === 1) {

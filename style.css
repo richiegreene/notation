@@ -680,6 +680,18 @@ input.ratioIn {
     margin: 10px 0; /* Same as clearOutputButton */
 }
 
+#clearEdoOutputButton, #playEdoOutputButton {
+    display: block;
+    width: 100%;
+    font-size: 14px; /* Same as clearOutputButton */
+    margin: 10px 0; /* Same as clearOutputButton */
+}
+
+#playEdoOutputButton.playing-active {
+    background-color: var(--bg-button-selected);
+    border-color: var(--bg-button-selected);
+}
+
 /* New rule for centering stacking-input-container */
 .stacking-input-container, .chord-size-container {
     display: flex; /* Use flexbox */
@@ -798,4 +810,30 @@ html[data-theme="light"] #theme-toggle .light-icon {
 .precision-control-group label {
     font-size: 1rem; /* Match "Display" label font size */
     font-weight: normal; /* Override bold if inherited from span */
+}
+
+/* EDO Output styles */
+.edo-output-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.edoNoteName {
+    color: var(--color-text);
+    font-family: sans-serif; /* Explicitly non-HEJI font */
+    font-weight: normal;
+    font-size: 4rem;
+    position: relative;
+}
+
+.edoNotationOutput {
+    color: var(--color-text);
+    font-family: sans-serif; /* Explicitly non-HEJI font */
+    font-size: 6rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+#edo-output-item {
+    grid-row: span 3; /* Adjust grid-row for EDO output */
 }

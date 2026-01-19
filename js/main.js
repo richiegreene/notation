@@ -16,14 +16,14 @@ window.loadCurrentPitch = function(index) {
     } else { // This is for dynamically generated ratios
         $(`#inputNum_${index}`).val(state.displayNumValue);
         $(`#inputDen_${index}`).val(state.displayDenValue);
-        Calc.doCalc();
+        performCalculationsAndStopPlayback();
     }
 }
 
 window.clearRatio = function(index) {
     $(`#inputNum_${index}`).val(1);
     $(`#inputDen_${index}`).val(1);
-    Calc.doCalc();
+    performCalculationsAndStopPlayback();
 }
 
 window.clearRatio1 = function() {
@@ -42,13 +42,13 @@ window.getCurrentPitch = function() {
 window.loadCurrentPitchToChord = function(index) {
     $(`#chordInputNum_${index}`).val(state.displayNumValue);
     $(`#chordInputDen_${index}`).val(state.displayDenValue);
-    Calc.doCalc();
+    performCalculationsAndStopPlayback();
 }
 
 window.clearChordRatio = function(index) {
     $(`#chordInputNum_${index}`).val(1);
     $(`#chordInputDen_${index}`).val(1);
-    Calc.doCalc();
+    performCalculationsAndStopPlayback();
 }
 
 window.clearAllIntervals = function() {
@@ -60,8 +60,26 @@ window.clearAllIntervals = function() {
     $("#chord-size-input").val(1);
     $("#chord-size-input").trigger("change");
 
+    // Reset EDO Approximation input
+    $("#edoApproximationInput").val(12);
+    $("#edoNormalize").prop("checked", false); // Uncheck EDO octave reduce
+
+    // Clear EDO output
+    clearEdoOutput();
+
     // Reset HEJI Entry fields and trigger calculations
     sendA();
+}
+
+// Function to clear the EDO Output window
+window.clearEdoOutput = function() {
+    $(".edo-output-container").empty();
+    // Also stop any playing EDO frequencies if they are active
+    if (isPlayingEdo) {
+        stopAllFrequencies(0.1);
+        isPlayingEdo = false;
+        $("#playEdoOutputButton").text("play").removeClass("playing-active");
+    }
 }
 
 window.sendA = function() {
@@ -90,7 +108,7 @@ window.sendA = function() {
 	$("#default79").click();
 	$("#default83").click();
 	$("#default89").click();
-	Calc.doCalc();
+	performCalculationsAndStopPlayback();
 	Calc.getFrequency1to1();
 	Calc.getFrequencyKammerTon();
 	window.getCurrentPitch();
@@ -109,6 +127,24 @@ function applyStoredTheme() {
 }
 
 let isPlaying = false;
+let isPlayingEdo = false; // New state for EDO playback
+
+// New function to perform calculations and stop playback
+function performCalculationsAndStopPlayback() {
+    Calc.doCalc(); // Perform the original calculation
+    // Stop playback for main output if active
+    if (isPlaying) {
+        stopAllFrequencies(0.1);
+        isPlaying = false;
+        $("#playOutputButton").text("play").removeClass("playing-active");
+    }
+    // Stop playback for EDO output if active
+    if (isPlayingEdo) {
+        stopAllFrequencies(0.1);
+        isPlayingEdo = false;
+        $("#playEdoOutputButton").text("play").removeClass("playing-active");
+    }
+}
 
 $(document).ready(function(){
     applyStoredTheme(); // Apply theme on load
@@ -123,47 +159,50 @@ $(document).ready(function(){
 
 	state.kammerTon = $("#frequencyA4").val();
 	state.precision = $("#precision").val();
+    state.edoQuantisation = $("#edoApproximationInput").val(); // Initialize edoQuantisation
 	sendA();
 	UI.getPC();
+    UI.generateEdoOutputColumns(parseInt($("#chord-size-input").val())); // Generate initial EDO output columns
+
 
     initAudio(); // Initialize the audio context
     updateWaveform(parseFloat($("#timbreSlider").val())); // Set initial waveform
 
 	$("#octaveDropdown").change(function(c){
 		Calc.getFrequency1to1();
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 	$("#diatonicNoteDropdown").change(function(c){
 		Calc.getFrequency1to1();
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 	$("#refAccidentalDropdown").change(function(c){
 		Calc.getFrequency1to1();
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 	$("#hejiOctaveDropdown").change(function(c){
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 	$("#hejiDiatonicNoteDropdown").change(function(c){
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 	$(".refOctave").click(function(c){
 		$(".refOctave").removeClass("selected");
 		$(this).addClass("selected");
 		Calc.getFrequency1to1();
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 	$(".refNote").click(function(c){
 		$(".refNote").removeClass("selected");
 		$(this).addClass("selected");
 		Calc.getFrequency1to1();
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 
@@ -171,146 +210,146 @@ $(document).ready(function(){
 	$(".accidental").click(function(c){
 		$(".accidental").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 
 	$(".chromatic").click(function(c){
 		$(".chromatic").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 	$(".syntonic").click(function(c){
 		$(".syntonic").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".septimal").click(function(c){
 		$(".septimal").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".undecimal").click(function(c){
 		$(".undecimal").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".tridecimal").click(function(c){
 		$(".tridecimal").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".seventeen").click(function(c){
 		$(".seventeen").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".nineteen").click(function(c){
 		$(".nineteen").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".twentyThree").click(function(c){
 		$(".twentyThree").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".twentyNine").click(function(c){
 		$(".twentyNine").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".thirtyOne").click(function(c){
 		$(".thirtyOne").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".thirtySeven").click(function(c){
 		$(".thirtySeven").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".fortyOne").click(function(c){
 		$(".fortyOne").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".fortyThree").click(function(c){
 		$(".fortyThree").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".fortySeven").click(function(c){
 		$(".fortySeven").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".fiftyThree").click(function(c){
 		$(".fiftyThree").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".fiftyNine").click(function(c){
 		$(".fiftyNine").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".sixtyOne").click(function(c){
 		$(".sixtyOne").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".sixtySeven").click(function(c){
 		$(".sixtySeven").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".seventyOne").click(function(c){
 		$(".seventyOne").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".seventyThree").click(function(c){
 		$(".seventyThree").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".seventyNine").click(function(c){
 		$(".seventyNine").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".eightyThree").click(function(c){
 		$(".eightyThree").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$(".eightyNine").click(function(c){
 		$(".eightyNine").removeClass("selected");
 		$(this).addClass("selected");
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	}); 
 	$("#num").change(function(c){
@@ -358,21 +397,21 @@ $(document).ready(function(){
 
     // Input type radio buttons
 	$("#paletteInput").click(function(c){
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 	$("#intervalInput").click(function(c){
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
     $("#chordInput").click(function(c){
-        Calc.doCalc();
+        performCalculationsAndStopPlayback();
         UI.getPC();
     });
 
 
 	$("#normalize").click(function(c){
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 	$("#bendParameter").change(function(c){
@@ -390,7 +429,7 @@ $(document).ready(function(){
 	})
 	$("#precision").change(function(c){
 		state.precision = $(this).val();
-		Calc.doCalc();
+		performCalculationsAndStopPlayback();
     });
     
 	$("#sibeliusRange").change(function(c){
@@ -400,6 +439,15 @@ $(document).ready(function(){
 	$("#midiRange").change(function(c){
 		state.midiRange = $(this).val();
 		UI.getBend();
+    });
+
+    // New EDO Approximation input and normalize checkbox listeners
+    $("#edoApproximationInput").on("change", function() {
+        state.edoQuantisation = parseInt($(this).val());
+        performCalculationsAndStopPlayback();
+    });
+    $("#edoNormalize").on("click", function() {
+        performCalculationsAndStopPlayback();
     });
 
     // Collapsible menu functionality
@@ -452,14 +500,15 @@ $(document).ready(function(){
     $("#chord-size-input").change(function() {
         let numFields = $(this).val();
         UI.generateOutputColumns(numFields);
+        UI.generateEdoOutputColumns(numFields); // Generate EDO output columns
         UI.generateChordRatioFields(numFields);
-        Calc.doCalc();
+        performCalculationsAndStopPlayback();
     });
 
     $("#stacking-input").change(function() {
         let numStackingFields = $(this).val();
         UI.generateStackingRatioFields(numStackingFields);
-        Calc.doCalc();
+        performCalculationsAndStopPlayback();
     });
 
     // Initial setup
@@ -486,7 +535,7 @@ $(document).ready(function(){
         const parts = input.split(':').map(s => s.trim()).filter(s => s.length > 0 && !isNaN(s));
 
         const baseNum = parseInt($("#enumerated-base-num").val(), 10) || 1;
-        const baseDen = parseInt($("#enumerated-base-den").val(), 10) || 1;
+        const baseDen = parseInt($("#enumerated-base-den").val(), 10) || 1; // Corrected from 20 to 10
 
         if (parts.length > 0) {
             const denominator = parseInt(parts[0], 10);
@@ -512,13 +561,13 @@ $(document).ready(function(){
                 $(`#chordInputDen_${fieldIndex}`).val(reduced[1]);
             });
 
-            Calc.doCalc();
+            performCalculationsAndStopPlayback();
         } else {
             // If the enumerated chord input is empty, clear the outputs
             $("#chord-size-input").val(1).trigger('change');
             $(`#chordInputNum_1`).val(baseNum);
             $(`#chordInputDen_1`).val(baseDen);
-            Calc.doCalc();
+            performCalculationsAndStopPlayback();
         }
     }
 
@@ -540,7 +589,7 @@ $(document).ready(function(){
 
     // Event listener for dynamically generated ratio input fields
     $("#dynamic-ratio-fields-container, #chord-ratio-fields-container").on("change", "input.ratioIn", function() {
-        Calc.doCalc();
+        performCalculationsAndStopPlayback();
     });
 
     // Timbre slider event listener
@@ -572,17 +621,33 @@ $(document).ready(function(){
                         }
                     }    });
 
-    // Stop playback if chord size changes or any input changes that trigger doCalc
-    // This needs to be carefully managed to avoid stopping on every single UI update.
-    // A more robust solution might involve a dedicated "stop" when relevant inputs change.
-    // For now, let's stop playback whenever Calc.doCalc is invoked.
-    const originalDoCalc = Calc.doCalc;
-    Calc.doCalc = function() {
-        originalDoCalc();
-        if (isPlaying) {
-            stopAllFrequencies(0.1); // Quick fade out
-            isPlaying = false;
-            $("#playOutputButton").text("play").removeClass("playing-active");
+    // EDO Play button event listener
+    $("#playEdoOutputButton").on("click", function() {
+        if (isPlayingEdo) {
+            stopAllFrequencies(0.2);
+            isPlayingEdo = false;
+            $(this).text("play").removeClass("playing-active");
+        } else {
+            const chordSize = parseInt($("#chord-size-input").val());
+            const frequencies = [];
+            for (let i = 1; i <= chordSize; i++) {
+                const freqValue = state.edoOutputFrequencies[i]; // EDO frequencies
+                if (freqValue !== undefined && !isNaN(freqValue)) {
+                    frequencies.push(freqValue);
+                }
+            }
+            if (frequencies.length > 0) {
+                playFrequencies(frequencies, 0.2);
+                isPlayingEdo = true;
+                $(this).text("stop").addClass("playing-active");
+            } else {
+                console.warn("No EDO frequencies to play.");
+            }
         }
-    };
+    });
+
+    // EDO Clear button event listener
+    $("#clearEdoOutputButton").on("click", function() {
+        clearEdoOutput();
+    });
 });

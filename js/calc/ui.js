@@ -2,6 +2,7 @@
 import * as C from './constants.js';
 import * as U from './utils.js';
 import { state } from './state.js';
+import { calculateEdoNotation } from './edo.js'; // Import the new EDO notation function
 
 // Functions to retrieve input values 
 export function getRefOctave(){
@@ -895,6 +896,13 @@ if ($("#paletteInput").prop("checked")){
             'padding-bottom': '0'
         });
     }
+    
+    // EDO Notation Update
+    const edoQuantisation = parseInt($("#edoApproximationInput").val());
+    const edoOctaveReduce = $("#edoNormalize").prop("checked");
+    updateEdoNotationDisplay(columnIndex, state.jiCents, edoQuantisation, edoOctaveReduce);
+
+    return ref12; // Return ref12 for external use
 }
 
 export function getBend() {
@@ -994,4 +1002,84 @@ export function generateChordRatioFields(numFields) {
         `;
         container.append(ratioHtml);
     }
+}
+
+export function generateEdoOutputColumns(numColumns) {
+    let edoOutputContainer = $(".edo-output-container");
+    edoOutputContainer.empty(); // Clear existing columns
+
+    for (let i = 1; i <= numColumns; i++) {
+        let columnHtml = `
+            <div class="output-column">
+                <div class="notation-display-container edo-notation-display-container">
+                    <div class="edoNoteName" id="edoNoteName_${i}"></div><!--
+                    --><div class="edoNotationOutput" id="edoNotationOutput_${i}"></div>
+                </div>
+                <div class="output-content">
+                    <span id="edoCentDeviation_${i}" value="0"></span>
+                </div>
+            </div>
+        `;
+        edoOutputContainer.append(columnHtml);
+    }
+}
+
+// Update EDO notation for a specific column
+export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, octaveReduce, ref12) {
+    // Calculate EDO step and notation
+    const edoStepSize = 1200 / edoQuantisation;
+    let edoStep = Math.round(jiCents / edoStepSize);
+    let centDeviation = (edoStep * edoStepSize) - jiCents;
+
+    if (octaveReduce) {
+        edoStep = U.mod(edoStep, edoQuantisation);
+        centDeviation = (edoStep * edoStepSize) - jiCents; // Re-calculate deviation after octave reduction
+        // Adjust centDeviation for +/- 50c display
+        if (centDeviation > 600) {
+            centDeviation -= 1200;
+        } else if (centDeviation < -600) {
+            centDeviation += 1200;
+        }
+    }
+
+    const edoNotation = calculateEdoNotation(edoStep, edoQuantisation, ref12);
+
+    // Get the base note name from the EDO notation string
+    // Assuming the notation string will be like "C#", "D", "Ebb" etc.
+    let baseNoteName = edoNotation.split(/[\^vb#x,\\/]/)[0].trim();
+    let accidentalSymbols = edoNotation.substring(baseNoteName.length).trim();
+    if (accidentalSymbols.startsWith(',')) { // Handle cases like "C, Db"
+        baseNoteName = edoNotation; // Display full string if comma separated
+        accidentalSymbols = "";
+    }
+    
+    // Format cent deviation
+    let centsText;
+    if (Math.round(centDeviation * 1e9) / 1e9 === 0) { // Check for near-zero
+        centsText = "";
+    } else if (centDeviation > 0) {
+        centsText = "+" + centDeviation.toFixed(state.precision);
+    } else {
+        centsText = centDeviation.toFixed(state.precision);
+    }
+
+    $(`#edoNoteName_${columnIndex}`).text(baseNoteName);
+    $(`#edoNotationOutput_${columnIndex}`).text(accidentalSymbols);
+    $(`#edoCentDeviation_${columnIndex}`).text(centsText);
+
+    // Apply monospace font and specified sizes to EDO output
+    $(`#edoNoteName_${columnIndex}`).css({
+        'font-family': 'monospace',
+        'font-size': '4rem' // Matching main output font size
+    });
+    $(`#edoNotationOutput_${columnIndex}`).css({
+        'font-family': 'monospace',
+        'font-size': '6rem' // Matching main output notation font size
+    });
+    // Ensure no wrapping for EDO notation display
+    $(`.edo-notation-display-container`).css('white-space', 'nowrap');
+
+    // Calculate and store EDO frequency
+    const edoFrequency = state.freq1to1 * Math.pow(2, edoStep / edoQuantisation);
+    state.edoOutputFrequencies[columnIndex] = edoFrequency;
 }
