@@ -1017,7 +1017,7 @@ export function generateEdoOutputColumns(numColumns) {
                 <div class="notation-display-container edo-notation-display-container">
                     <div class="edoNoteName" id="edoNoteName_${i}"></div><!--
                     --><div class="edoNotationOutput" id="edoNotationOutput_${i}"></div>
-                </div><br><br><br>
+                </div><br><br>
                 <div class="output-spacer"></div> <!-- Blank row beneath note name -->
                 <div class="output-content">
                     <div id="edoStepDistance_${i}"></div>

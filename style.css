@@ -272,9 +272,9 @@ button {
     color: var(--color-text);
     text-align: center;
     vertical-align: middle;
-    border: 1px solid var(--border-button); /* Changed border */
-    border-radius: 4px; /* Added border-radius */
-    padding: 4px 8px; /* Adjusted padding */
+    border: 1px solid var(--border-button); 
+    border-radius: 4px;
+    padding: 4px 8px; 
     margin: 0.2rem 0;
     cursor: pointer;
 }
@@ -282,14 +282,14 @@ button {
 button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .nineteen, .twentyThree, .twentyNine, .thirtyOne, .thirtySeven, .fortyOne, .fortyThree, .fortySeven, .fiftyThree, .fiftyNine, .sixtyOne, .sixtySeven, .seventyOne, .seventyThree, .seventyNine, .eightyThree, .eightyNine, .refAccidental, .spacer {
     height: 2.5rem;
     width: 2.5rem;
-    border: 1px solid var(--border-button); /* Changed border thickness */
+    border: 1px solid var(--border-button); 
     position: relative;
-    border-radius: 4px; /* Added border-radius */
+    border-radius: 4px; 
     margin-top: 0;
     margin-bottom: 0;
     box-sizing: border-box;
-    line-height: 2.5rem; /* For vertical centering */
-    padding: 0; /* To help with line-height centering */
+    line-height: 2.5rem; 
+    padding: 0; 
     vertical-align: middle;
 }
 
@@ -355,46 +355,46 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 
 #clearOutputButton {
     font-size: 14px;
-    margin: 10px 0; /* Only vertical margin */
+    margin: 10px 0; 
     display: block;
-    width: 100%; /* Make it full width */
+    width: 100%; 
 }
 
 
 select {
-    border: 1px solid var(--border-button); /* Changed border */
+    border: 1px solid var(--border-button); 
     background-color: var(--color-input);
     color: var(--color-text);
-    padding: 5px; /* Adjusted padding */
+    padding: 5px; 
     font-size: inherit;
-    border-radius: 4px; /* Added border-radius */
+    border-radius: 4px; 
 }
 
 .selected {
     background-color: var(--bg-button-selected);
-    border-color: var(--bg-button-selected); /* Changed border color */
+    border-color: var(--bg-button-selected); 
 }
 
 .clearFreq, .clear, .clearSave, .clearMelodic, .clearMelodicSave, .clearInputRatio, .clearEnharmonic {
-    border-radius: 4px; /* Added border-radius */
+    border-radius: 4px; 
     background-color: var(--bg-button-clear);
-    border: 1px solid var(--border-button); /* Changed border thickness */
+    border: 1px solid var(--border-button); 
 }
 
 .getMelodic, .getMelodicReference, .getCurrentPitch, .getEnharmonic {
-    border-radius: 4px; /* Added border-radius */
+    border-radius: 4px; 
     background-color: var(--bg-button-get);
-    border: 1px solid var(--border-button); /* Changed border thickness */
+    border: 1px solid var(--border-button); 
 }
 
 .interval-button {
-    font-size: 0.75rem; /* Reduced font size */
-    padding: 2px 4px; /* Reduced padding */
+    font-size: 0.75rem; 
+    padding: 2px 4px;
 }
 
 .interval-button-group {
     display: flex;
-    gap: 5px; /* Space between buttons */
+    gap: 5px; 
 }
 
 
@@ -408,8 +408,6 @@ select {
     padding-bottom: 0.5rem;
     text-align: left; /* Added to left align contents */
 }
-
-
 
 .enharmonic-search {
     /* display: none; - Keep this for now if it's intentionally hidden */
@@ -426,8 +424,6 @@ table.enharmonic-table {
 table.enharmonic-table > tr, td, th {
     padding: 1rem;
 }
-
-
 
 .fiftyThree, .fiftyNine, .sixtyOne, .sixtySeven, .seventyOne, .seventyThree, .seventyNine, .eightyThree, .eightyNine {
     font-family: "HEJIExtensions2022", "HEJI2", sans-serif;
@@ -452,8 +448,6 @@ table.enharmonic-table > tr, td, th {
 .JIgross {
     color: var(--bg-button); /* Added for unticked button grey */
 }
-
-
 
 .midiNote {
     font-family: "Plainsound Text", sans-serif;
@@ -562,7 +556,6 @@ table.enharmonic-table > tr, td, th {
 .midiNote {
     font-family: monospace;
     font-size: 1.2rem;
-    /* Removed margin-right to eliminate space */
 }
 
 /* Styling for the new Interval Entry layout */
@@ -599,8 +592,6 @@ input.ratioIn {
     grid-row: span 15;
 }
 
-
-
 #output-columns-item {
     grid-row: span 2;
 }
@@ -608,8 +599,6 @@ input.ratioIn {
 #output-item {
     grid-row: span 4;
 }
-
-
 
 .settings-menu-item.collapsed-item {
     grid-row: span 1 !important;
@@ -744,24 +733,24 @@ input.ratioIn {
 #theme-toggle {
     background-color: var(--bg-button);
     border: 1px solid var(--border-button);
-    border-radius: 50%; /* Make it circular */
-    width: 30px; /* Adjust size as needed */
-    height: 30px; /* Adjust size as needed */
+    border-radius: 50%;
+    width: 30px; 
+    height: 30px; 
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    padding: 0; /* Remove default padding */
-    font-size: 1.2rem; /* Size of the emoji icons */
-    line-height: 1; /* Ensure emoji is centered */
+    padding: 0;
+    font-size: 1.2rem; 
+    line-height: 1;
 }
 
 #theme-toggle .icon {
-    display: none; /* Hide all icons by default */
+    display: none; 
 }
 
 #theme-toggle .dark-icon {
-    display: block; /* Show dark icon in dark mode (default) */
+    display: block; 
 }
 
 html[data-theme="light"] {
