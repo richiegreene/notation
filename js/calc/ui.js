@@ -1020,6 +1020,9 @@ export function generateEdoOutputColumns(numColumns) {
                     --><div class="edoNotationOutput" id="edoNotationOutput_${i}"></div>
                 </div>
                 <div class="output-content">
+                    <div id="edoStepDistance_${i}"></div>
+                </div>
+                <div class="output-content">
                     <span id="edoCentDeviation_${i}" value="0"></span>
                 </div>
                 <div class="output-content">
@@ -1075,6 +1078,15 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
 
     $(`#edoNoteName_${columnIndex}`).text(baseNoteName);
     $(`#edoNotationOutput_${columnIndex}`).text(accidentalSymbols);
+    
+    // Populate EDO Step Distance
+    $(`#edoStepDistance_${columnIndex}`).text(edoStep);
+    $(`#edoStepDistance_${columnIndex}`).css({
+        'font-family': 'monospace',
+        'font-size': '2.0rem',
+        'text-align': 'center'
+    });
+
     $(`#edoCentDeviation_${columnIndex}`).text(centsText);
 
     // Apply monospace font and specified sizes to EDO output
