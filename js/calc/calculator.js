@@ -51,7 +51,7 @@ function performCalculationsForColumn(columnIndex, inputMonzoAbsolute) {
     const ref12 = UI.getPC(columnIndex); // Capture ref12 here
     getCentDeviation(columnIndex);
     getOutputFrequency(columnIndex);
-    UI.updateEdoNotationDisplay(columnIndex, state.jiCents, state.edoQuantisation, $("#edoNormalize").prop("checked"), ref12); // Pass ref12
+    UI.updateEdoNotationDisplay(columnIndex, state.jiCents, state.edoQuantisation, $("#edoNormalize").prop("checked"), ref12, state.cents_toRef); // Pass ref12 and cents_toRef
     
     // Only update the enharmonic search box for the first column to avoid confusion
     if (columnIndex === 1) {

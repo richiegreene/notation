@@ -1022,6 +1022,12 @@ export function generateEdoOutputColumns(numColumns) {
                 <div class="output-content">
                     <span id="edoCentDeviation_${i}" value="0"></span>
                 </div>
+                <div class="output-content">
+                    <div type="text" id="edoFrequency_${i}" value="440"></div>
+                </div>
+                <div class="output-content">
+                    <div id="edoJIgross_${i}" value="0">0</div>
+                </div>
             </div>
         `;
         edoOutputContainer.append(columnHtml);
@@ -1029,7 +1035,7 @@ export function generateEdoOutputColumns(numColumns) {
 }
 
 // Update EDO notation for a specific column
-export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, octaveReduce, ref12) {
+export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, octaveReduce, ref12, centsToRef) {
     // Calculate EDO step and notation
     const edoStepSize = 1200 / edoQuantisation;
     let edoStep = Math.round(jiCents / edoStepSize);
@@ -1086,4 +1092,12 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
     // Calculate and store EDO frequency
     const edoFrequency = state.freq1to1 * Math.pow(2, edoStep / edoQuantisation);
     state.edoOutputFrequencies[columnIndex] = edoFrequency;
+    $(`#edoFrequency_${columnIndex}`).text(edoFrequency.toFixed(state.precision) + "Hz");
+
+    // Populate cents from reference
+    if (centsToRef > 0) {
+        $(`#edoJIgross_${columnIndex}`).text("+" + centsToRef.toFixed(state.precision) + "c");
+    } else {
+        $(`#edoJIgross_${columnIndex}`).text(centsToRef.toFixed(state.precision) + "c");
+    }
 }
