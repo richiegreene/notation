@@ -181,11 +181,12 @@ export function generateStackingRatioFields(numFields) {
     for (let i = 1; i <= numFields; i++) {
         let ratioHtml = ``;
         if (i > 1) { // Only add "×" for subsequent fields
-            ratioHtml += `<div class="times-symbol">×</div>`;
+            ratioHtml += `<br><br><div class="times-symbol">×</div>`;
         }
         ratioHtml += `
             <div class="interval-column">
-                <input type="number" class="ratioIn" id="inputNum_${i}" minlength="1" required value="1"></input>
+                <br><br>
+				<input type="number" class="ratioIn" id="inputNum_${i}" minlength="1" required value="1"></input>
                 <input type="number" class="ratioIn" id="inputDen_${i}"  minlength="1" required value="1"></input>
                 <div class="interval-button-group">
                     <button id="loadCurrentPitch_${i}" class="getCurrentPitch interval-button" onclick="loadCurrentPitch(${i})">load</button>
@@ -198,14 +199,15 @@ export function generateStackingRatioFields(numFields) {
 }
 
 export function generateOutputColumns(numColumns) {
-    let outputContainer = $(".output-container");
+    let outputContainer = $(".output-container"); 
     outputContainer.empty(); // Clear existing columns
 
     for (let i = 1; i <= numColumns; i++) {
         let columnHtml = `
             <div class="output-column">
                 <em><div id="undefinedNotation_${i}"></div></em>
-                <div class="notation-display-container">
+                <br>
+				<div class="notation-display-container">
                     <div class="noteName" id="noteName_${i}"></div><!--
                     --><div class="notationOutput" id="notationOutput_${i}"></div>
                 </div>

@@ -576,7 +576,7 @@ table.enharmonic-table > tr, td, th {
 
 .times-symbol {
     font-size: 1.5rem;
-    margin-top: 25px;
+    margin-top: 57px;
 }
 
 input.ratioIn {
@@ -677,7 +677,6 @@ input.ratioIn {
     border-color: var(--bg-button-selected);
 }
 
-/* New rule for centering stacking-input-container */
 .stacking-input-container, .chord-size-container {
     display: flex; /* Use flexbox */
     justify-content: center; /* Center horizontally */
@@ -689,14 +688,15 @@ input.ratioIn {
 .enumerated-column {
     display: flex;
     flex-direction: column;
-    /* remove align-items: center; to allow input to take full width */
-    /* align-items: center; */ /* This was constraining the input width */
     gap: 5px;
 }
 
 #enumerated-chord-input {
-    /* remove fixed width */
-    /* width: 150px; */
+    width: 100%; /* Make it fill the available space */
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+#chord-entry-type-select {
     width: 100%; /* Make it fill the available space */
     box-sizing: border-box; /* Include padding and border in width */
 }
@@ -708,7 +708,7 @@ input.ratioIn {
 .enumerated-chord-layout > .enumerated-column:nth-child(2) {
     margin-top: 10px; /* Small margin to push it down */
 }
-/* --- Display Options Row --- */
+
 .display-label-row {
     /* New: to contain only the "Display" label */
 }
