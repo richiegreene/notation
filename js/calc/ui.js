@@ -1066,7 +1066,7 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
     // Format cent deviation
     let centsText;
     if (Math.round(centDeviation * 1e9) / 1e9 === 0) { // Check for near-zero
-        centsText = "";
+        centsText = "0"; // Display "0" instead of hiding it
     } else if (centDeviation > 0) {
         centsText = "+" + centDeviation.toFixed(state.precision);
     } else {
