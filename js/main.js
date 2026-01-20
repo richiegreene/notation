@@ -163,6 +163,9 @@ $(document).ready(function(){
 	sendA();
 	UI.getPC();
     UI.generateEdoOutputColumns(parseInt($("#chord-size-input").val())); // Generate initial EDO output columns
+    // Trigger the change event on edoApproximationInput to force a recalculation and update
+    // of all EDO output columns upon page load, mimicking the user's successful interaction.
+    $("#edoApproximationInput").trigger("change");
 
 
     initAudio(); // Initialize the audio context
@@ -515,6 +518,8 @@ $(document).ready(function(){
     $("#chord-size-input").trigger("change");
     $("#stacking-input").trigger("change");
     clearRatio1();
+    // Simulate the "Send default 12" bang at initialization of app
+    $("#edoApproximationInput").trigger("change");
 
     // Event listener for the chord entry type dropdown
     $("#chord-entry-type-select").change(function() {

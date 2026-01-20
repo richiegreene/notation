@@ -8,7 +8,7 @@ import * as UI from './ui.js';
  * Determines the input mode and triggers the appropriate calculation pipeline.
  */
 export function doCalc() {
-    UI.getPC(); // Ensure currentReferenceMonzo is up-to-date
+    UI.updateCurrentReferenceMonzo(); // Ensure currentReferenceMonzo is up-to-date
     const chordSize = $("#chord-size-input").val();
     const isChordMode = $("#chordInput").prop("checked");
 

@@ -224,17 +224,21 @@ export function generateOutputColumns(numColumns) {
     }
 }
 
+// Function to update state.currentReferenceMonzo
+export function updateCurrentReferenceMonzo() {
+    let referenceSum = U.diffArray(C.refOctave[getRefOctave()], C.refNote[getRefNote()]);
+    referenceSum = U.diffArray(referenceSum, C.refAccidental[getRefAccidental()]);
+    state.currentReferenceMonzo = referenceSum;
+}
+
 // get HE notation output 
 export function getPC(columnIndex){
 	var inverseSum = U.diffArray(state.displaySum, C.refOctave[getRefOctave()]);
     inverseSum = U.diffArray(inverseSum, C.refNote[getRefNote()]);
     inverseSum = U.diffArray(inverseSum, C.refAccidental[getRefAccidental()]);
 
-	var referenceSum = U.diffArray(C.refOctave[getRefOctave()], C.refNote[getRefNote()]);
-    referenceSum = U.diffArray(referenceSum, C.refAccidental[getRefAccidental()]);
-    state.currentReferenceMonzo = referenceSum; // Store the reference monzo in state
-
-	var refArray = U.productArray(referenceSum, C.tonalIdentity);
+	// state.currentReferenceMonzo is now updated by updateCurrentReferenceMonzo()
+	var refArray = U.productArray(state.currentReferenceMonzo, C.tonalIdentity);
 
     let tonalArray;
 	if ($("#paletteInput").prop("checked")){
@@ -897,10 +901,10 @@ if ($("#paletteInput").prop("checked")){
         });
     }
     
-    // EDO Notation Update
-    const edoQuantisation = parseInt($("#edoApproximationInput").val());
-    const edoOctaveReduce = $("#edoNormalize").prop("checked");
-    updateEdoNotationDisplay(columnIndex, state.jiCents, edoQuantisation, edoOctaveReduce);
+    // EDO Notation Update (Moved to performCalculationsForColumn in calculator.js)
+    // const edoQuantisation = parseInt($("#edoApproximationInput").val());
+    // const edoOctaveReduce = $("#edoNormalize").prop("checked");
+    // updateEdoNotationDisplay(columnIndex, state.jiCents, edoQuantisation, edoOctaveReduce);
 
     return ref12; // Return ref12 for external use
 }
