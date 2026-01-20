@@ -900,11 +900,6 @@ if ($("#paletteInput").prop("checked")){
             'padding-bottom': '0'
         });
     }
-    
-    // EDO Notation Update (Moved to performCalculationsForColumn in calculator.js)
-    // const edoQuantisation = parseInt($("#edoApproximationInput").val());
-    // const edoOctaveReduce = $("#edoNormalize").prop("checked");
-    // updateEdoNotationDisplay(columnIndex, state.jiCents, edoQuantisation, edoOctaveReduce);
 
     return ref12; // Return ref12 for external use
 }
@@ -1018,10 +1013,12 @@ export function generateEdoOutputColumns(numColumns) {
                 <div class="notation-display-container edo-notation-display-container">
                     <div class="edoNoteName" id="edoNoteName_${i}"></div><!--
                     --><div class="edoNotationOutput" id="edoNotationOutput_${i}"></div>
-                </div>
+                </div><br><br><br>
+                <div class="output-spacer"></div> <!-- Blank row beneath note name -->
                 <div class="output-content">
                     <div id="edoStepDistance_${i}"></div>
-                </div>
+                </div><br>
+                <div class="output-spacer"></div> <!-- Blank row beneath edoStepDistance -->
                 <div class="output-content">
                     <span id="edoCentDeviation_${i}" value="0"></span>
                 </div>

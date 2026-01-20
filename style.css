@@ -837,3 +837,8 @@ html[data-theme="light"] #theme-toggle .light-icon {
 #edo-output-item {
     grid-row: span 3; /* Adjust grid-row for EDO output */
 }
+
+.output-spacer {
+    height: 0.5rem; /* Height of the blank row */
+    margin-bottom: 0.5rem; /* Space below the blank row */
+}
