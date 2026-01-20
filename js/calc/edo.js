@@ -255,12 +255,10 @@ function printflat(flats, half) {
     return result;
 }
 
-function printnote(note, halves) {
+function printnote(note, halves, showEnharmonics, hejiBaseNote) {
     let sharp_name;
     let flat_name;
 
-    // Use current nominal for both sharp and flat names for simplicity if they are the same
-    // Otherwise, generate both and return "sharp_name, flat_name" ... I plan to change this (or add 2nd option) to more resemble HEJI-like spelling
     sharp_name = (
         printliftdrop(note.s_lifts) +
         printupdown(note.s_ups) +
@@ -275,20 +273,62 @@ function printnote(note, halves) {
         printflat(note.flats, halves)
     );
 
-    if (note.s_nom === note.f_nom) {
-        // If nominals are the same, check for equivalence in accidentals
-        // This is a simplified logic compared to full HEJI but works for basic Ups and Downs notation
+    if (showEnharmonics) {
+        if (note.s_nom === note.f_nom) {
+            if (sharp_name.length <= flat_name.length) {
+                return sharp_name;
+            } else {
+                return flat_name;
+            }
+        } else {
+            return `${sharp_name},${flat_name}`;
+        }
+    } else { // HEJI-like spelling without enharmonic equivalents
+        // Calculate total "accidental units" for comparison
+        const totalSharpAccidentals = Math.abs(note.sharps) + Math.abs(note.s_ups) + Math.abs(note.s_lifts);
+        const totalFlatAccidentals = Math.abs(note.flats) + Math.abs(note.f_ups) + Math.abs(note.f_lifts);
+
+        // Rule 1: If hejiBaseNote is provided, use it as the primary guide for nominal preference
+        if (hejiBaseNote) {
+            const sharpNominal = printnom(note.s_nom);
+            const flatNominal = printnom(note.f_nom);
+
+            if (sharpNominal === hejiBaseNote) {
+                return sharp_name;
+            } else if (flatNominal === hejiBaseNote) {
+                return flat_name;
+            }
+        }
+        
+        // Rule 2: Prioritize natural notes (if hejiBaseNote didn't yield a match)
+        if (totalSharpAccidentals === 0 && totalFlatAccidentals !== 0) {
+            return sharp_name; // Sharp spelling is natural
+        }
+        if (totalFlatAccidentals === 0 && totalSharpAccidentals !== 0) {
+            return flat_name; // Flat spelling is natural
+        }
+        if (totalSharpAccidentals === 0 && totalFlatAccidentals === 0) {
+            return sharp_name; // Both are natural, return one.
+        }
+
+        // Rule 3: Prefer fewer accidentals (if natural notes didn't yield a match)
+        if (totalSharpAccidentals < totalFlatAccidentals) {
+            return sharp_name;
+        }
+        if (totalFlatAccidentals < totalSharpAccidentals) {
+            return flat_name;
+        }
+
+        // Default tie-breaker: if sharp_name is shorter or equal length
         if (sharp_name.length <= flat_name.length) {
             return sharp_name;
         } else {
             return flat_name;
         }
-    } else {
-        return `${sharp_name},${flat_name}`;
     }
 }
 
-export function calculateEdoNotation(n, m, ref12) {
+export function calculateEdoNotation(n, m, ref12, showEnharmonics = true, hejiBaseNote = "") {
     if (m < 7 && m !== 5) {
         return "n/a";
     }
@@ -315,7 +355,7 @@ export function calculateEdoNotation(n, m, ref12) {
 
     n = mod(n, m); // Ensure n is within bounds
 
-    return printnote(notes[n], halves);
+    return printnote(notes[n], halves, showEnharmonics, hejiBaseNote);
 }
 
 // Helper function to convert MIDI pitch class (ref12) to C-centric diatonic nominal (C=0, D=1, E=2, F=3, G=4, A=5, B=6)

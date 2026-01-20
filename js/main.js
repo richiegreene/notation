@@ -453,6 +453,10 @@ $(document).ready(function(){
         performCalculationsAndStopPlayback();
     });
 
+    $("#showEnharmonics").on("click", function() {
+        performCalculationsAndStopPlayback();
+    });
+
     // Collapsible menu functionality
     document.querySelectorAll('.settings-menu-item').forEach(item => {
         let headerToClick = item.querySelector('.toggle-header-placement') || item.querySelector('.settings-header');

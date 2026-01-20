@@ -34,6 +34,10 @@ export function getRefAccidentalMonzo(){
     return C.refAccidental[selectedValue];
 }
 
+export function getShowEnharmonics(){
+    return $("#showEnharmonics").prop("checked");
+}
+
 export function getFrequencyOctave(){
 	return $("#octaveDropdown").val();
 }
@@ -1052,7 +1056,8 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
         }
     }
 
-    const edoNotation = calculateEdoNotation(edoStep, edoQuantisation, ref12);
+    const hejiBaseNote = $(`#noteName_${columnIndex}`).text(); // Retrieve HEJI base note
+    const edoNotation = calculateEdoNotation(edoStep, edoQuantisation, ref12, getShowEnharmonics(), hejiBaseNote);
 
     // Get the base note name from the EDO notation string
     // Assuming the notation string will be like "C#", "D", "Ebb" etc.
