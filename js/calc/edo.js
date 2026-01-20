@@ -1,3 +1,4 @@
+// Ups and Downs rendering info based on EDO described in Settings panel.
 function mod(n, m) {
     return ((n % m) + m) % m;
 }
@@ -39,7 +40,7 @@ function updown(edo, p5) {
     }
     const y3 = Math.round(Math.log(1.25) / Math.log(2) * edo);
     const sc = (p5 * 4) - (edo * 2) - y3;
-    return 1; // if sc == 0 else sc
+    return 1;
 }
 
 function verysharp(edo, p5) {
@@ -166,16 +167,16 @@ function flatnotes(notes, edo, p5, p2, ap, ud, penta) {
 }
 
 function printnom(nom) {
-    const noteNames = ["F", "C", "G", "D", "A", "E", "B"]; // User's desired output mapping for 0-6
-    // Internal C-centric nominal (input `nom`) to F-centric index
+    const noteNames = ["F", "C", "G", "D", "A", "E", "B"]; 
+    // Internal C-centric nominal 
     const cCentricNominalToFcentricIndex = {
         0: 1, // C (C-centric 0) is at index 1 in F-centric noteNames
-        1: 3, // D (C-centric 1) is at index 3 in F-centric noteNames
-        2: 5, // E (C-centric 2) is at index 5 in F-centric noteNames
-        3: 0, // F (C-centric 3) is at index 0 in F-centric noteNames
-        4: 2, // G (C-centric 4) is at index 2 in F-centric noteNames
-        5: 4, // A (C-centric 5) is at index 4 in F-centric noteNames
-        6: 6  // B (C-centric 6) is at index 6 in F-centric noteNames
+        1: 3, // D
+        2: 5, // E
+        3: 0, // F
+        4: 2, // G
+        5: 4, // A
+        6: 6  // B
     };
     const fCentricIndex = cCentricNominalToFcentricIndex[mod(nom, 7)];
     return noteNames[fCentricIndex];
@@ -259,7 +260,7 @@ function printnote(note, halves) {
     let flat_name;
 
     // Use current nominal for both sharp and flat names for simplicity if they are the same
-    // Otherwise, generate both and return "sharp_name, flat_name"
+    // Otherwise, generate both and return "sharp_name, flat_name" ... I plan to change this (or add 2nd option) to more resemble HEJI-like spelling
     sharp_name = (
         printliftdrop(note.s_lifts) +
         printupdown(note.s_ups) +
@@ -275,8 +276,8 @@ function printnote(note, halves) {
     );
 
     if (note.s_nom === note.f_nom) {
-        // If nominals are the same, we check for equivalence in accidentals
-        // This is a simplified logic compared to full HEJI but works for basic EDO notation
+        // If nominals are the same, check for equivalence in accidentals
+        // This is a simplified logic compared to full HEJI but works for basic Ups and Downs notation
         if (sharp_name.length <= flat_name.length) {
             return sharp_name;
         } else {
