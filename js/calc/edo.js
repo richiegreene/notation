@@ -328,7 +328,7 @@ function printnote(note, halves, showEnharmonics, hejiBaseNote) {
     }
 }
 
-export function calculateEdoNotation(n, m, ref12, showEnharmonics = true, hejiBaseNote = "") {
+export function calculateEdoNotation(n, m, ref12, showEnharmonics = true, hejiBaseNote = "", excludeHalves = false) {
     if (m < 7 && m !== 5) {
         return "n/a";
     }
@@ -338,7 +338,11 @@ export function calculateEdoNotation(n, m, ref12, showEnharmonics = true, hejiBa
     let a1 = apotome(m, p5);
     const ud = updown(m, p5);
     const penta = verysharp(m, p5);
-    const halves = halfacc(a1);
+    let halves = halfacc(a1);
+
+    if (excludeHalves) {
+        halves = false;
+    }
 
     if (halves) {
         a1 = Math.floor(a1 / 2); // Integer division

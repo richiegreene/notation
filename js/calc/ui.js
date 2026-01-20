@@ -38,6 +38,10 @@ export function getShowEnharmonics(){
     return $("#showEnharmonics").prop("checked");
 }
 
+export function getExcludeHalves(){
+    return $("#excludeHalvesCheckbox").prop("checked");
+}
+
 export function getFrequencyOctave(){
 	return $("#octaveDropdown").val();
 }
@@ -1057,7 +1061,7 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
     }
 
     const hejiBaseNote = $(`#noteName_${columnIndex}`).text(); // Retrieve HEJI base note
-    const edoNotation = calculateEdoNotation(edoStep, edoQuantisation, ref12, getShowEnharmonics(), hejiBaseNote);
+    const edoNotation = calculateEdoNotation(edoStep, edoQuantisation, ref12, getShowEnharmonics(), hejiBaseNote, getExcludeHalves());
 
     // Get the base note name from the EDO notation string
     // Assuming the notation string will be like "C#", "D", "Ebb" etc.
