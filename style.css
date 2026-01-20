@@ -42,25 +42,25 @@
 
 html {
     min-height: 100%;
-    --bg-main: #000; /* Tetrads background */
-    --bg-header: rgba(30, 30, 30, 0.8); /* Tetrads settings menu background */
-    --bg-button: #5a5a5a; /* Tetrads button background */
-    --bg-button-selected: #007bff; /* Tetrads selected button */
-    --bg-button-clear: #5a5a5a; /* Tetrads button background */
-    --bg-button-get: #5a5a5a; /* Tetrads button background */
-    --border-button: #555; /* Tetrads border */
+    --bg-main: #000; /* background */
+    --bg-header: rgba(30, 30, 30, 0.8); /* settings menu background */
+    --bg-button: #5a5a5a; /* button background */
+    --bg-button-selected: #007bff; /* selected button */
+    --bg-button-clear: #5a5a5a; /* button background */
+    --bg-button-get: #5a5a5a; /* button background */
+    --border-button: #555; /* border */
     --color-palette-labels: #fff; /* White for labels */
     --color-text: #fff; /* White text */
     --color-em: #fff; /* White emphasis */
-    --color-link: #007bff; /* Tetrads link color */
-    --color-link-hover: #0056b3; /* Tetrads link hover color */
-    --color-input: #4a4a4a; /* Tetrads input background */
+    --color-link: #007bff; /* link color */
+    --color-link-hover: #0056b3; /* link hover color */
+    --color-input: #4a4a4a; /* input background */
 }
 
 body {
     background-color: var(--bg-main);
     color: var(--color-text);
-    font-family: monospace; /* Tetrads font */
+    font-family: monospace; /* Primary font */
 }
 
 .settings-menu-item {
@@ -599,21 +599,17 @@ input.ratioIn {
     grid-row: span 15;
 }
 
-#interval-entry-item {
-    grid-row: span 3;
-}
+
 
 #output-columns-item {
     grid-row: span 2;
 }
 
 #output-item {
-    grid-row: span 7;
+    grid-row: span 4;
 }
 
-#chord-entry-item {
-    grid-row: span 6;
-}
+
 
 .settings-menu-item.collapsed-item {
     grid-row: span 1 !important;
