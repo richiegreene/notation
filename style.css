@@ -70,8 +70,6 @@ body {
     font-family: monospace;
     margin: 10px; /* Space around each item */
     min-width: auto; /* Allow content to define min-width */
-    
-    /* max-width: 440px; /* Prevent items from becoming too wide on very large screens */ */
 }
 
 .settings-header {
@@ -584,26 +582,35 @@ input.ratioIn {
     box-sizing: border-box; /* Include padding and border in width calculation */
 }
 /* Specific grid-row spans for each settings-menu-item */
-#ref-pitch-item {
-    grid-row: span 11;
+
+#ref-pitch-item { /* Settings */
+    grid-row: span 6;
 }
 
 #heji-entry-item {
-    grid-row: span 15;
+    grid-row: span 7;
 }
 
-#output-columns-item {
+#interval-entry-item {
     grid-row: span 2;
+}
+
+#chord-entry-item {
+    grid-row: span 3;
 }
 
 #output-item {
     grid-row: span 4;
 }
 
+#edo-output-item {
+    grid-row: span 5; /* Adjust grid-row for EDO output */
+}
+
 .settings-menu-item.collapsed-item {
     grid-row: span 1 !important;
 }
-/* Styles copied from Tetrads_Refference/style.css */
+
 #timbre-row {
     grid-column: 1 / -1;
     display: grid;
@@ -709,10 +716,6 @@ input.ratioIn {
     margin-top: 10px; /* Small margin to push it down */
 }
 
-.display-label-row {
-    /* New: to contain only the "Display" label */
-}
-
 .display-label-row span {
     font-weight: normal; /* Unbold "Display" label */
     font-size: 1rem;
@@ -724,10 +727,6 @@ input.ratioIn {
     gap: 10px;
     padding-left: 20px; /* Indent this row */
     margin-top: 0; /* No extra space between "Display" and this row */
-}
-
-.theme-toggle-container {
-    /* No specific positioning needed here, handled by .precision-control-group flex */
 }
 
 #theme-toggle {
@@ -817,10 +816,6 @@ html[data-theme="light"] #theme-toggle .light-icon {
     font-size: 6rem;
     display: inline-flex;
     align-items: center;
-}
-
-#edo-output-item {
-    grid-row: span 3; /* Adjust grid-row for EDO output */
 }
 
 .output-spacer {
