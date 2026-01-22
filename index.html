@@ -92,21 +92,32 @@
                         <input type="radio" name="refInput" id="refFrequencyFreeRadio"> <label for="refFrequencyFreeRadio">A4 &plusmn;0c</label>
                     </div>
                     <br>
-                    <div class="row">
-                        <h3>A4 (Hz)</h3><br>
-                        <input type="number" id="frequencyA4" value="440.0000"></input>
-                    </div>
-        			<br> <!-- Add a line break for spacing -->
-                    <br>
-                    <h3>Playback</h3>
-                    <br>
-                    <div class="settings-row" id="timbre-row">
-                        <input type="range" id="timbreSlider" min="0" max="3" value="1" step="0.01">
-                        <canvas id="waveformCanvas" width="60" height="30"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                                              <div class="row">
+                                                                 <h3>A4 (Hz)</h3><br>
+                                                                 <input type="number" id="frequencyA4" value="440.0000"></input>
+                                                             </div>
+                                                 			<br> <!-- Add a line break for spacing -->
+                                                             <br>
+                                                             <h3>Playback</h3>
+                                                             <br>
+                                                             <div class="settings-row">
+                                                                 <select id="playbackMode">
+                                                                     <option value="browser" selected>In-Browser Audio</option>
+                                                                     <option value="mpe-midi">MIDI Polyphonic Expression (MPE)</option>
+                                                                 </select>
+                                                             </div>
+                                                             <br> <!-- Line break added here -->
+                                                                                 <div class="settings-row" id="midi-device-selector" style="display: none;">
+                                                                                     <select id="midiOutputSelect" style="flex-grow: 1; width: 100%;">
+                                                                                         <option>No devices found</option>
+                                                                                     </select>
+                                                                                     <br> <!-- Line break added here -->
+                                                                                 </div>                                                             <div class="settings-row" id="timbre-row">
+                                                                 <input type="range" id="timbreSlider" min="0" max="3" value="1" step="0.01">
+                                                                 <canvas id="waveformCanvas" width="60" height="30"></canvas>
+                                                             </div>
+                                                         </div>
+                                                     </div>        </div>
 
                                 <div class="settings-menu-item" id="heji-entry-item">
 

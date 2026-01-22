@@ -1,5 +1,7 @@
+import { initMidiOutput, sendMpeNoteOn, sendMpeNoteOff, sendMpePitchBendUpdate, releaseAllMpeNotes, playbackMode, isMpeNoteActive } from './mpe-playback.js';
+
 let audioCtx;
-let currentPeriodicWave = null;
+export let currentPeriodicWave = null; // Export to be accessible for other modules if needed
 let compensationGainNode;
 
 const numHarmonics = 64;
@@ -33,12 +35,8 @@ export function initAudio() {
     if (audioCtx) return; // Already initialized
     try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        // Main gain node for overall volume control (optional, but good practice)
-        // let mainGainNode = audioCtx.createGain();
-        // mainGainNode.connect(audioCtx.destination);
-        
         compensationGainNode = audioCtx.createGain();
-        compensationGainNode.connect(audioCtx.destination); // Connect directly to destination for now
+        compensationGainNode.connect(audioCtx.destination);
     } catch (e) {
         console.error(`Error creating audio context: ${e.message}`);
     }
@@ -124,56 +122,116 @@ export function drawWaveform(imag) {
     ctx.stroke();
 }
 
-// Functions to be used for actual playback later
-let voices = []; // Array of { osc: OscillatorNode, gain: GainNode }
+let voices = [];
 
-export function playFrequencies(frequencies, fadeDuration = 0.1) {
-    if (!audioCtx) initAudio();
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
+export function playFrequencies(frequencies, fadeDuration = 0.1, slideDuration = 0.1) {
+    // --- Handle Browser Audio Playback ---
+    if (playbackMode === 'browser' || playbackMode === undefined) { // playbackMode undefined for initial load
+        if (!audioCtx) initAudio();
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        stopAllFrequencies(0); // Stop any currently playing browser notes immediately
+
+        frequencies.forEach(freq => {
+            if (freq <= 20 || freq >= 20000) {
+                console.warn(`Frequency ${freq}Hz is out of audible range or unsafe, skipping.`);
+                return;
+            }
+
+            const osc = audioCtx.createOscillator();
+            if (currentPeriodicWave) {
+                osc.setPeriodicWave(currentPeriodicWave);
+            } else {
+                osc.type = 'sine';
+            }
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + fadeDuration);
+
+            osc.connect(gainNode);
+            gainNode.connect(compensationGainNode);
+            osc.start(audioCtx.currentTime);
+
+            voices.push({ osc, gain: gainNode });
+        });
+    } else {
+        // If not in browser mode, stop any existing browser audio
+        if (voices.length > 0) {
+            stopAllFrequencies(0); // Immediately stop browser audio
+        }
     }
 
-    // Stop any currently playing notes immediately
-    stopAllFrequencies(0); 
+    // --- Handle MPE MIDI Playback ---
+    if (playbackMode === 'mpe-midi' || playbackMode === 'both') {
+        // Assume frequencies array maps to MPE note indices 0, 1, 2, ...
+        // For simplicity, we'll assign MPE channels based on array index.
+        // This means a new channel will be requested for each note in the chord.
 
-    // Create new voices for the current frequencies
-    frequencies.forEach(freq => {
-        // Simple range check for frequencies to avoid extreme values
-        if (freq <= 20 || freq >= 20000) { // Humans typically hear 20Hz to 20kHz
-            console.warn(`Frequency ${freq}Hz is out of audible range or unsafe, skipping.`);
-            return;
+        const currentChordIndices = new Set(frequencies.map((_, index) => index));
+        
+        // Find notes that were active but are no longer in the current chord
+        // Assuming max 4 voices based on Tetrads, adjust if needed for Notation
+        for (let i = 0; i < 4; i++) { // Iterate through potential previous notes
+            if (isMpeNoteActive(i) && !currentChordIndices.has(i)) {
+                sendMpeNoteOff(i);
+            }
         }
 
-        const osc = audioCtx.createOscillator();
-        if (currentPeriodicWave) {
-            osc.setPeriodicWave(currentPeriodicWave);
-        } else {
-            osc.type = 'sine'; // Fallback to sine if no periodic wave is set
-        }
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.setValueAtTime(0, audioCtx.currentTime); // Start at 0 gain
-        gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + fadeDuration); // Fade in
-
-        osc.connect(gainNode);
-        gainNode.connect(compensationGainNode); // Connect to the overall compensation gain node
-        osc.start(audioCtx.currentTime);
-
-        voices.push({ osc, gain: gainNode });
-    });
+        frequencies.forEach((freq, index) => {
+            if (isMpeNoteActive(index)) {
+                sendMpePitchBendUpdate(index, freq, true, slideDuration);
+            } else {
+                sendMpeNoteOn(index, freq, 100, true, slideDuration);
+            }
+        });
+    } else {
+        releaseAllMpeNotes(); // Ensure MIDI notes are off if switching away from MIDI mode
+    }
 }
 
 export function stopAllFrequencies(fadeDuration = 0.1) {
-    if (!audioCtx) return;
+    // --- Stop Browser Audio ---
+    if (playbackMode === 'browser' || playbackMode === undefined) {
+        const stopDelay = fadeDuration * 1000 + 50; // A bit longer than fade to ensure sound stops
 
-    voices.forEach(voice => {
-        voice.gain.gain.cancelScheduledValues(audioCtx.currentTime);
-        voice.gain.gain.setValueAtTime(voice.gain.gain.value, audioCtx.currentTime);
-        voice.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDuration); // Fade out
-        voice.osc.stop(audioCtx.currentTime + fadeDuration); // Stop after fade
-        voice.osc.disconnect();
-        voice.gain.disconnect();
-    });
-    voices = []; // Clear the array of active voices
+        voices.forEach(voice => {
+            voice.gain.gain.cancelScheduledValues(audioCtx.currentTime);
+            voice.gain.gain.setValueAtTime(voice.gain.gain.value, audioCtx.currentTime);
+            voice.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDuration);
+        });
+
+        const oldVoices = voices;
+        voices = [];
+        setTimeout(() => {
+            oldVoices.forEach(voice => {
+                try {
+                    voice.osc.stop();
+                    voice.osc.disconnect();
+                    voice.gain.disconnect();
+                } catch (e) {
+                    console.warn("Error stopping audio voice:", e);
+                }
+            });
+        }, stopDelay);
+    } else {
+        voices.forEach(voice => {
+            try {
+                voice.osc.stop();
+                voice.osc.disconnect();
+                voice.gain.disconnect();
+            } catch (e) {
+                console.warn("Error stopping audio voice:", e);
+            }
+        });
+        voices = [];
+    }
+
+    // --- Stop MPE MIDI ---
+    if (playbackMode === 'mpe-midi' || playbackMode === 'both') {
+        releaseAllMpeNotes();
+    }
 }

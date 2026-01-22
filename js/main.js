@@ -3,7 +3,10 @@ import * as U from './calc/utils.js';
 import { state } from './calc/state.js';
 import * as Calc from './calc/calculator.js';
 import * as UI from './calc/ui.js';
-import { initAudio, updateWaveform, playFrequencies, stopAllFrequencies } from './audio-playback.js'; // Import audio functions
+import { initAudio, updateWaveform, playFrequencies, stopAllFrequencies, currentPeriodicWave } from './audio-playback.js'; // Import audio functions
+import { initMidiOutput, setPlaybackMode, midiOutputSelect, midiDeviceSelectorDiv } from './mpe-playback.js'; // Import MPE functions
+
+let slideDuration = 0.25; // Default slide duration, can be made configurable
 
 // Functions that need to be globally accessible from HTML
 window.loadCurrentPitch = function(index) {
@@ -188,6 +191,33 @@ $(document).ready(function(){
 
     initAudio(); // Initialize the audio context
     updateWaveform(parseFloat($("#timbreSlider").val())); // Set initial waveform
+
+    // Playback Mode change listener
+    $("#playbackMode").on("change", async function() {
+        const selectedMode = $(this).val();
+        setPlaybackMode(selectedMode); // Update the global playback mode in mpe-playback.js
+
+        const timbreRow = $("#timbre-row");
+
+        if (selectedMode === 'mpe-midi') {
+            await initMidiOutput(); // Initialize MIDI when MPE MIDI is selected
+            if (midiDeviceSelectorDiv) {
+                midiDeviceSelectorDiv.style.display = 'flex'; // Show MIDI device selector
+            }
+            if (timbreRow) {
+                timbreRow.hide(); // Hide timbre slider and waveform
+            }
+        } else { // 'browser' selected
+            if (midiDeviceSelectorDiv) {
+                midiDeviceSelectorDiv.style.display = 'none'; // Hide MIDI device selector
+            }
+            if (timbreRow) {
+                timbreRow.show(); // Show timbre slider and waveform
+            }
+            stopAllFrequencies(0.1); // Stop any active MIDI notes if switching away from MPE
+        }
+        performCalculationsAndStopPlayback(); // Recalculate and stop any playing sounds
+    });
 
 	$("#octaveDropdown").change(function(c){
 		Calc.getFrequency1to1();
@@ -640,27 +670,28 @@ $(document).ready(function(){
 
     // Play button event listener
     $("#playOutputButton").on("click", function() {
-                    if (isPlaying) {
-                        stopAllFrequencies(0.2); // Fade out over 0.2 seconds
-                        isPlaying = false;
-                        $(this).text("play").removeClass("playing-active");
-                    } else {
-                        const chordSize = parseInt($("#chord-size-input").val());
-                        const frequencies = [];
-                        for (let i = 1; i <= chordSize; i++) {
-                            const freqValue = state.outputFrequencies[i]; // Get unrounded frequency directly from state
-                            if (freqValue !== undefined && !isNaN(freqValue)) {
-                                frequencies.push(freqValue);
-                            }
-                        }
-                        if (frequencies.length > 0) {
-                            playFrequencies(frequencies, 0.2); // Fade in over 0.2 seconds
-                            isPlaying = true;
-                            $(this).text("stop").addClass("playing-active");
-                        } else {
-                            console.warn("No frequencies to play.");
-                        }
-                    }    });
+        if (isPlaying) {
+            stopAllFrequencies(0.2); // Fade out over 0.2 seconds
+            isPlaying = false;
+            $(this).text("play").removeClass("playing-active");
+        } else {
+            const chordSize = parseInt($("#chord-size-input").val());
+            const frequencies = [];
+            for (let i = 1; i <= chordSize; i++) {
+                const freqValue = state.outputFrequencies[i]; // Get unrounded frequency directly from state
+                if (freqValue !== undefined && !isNaN(freqValue)) {
+                    frequencies.push(freqValue);
+                }
+            }
+            if (frequencies.length > 0) {
+                playFrequencies(frequencies, 0.2, slideDuration); // Pass slideDuration
+                isPlaying = true;
+                $(this).text("stop").addClass("playing-active");
+            } else {
+                console.warn("No frequencies to play.");
+            }
+        }
+    });
 
     // EDO Play button event listener
     $("#playEdoOutputButton").on("click", function() {
@@ -678,7 +709,7 @@ $(document).ready(function(){
                 }
             }
             if (frequencies.length > 0) {
-                playFrequencies(frequencies, 0.2);
+                playFrequencies(frequencies, 0.2, slideDuration); // Pass slideDuration
                 isPlayingEdo = true;
                 $(this).text("stop").addClass("playing-active");
             } else {
