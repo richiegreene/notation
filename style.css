@@ -738,7 +738,7 @@ input.ratioIn {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding-left: 20px; /* Indent this row */
+    justify-content: center; /* Center horizontally */
     margin-top: 0; /* No extra space between "Display" and this row */
 }
 
