@@ -25,7 +25,7 @@ for (let i = 1; i < numHarmonics; i++) {
 }
 
 const waveCoeffs = [sineCoeffs, triangleCoeffs, sawtoothCoeffs, squareCoeffs];
-const realCoeffs = new Float32Array(numHarmonics).fill(0); // All our waves are sine-based
+const realCoeffs = new Float32Array(numHarmonics).fill(0); // All waves sine-based
 
 // Gain compensation values to normalize perceived loudness.
 // Sine, Triangle, Sawtooth, Square
