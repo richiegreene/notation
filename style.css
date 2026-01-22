@@ -820,6 +820,24 @@ html[data-theme="light"] #theme-toggle .light-icon {
     gap: 20px;
 }
 
+.info-link {
+    font-size: 1.2rem; /* Similar to button icon size */
+    color: var(--color-text); /* Use text color */
+    text-decoration: none; /* Remove underline */
+    display: flex; /* Use flex to center the 'i' */
+    justify-content: center;
+    align-items: center;
+    width: 30px; /* Same width as theme toggle button */
+    height: 30px; /* Same height as theme toggle button */
+    border-radius: 50%; /* Make it round */
+    border: 1px solid var(--border-button); /* Match button border */
+}
+
+.info-link:hover {
+    color: var(--color-link-hover); /* Hover effect */
+    border-color: var(--color-link-hover);
+}
+
 .precision-control-group label {
     font-size: 1rem; /* Match "Display" label font size */
     font-weight: normal; /* Override bold if inherited from span */
