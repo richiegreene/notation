@@ -519,14 +519,14 @@ table.enharmonic-table > tr, td, th {
 }
 
 #refAccidentalDropdown {
-    font-family: "HEJI2";
-    font-size: 1.67rem;
+    font-family: "Inter";
+    font-size: 1.2525rem;
     vertical-align: middle;
     height: 2.5rem;
 }
 
 #refAccidentalDropdown option {
-    font-family: "HEJI2" !important;
+    font-family: "Inter" !important;
 }
 
 .toggle-header-placement {
