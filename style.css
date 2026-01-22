@@ -188,6 +188,11 @@ input {
     padding: 5px; /* Adjusted padding */
 }
 
+.settings-content .row input[type="number"] {
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding and border are included in the 100% width */
+}
+
 div.version {
     padding-bottom: 0.5rem;
 }
