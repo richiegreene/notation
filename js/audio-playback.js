@@ -167,14 +167,11 @@ export function playFrequencies(frequencies, fadeDuration = 0.1, slideDuration =
 
     // --- Handle MPE MIDI Playback ---
     if (playbackMode === 'mpe-midi' || playbackMode === 'both') {
-        // Assume frequencies array maps to MPE note indices 0, 1, 2, ...
-        // For simplicity, we'll assign MPE channels based on array index.
-        // This means a new channel will be requested for each note in the chord.
+        // new channel requested for each note in the chord.
 
         const currentChordIndices = new Set(frequencies.map((_, index) => index));
         
         // Find notes that were active but are no longer in the current chord
-        // Assuming max 4 voices based on Tetrads, adjust if needed for Notation
         for (let i = 0; i < 4; i++) { // Iterate through potential previous notes
             if (isMpeNoteActive(i) && !currentChordIndices.has(i)) {
                 sendMpeNoteOff(i);
@@ -183,9 +180,9 @@ export function playFrequencies(frequencies, fadeDuration = 0.1, slideDuration =
 
         frequencies.forEach((freq, index) => {
             if (isMpeNoteActive(index)) {
-                sendMpePitchBendUpdate(index, freq, false, slideDuration); // Changed to false
+                sendMpePitchBendUpdate(index, freq, false, slideDuration);
             } else {
-                sendMpeNoteOn(index, freq, 100, false, slideDuration); // Changed to false
+                sendMpeNoteOn(index, freq, 100, false, slideDuration);
             }
         });
     } else {
