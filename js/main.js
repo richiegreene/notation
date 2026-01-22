@@ -60,6 +60,10 @@ window.clearAllIntervals = function() {
     $("#chord-size-input").val(1);
     $("#chord-size-input").trigger("change");
 
+    // Clear Enumerated Chord Entry field
+    $("#enumerated-chord-input").val("");
+    $("#enumerated-chord-input").trigger("input");
+
     // Reset EDO Approximation input
     $("#edoApproximationInput").val(12);
     $("#edoNormalize").prop("checked", false); // Uncheck EDO octave reduce
@@ -73,13 +77,27 @@ window.clearAllIntervals = function() {
 
 // Function to clear the EDO Output window
 window.clearEdoOutput = function() {
-    $(".edo-output-container").empty();
+    // Iterate through all existing EDO output columns and clear their dynamic content
+    // The number of columns is determined by the current chord size input
+    const numColumns = parseInt($("#chord-size-input").val()) || 1; 
+    for (let i = 1; i <= numColumns; i++) {
+        $(`#edoNoteName_${i}`).text("");
+        $(`#edoNotationOutput_${i}`).text("");
+        $(`#edoStepDistance_${i}`).text("");
+        $(`#edoCentDeviation_${i}`).text("0"); // Set to "0" instead of empty
+        $(`#edoFrequency_${i}`).text("440"); // Set to "440" instead of empty
+        $(`#edoJIgross_${i}`).text("0"); // Set to "0" instead of empty
+    }
     // Also stop any playing EDO frequencies if they are active
     if (isPlayingEdo) {
         stopAllFrequencies(0.1);
         isPlayingEdo = false;
         $("#playEdoOutputButton").text("play").removeClass("playing-active");
     }
+
+    // Trigger a re-calculation to re-populate EDO output with default values
+    // This mimics the behavior when clearAllIntervals is used.
+    performCalculationsAndStopPlayback();
 }
 
 window.sendA = function() {
@@ -661,6 +679,6 @@ $(document).ready(function(){
 
     // EDO Clear button event listener
     $("#clearEdoOutputButton").on("click", function() {
-        clearEdoOutput();
+        clearAllIntervals();
     });
 });
