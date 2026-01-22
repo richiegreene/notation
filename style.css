@@ -801,7 +801,7 @@ html[data-theme="light"] #theme-toggle .light-icon {
 .precision-control-group {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 20px;
 }
 
 .precision-control-group label {
