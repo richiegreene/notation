@@ -418,16 +418,26 @@ $(document).ready(function(){
 
     // Input type radio buttons
 	$("#paletteInput").click(function(c){
+		// When switching to Palette Input, ensure only one output column is displayed
+		$("#chord-size-input").val(1);
+		$("#chord-size-input").trigger("change");
 		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
 	$("#intervalInput").click(function(c){
+		// When switching to Interval Input, ensure only one output column is displayed
+		$("#chord-size-input").val(1);
+		$("#chord-size-input").trigger("change");
 		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
     $("#chordInput").click(function(c){
         performCalculationsAndStopPlayback();
         UI.getPC();
+        // If enumerated chord entry is selected, re-trigger its input to update output
+        if ($("#chord-entry-type-select").val() === 'enumerated-chord') {
+            $("#enumerated-chord-input").trigger('input');
+        }
     });
 
 
