@@ -444,9 +444,8 @@ table.enharmonic-table > tr, td, th {
 }
 
 .palette {
-    white-space: nowrap;
+    white-space: nowrap; /* Re-add to prevent horizontal wrapping of button rows */
     text-align: center; /* Center the inline-block elements within the palette */
-    line-height: 1; /* Reduce line height to minimize vertical space */
 }
 
 .cents {
@@ -512,6 +511,20 @@ table.enharmonic-table > tr, td, th {
 .palette .label {
     color: var(--bg-button);
     vertical-align: middle; /* Ensure vertical alignment */
+}
+
+.heji-button-row {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    align-items: center; /* Center buttons vertically */
+    margin: 0; /* Remove default margins */
+    padding: 0; /* Remove default padding */
+}
+
+.heji-button-row .label,
+.heji-button-row button {
+    flex-shrink: 0; /* Prevent items from shrinking */
+    margin: 0; /* Remove any default margins on these items */
 }
 
 .ref-pitch-controls-centered {
