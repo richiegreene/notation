@@ -183,9 +183,9 @@ export function playFrequencies(frequencies, fadeDuration = 0.1, slideDuration =
 
         frequencies.forEach((freq, index) => {
             if (isMpeNoteActive(index)) {
-                sendMpePitchBendUpdate(index, freq, true, slideDuration);
+                sendMpePitchBendUpdate(index, freq, false, slideDuration); // Changed to false
             } else {
-                sendMpeNoteOn(index, freq, 100, true, slideDuration);
+                sendMpeNoteOn(index, freq, 100, false, slideDuration); // Changed to false
             }
         });
     } else {
