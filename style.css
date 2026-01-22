@@ -446,7 +446,7 @@ table.enharmonic-table > tr, td, th {
 .palette {
     white-space: nowrap;
     text-align: center; /* Center the inline-block elements within the palette */
-    line-height: 2.5rem; /* Ensure consistent vertical spacing between rows */
+    line-height: 1; /* Reduce line height to minimize vertical space */
 }
 
 .cents {
@@ -511,6 +511,7 @@ table.enharmonic-table > tr, td, th {
 
 .palette .label {
     color: var(--bg-button);
+    vertical-align: middle; /* Ensure vertical alignment */
 }
 
 .ref-pitch-controls-centered {
