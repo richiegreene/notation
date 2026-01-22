@@ -1099,11 +1099,11 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
 
     // Apply monospace font and specified sizes to EDO output
     $(`#edoNoteName_${columnIndex}`).css({
-        'font-family': 'monospace',
+        'font-family': '"EdoAccidentals"', // Re-add font-family override, now with EdoAccidentals
         'font-size': '4rem' // Matching main output font size
     });
     $(`#edoNotationOutput_${columnIndex}`).css({
-        'font-family': 'monospace',
+        'font-family': '"EdoAccidentals"', // Re-add font-family override, now with EdoAccidentals
         'font-size': '4rem' // Matching main output font size
     });
     // Ensure no wrapping for EDO notation display

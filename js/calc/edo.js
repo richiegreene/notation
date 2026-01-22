@@ -183,7 +183,7 @@ function printnom(nom) {
 }
 
 function printupdown(ups) {
-    return "v".repeat(Math.max(0, -ups)) + "^".repeat(Math.max(0, ups));
+    return "v".repeat(Math.max(0, -ups)) + "w".repeat(Math.max(0, ups));
 }
 
 function printliftdrop(lifts) {
@@ -193,31 +193,35 @@ function printliftdrop(lifts) {
 function printsharp(sharps, half) {
     let result = "";
     if (half) {
-        if (sharps % 2 !== 0) {
-            result += "t"; // Half sharp
-            sharps -= 1;
-        }
-        if (sharps % 4 !== 0) {
-            if (result.endsWith("^")) {
-                result = result.slice(0, -1) + "t#"; // Three half sharp
-                sharps -= 2;
+        if (sharps % 2 !== 0) { // e.g., 1, 3, 5 sharps
+            if (sharps === 3) { // Special case for three half-sharps: t#
+                result += "g"; // t# -> g
+                sharps -= 3;
             } else {
-                result += "#"; // Sharp
+                result += "h"; // t -> h
+                sharps -= 1;
+            }
+        }
+        // Handle remaining full sharps (2 or 4) or cases where initial sharps were even
+        if (sharps > 0) {
+            // Priority for double sharp first (x -> d)
+            while (sharps >= 4) {
+                result += "d"; // x -> d
+                sharps -= 4;
+            }
+            // Then for single sharp (# -> c)
+            if (sharps >= 2) {
+                result += "c"; // # -> c
                 sharps -= 2;
             }
         }
-        while (sharps > 0) {
-            result += "x"; // Double sharp
-            sharps -= 4;
-        }
-    } else {
-        if (sharps % 2 !== 0) {
-            result += "#"; // Sharp
-            sharps -= 1;
-        }
-        while (sharps > 0) {
-            result += "x"; // Double sharp
+    } else { // full sharps
+        while (sharps >= 2) {
+            result += "d"; // x -> d (double sharp)
             sharps -= 2;
+        }
+        if (sharps === 1) {
+            result += "c"; // # -> c (single sharp)
         }
     }
     return result;
@@ -226,30 +230,35 @@ function printsharp(sharps, half) {
 function printflat(flats, half) {
     let result = "";
     if (half) {
-        if (flats % 2 !== 0) {
-            result += "d"; // Half flat
-            flats -= 1;
-        }
-        if (flats % 4 !== 0) {
-            if (result.endsWith("v")) {
-                result = result.slice(0, -1) + "db"; // Three half flat
-                flats -= 2;
+        if (flats % 2 !== 0) { // e.g., 1, 3, 5 flats
+            if (flats === 3) { // Special case for three half-flats: db
+                result += "ea"; // db -> ea
+                flats -= 3;
             } else {
-                result += "b"; // Flat
+                result += "e"; // d -> e
+                flats -= 1;
+            }
+        }
+        // Handle remaining full flats (2 or 4) or cases where initial flats were even
+        if (flats > 0) {
+            // Priority for double flat first (bb -> )
+            while (flats >= 4) {
+                result += ""; // bb -> 
+                flats -= 4;
+            }
+            // Then for single flat (b -> a)
+            if (flats >= 2) {
+                result += "a"; // b -> a
                 flats -= 2;
             }
         }
-        while (flats > 0) {
-            result += "bb"; // Double flat
-            flats -= 4;
-        }
-    } else {
+    } else { // full flats
         while (flats >= 2) {
-            result += "bb"; // Double flat
+            result += "�"; // bb ->  (double flat)
             flats -= 2;
         }
         if (flats === 1) {
-            result += "b"; // Flat
+            result += "a"; // b -> a (single flat)
         }
     }
     return result;

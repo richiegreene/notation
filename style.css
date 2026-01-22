@@ -1,4 +1,12 @@
 @font-face {
+    font-family: "EdoAccidentals";
+    src: url("fonts/notes.otf") format("opentype");
+}
+@font-face {
+    font-family: "Inter";
+    src: url("fonts/inter.ttf") format("opentype");
+}
+@font-face {
     font-family: "HEJI2Text";
     src: url("fonts/HEJI2Text.otf") format("opentype");
 }
@@ -36,7 +44,7 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: Menlo, Monaco, 'Courier New', monospace;
+    font-family: "Inter", sans-serif;
     font-size: 14px;
 }
 
@@ -60,14 +68,14 @@ html {
 body {
     background-color: var(--bg-main);
     color: var(--color-text);
-    font-family: monospace; /* Primary font */
+    font-family: "Inter", sans-serif; /* Primary font */
 }
 
 .settings-menu-item {
     background-color: var(--bg-header);
     border-radius: 8px;
     color: var(--color-text);
-    font-family: monospace;
+    font-family: "Inter", sans-serif;
     margin: 10px; /* Space around each item */
     min-width: auto; /* Allow content to define min-width */
 }
@@ -341,7 +349,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 
 .noteName{
     color: var(--color-text);
-    font-family: monospace;
+    font-family: "Inter", sans-serif;
     font-weight: normal;
     font-size: 4rem;
     position: relative;
@@ -435,7 +443,7 @@ table.enharmonic-table > tr, td, th {
 }
 
 .cents {
-    font-family: monospace;
+    font-family: "Inter", sans-serif;
     color: var(--color-text); /* Reverted to white */
 }
 
@@ -552,7 +560,7 @@ table.enharmonic-table > tr, td, th {
 }
 
 .midiNote {
-    font-family: monospace;
+    font-family: "Inter", sans-serif;
     font-size: 1.2rem;
 }
 
@@ -804,7 +812,7 @@ html[data-theme="light"] #theme-toggle .light-icon {
 
 .edoNoteName {
     color: var(--color-text);
-    font-family: sans-serif; /* Explicitly non-HEJI font */
+    font-family: "EdoAccidentals" !important, sans-serif; /* Apply the new font for note names */
     font-weight: normal;
     font-size: 4rem;
     position: relative;
@@ -812,7 +820,7 @@ html[data-theme="light"] #theme-toggle .light-icon {
 
 .edoNotationOutput {
     color: var(--color-text);
-    font-family: sans-serif; /* Explicitly non-HEJI font */
+    font-family: "EdoAccidentals" !important, sans-serif; /* Apply EdoAccidentals font for accidentals */
     font-size: 6rem;
     display: inline-flex;
     align-items: center;
