@@ -183,6 +183,9 @@ function printnom(nom) {
 }
 
 function printupdown(ups) {
+    if (ups === -2) {
+        return "#";
+    }
     return "v".repeat(Math.max(0, -ups)) + "w".repeat(Math.max(0, ups));
 }
 
