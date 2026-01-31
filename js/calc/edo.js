@@ -185,6 +185,8 @@ function printnom(nom) {
 function printupdown(ups) {
     if (ups === -2) {
         return "#";
+    } else if (ups === 2) {
+        return "ww"; // "ww" placeholder for double ups single character
     }
     return "v".repeat(Math.max(0, -ups)) + "w".repeat(Math.max(0, ups));
 }
