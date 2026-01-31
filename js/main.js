@@ -603,7 +603,28 @@ $(document).ready(function(){
 
     function calculateEnumeratedChord() {
         const input = $("#enumerated-chord-input").val();
-        const parts = input.split(':').map(s => s.trim()).filter(s => s.length > 0 && !isNaN(s));
+        let parts;
+
+        if (input.includes('::')) {
+            const rangeParts = input.split('::').map(s => parseInt(s.trim(), 10));
+            if (rangeParts.length === 2 && !isNaN(rangeParts[0]) && !isNaN(rangeParts[1])) {
+                const start = rangeParts[0];
+                const end = rangeParts[1];
+                parts = [];
+                if (start <= end) {
+                    for (let i = start; i <= end; i++) {
+                        parts.push(i.toString());
+                    }
+                } else {
+                    // Handle descending range if necessary, or just treat as invalid for now
+                    // For this request, we assume ascending, so if start > end, parts remains empty
+                }
+            } else {
+                parts = []; // Invalid '::' format
+            }
+        } else {
+            parts = input.split(':').map(s => s.trim()).filter(s => s.length > 0 && !isNaN(s));
+        }
 
         const baseNum = parseInt($("#enumerated-base-num").val(), 10) || 1;
         const baseDen = parseInt($("#enumerated-base-den").val(), 10) || 1; // Corrected from 20 to 10
