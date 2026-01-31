@@ -243,7 +243,7 @@ function printflat(flats, half) {
         if (flats > 0) {
             // Priority for double flat first (bb -> )
             while (flats >= 4) {
-                result += ""; // bb -> 
+                result += "aa"; // bb -> aa
                 flats -= 4;
             }
             // Then for single flat (b -> a)
@@ -254,7 +254,7 @@ function printflat(flats, half) {
         }
     } else { // full flats
         while (flats >= 2) {
-            result += "�"; // bb ->  (double flat)
+            result += "aa"; // bb -> aa (double flat)
             flats -= 2;
         }
         if (flats === 1) {
