@@ -224,7 +224,7 @@ export function sendMpePressure(channel, pressure) {
     midiOutput.send([0xD0 | channel, clampedPressure]);
 }
 
-export function sendMpeNoteOff(index, velocity = 64) {
+export function sendMpeNoteOff(index, velocity = 100) {
     console.log(`Attempting to send MPE Note Off for index: ${index}. Current midiOutput:`, midiOutput);
     if (!midiOutput) {
         console.warn("No MIDI output selected or available. Cannot send Note Off.");
