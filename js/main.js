@@ -183,9 +183,9 @@ function saveEdoOutputAsCsv() {
  * @param {string} filename - The desired filename for the CSV.
  */
 function generateCsvAndDownload(frequencies, filename) {
-    const timeDomainRate = 0.01; // 0.01 seconds per step
-    const duration = 4.0; // 4 seconds total
-    const amplitude = 0.5; // Fixed amplitude
+    const timeDomainRate = 0.1; // 0.1 seconds per step
+    const duration = 8.0; // 8 seconds total
+    const amplitude = 0.25; // Fixed amplitude
 
     let csvContent = "time,frequency,amplitude,harmonic_index\n";
     const numSteps = Math.floor(duration / timeDomainRate);
