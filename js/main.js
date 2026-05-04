@@ -167,6 +167,63 @@ function performCalculationsAndStopPlayback() {
     }
 }
 
+// Function to generate and download CSV for JI Output
+function saveJIOutputAsCsv() {
+    generateCsvAndDownload(state.outputFrequencies, "ji_output.csv");
+}
+
+// Function to generate and download CSV for EDO Output
+function saveEdoOutputAsCsv() {
+    generateCsvAndDownload(state.edoOutputFrequencies, "edo_output.csv");
+}
+
+/**
+ * Generates a CSV string from frequency data and triggers a download.
+ * @param {object} frequencies - An object where keys are column indices and values are frequencies.
+ * @param {string} filename - The desired filename for the CSV.
+ */
+function generateCsvAndDownload(frequencies, filename) {
+    const timeDomainRate = 0.01; // 0.01 seconds per step
+    const duration = 4.0; // 4 seconds total
+    const amplitude = 0.5; // Fixed amplitude
+
+    let csvContent = "time,frequency,amplitude,harmonic_index\n";
+    const numSteps = Math.floor(duration / timeDomainRate);
+
+    // Collect all frequencies and sort them to determine harmonic_index
+    const activeFrequencies = Object.values(frequencies).filter(freq => freq !== undefined && freq > 0);
+    activeFrequencies.sort((a, b) => a - b); // Sort frequencies ascending
+
+    for (let i = 0; i <= numSteps; i++) {
+        const time = (i * timeDomainRate).toFixed(6); // Format time to 6 decimal places
+
+        activeFrequencies.forEach((freq, index) => {
+            csvContent += `${time},${freq.toFixed(6)},${amplitude.toFixed(6)},${index}\n`;
+        });
+    }
+
+    downloadCsv(csvContent, filename);
+}
+
+/**
+ * Helper function to trigger a file download in the browser.
+ * @param {string} content - The content of the file.
+ * @param {string} filename - The name of the file to download.
+ */
+function downloadCsv(content, filename) {
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) { // Feature detection
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
 $(document).ready(function(){
     applyStoredTheme(); // Apply theme on load
 
@@ -176,6 +233,24 @@ $(document).ready(function(){
         const newTheme = currentTheme === "dark" ? "light" : "dark";
         document.documentElement.setAttribute("data-theme", newTheme);
         localStorage.setItem("theme", newTheme);
+    });
+
+    // Keyboard shortcut to toggle save buttons visibility
+    $(document).on('keydown', function(e) {
+        // Check for Cmd+Shift+S (macOS) or Ctrl+Shift+S (Windows/Linux)
+        if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 's' || e.key === 'S')) {
+            e.preventDefault(); // Prevent the browser's default save dialog
+            $(".save-csv-button").toggleClass("show-save-button");
+        }
+    });
+
+    // Event listeners for the new save buttons
+    $("#saveJiOutputButton").on("click", function() {
+        saveJIOutputAsCsv();
+    });
+
+    $("#saveEdoOutputButton").on("click", function() {
+        saveEdoOutputAsCsv();
     });
 
 	state.kammerTon = $("#frequencyA4").val();

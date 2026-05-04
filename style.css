@@ -708,10 +708,27 @@ input.ratioIn {
     margin: 10px 0; /* Same as clearOutputButton */
 }
 
-#playEdoOutputButton.playing-active {
-    background-color: var(--bg-button-selected);
-    border-color: var(--bg-button-selected);
+
+/* CSV Save Buttons */
+.save-csv-button {
+    display: none; /* Hidden by default */
+    width: 100%; /* Match play buttons */
+    font-size: 14px; /* Match play buttons */
+    margin: 5px 0; /* Adjust margin to fit below play buttons */
 }
+
+.save-csv-button.show-save-button {
+    display: block !important; /* Show when the class is added */
+}
+
+/* Original styles for play buttons for context, ensuring they remain block level */
+#playOutputButton, #playEdoOutputButton {
+    display: block;
+    width: 100%;
+    font-size: 14px;
+    margin: 10px 0;
+}
+
 
 .stacking-input-container, .chord-size-container {
     display: flex; /* Use flexbox */
