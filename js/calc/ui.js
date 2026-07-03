@@ -219,8 +219,7 @@ export function generateOutputColumns(numColumns) {
                     </div>
                 </div>
                 <div class="output-content">
-                    <span id="midiNote_${i}"></span><span id="midiAccidental_${i}" class="midiAccidental"></span>
-                    <span id="cents_${i}" value="0"></span>
+                    <span id="midiNote_${i}"></span><span id="midiAccidental_${i}" class="midiAccidental"></span><span id="cents_${i}" value="0"></span>
                 </div>
                 <div class="output-content">
                     <div type="text" id="frequency_${i}" value="440"></div>
@@ -962,6 +961,33 @@ export function getBend() {
 		// Musescore bend
 		$("#musescore_cents").text(state.centDeviation.toFixed(2));
 	} 
+}
+
+function toSubscriptNumber(value) {
+    return String(value)
+        .split('')
+        .map(digit => '₀₁₂₃₄₅₆₇₈₉'[parseInt(digit, 10)] || digit)
+        .join('');
+}
+
+function formatOctaveSubscript(frequency) {
+    if (!frequency || !Number.isFinite(frequency)) {
+        return '';
+    }
+
+    const midiNumber = Math.round((12 * Math.log2(frequency / 440)) + 69);
+    const octave = Math.floor(midiNumber / 12) - 1;
+    return octave >= 0 ? toSubscriptNumber(octave) : '';
+}
+
+function formatCentsLabel(centsValue) {
+    if (Math.round(centsValue * 1e9) / 1e9 === 0) {
+        return '';
+    }
+    if (centsValue > 0) {
+        return `+${centsValue.toFixed(state.precision)}`;
+    }
+    return centsValue.toFixed(state.precision);
 }
 
 // Helper function to parse MIDI note output

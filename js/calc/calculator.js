@@ -49,8 +49,8 @@ function performCalculationsForColumn(columnIndex, inputMonzoAbsolute) {
     prepareCentsCalculationData();
     calculateJiCents();
     const ref12 = UI.getPC(columnIndex); // Capture ref12 here
-    getCentDeviation(columnIndex);
     getOutputFrequency(columnIndex);
+    getCentDeviation(columnIndex);
     UI.updateEdoNotationDisplay(columnIndex, state.jiCents, state.edoQuantisation, $("#edoNormalize").prop("checked"), ref12, state.cents_toRef); // Pass ref12 and cents_toRef
     
     // Only update the enharmonic search box for the first column to avoid confusion
@@ -295,6 +295,23 @@ export function calculateJiCents(){
     }
 }
 
+function toSubscriptNumber(value) {
+    return String(value)
+        .split('')
+        .map(digit => '₀₁₂₃₄₅₆₇₈₉'[parseInt(digit, 10)] || digit)
+        .join('');
+}
+
+function formatOctaveSubscript(frequency) {
+    if (!frequency || !Number.isFinite(frequency)) {
+        return '';
+    }
+
+    const midiNumber = Math.round((12 * Math.log2(frequency / 440)) + 69);
+    const octave = Math.floor(midiNumber / 12) - 1;
+    return octave >= 0 ? toSubscriptNumber(octave) : '';
+}
+
 export function getCentDeviation(columnIndex){
 	var et2 = (state.centsSum[0] * 12);
 	var et3 = (state.centsSum[1] * 19);
@@ -327,8 +344,14 @@ export function getCentDeviation(columnIndex){
         centsText = state.centDeviation.toFixed(state.precision);
     }
     
+    const outputFrequency = state.outputFrequencies[columnIndex] ?? (state.freq1to1 * (state.displayNumValue / state.displayDenValue));
+    const octaveSubscript = formatOctaveSubscript(outputFrequency);
+    const centsDisplayText = octaveSubscript
+        ? (centsText ? `${octaveSubscript} ${centsText}` : octaveSubscript)
+        : centsText;
+
     // MIDI note is now handled in getPC() for each column
-    $("#cents_" + columnIndex).text(centsText);
+    $("#cents_" + columnIndex).text(centsDisplayText);
     
 	UI.getBend();
     const isRatioMode = $("#intervalInput").prop("checked") || $("#chordInput").prop("checked");
