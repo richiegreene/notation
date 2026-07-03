@@ -676,54 +676,92 @@ $(document).ready(function(){
         $("#enumerated-chord-input").trigger('input');
     });
 
-    function calculateEnumeratedChord() {
-        const input = $("#enumerated-chord-input").val();
-        let parts;
+    function parseEnumeratedSequence(input) {
+        const trimmed = (input || "").trim();
 
-        if (input.includes('::')) {
-            const rangeParts = input.split('::').map(s => parseInt(s.trim(), 10));
-            if (rangeParts.length === 2 && !isNaN(rangeParts[0]) && !isNaN(rangeParts[1])) {
-                const start = rangeParts[0];
-                const end = rangeParts[1];
-                parts = [];
-                if (start <= end) {
-                    for (let i = start; i <= end; i++) {
-                        parts.push(i.toString());
-                    }
-                } else {
-                    // Handle descending range if necessary, or just treat as invalid for now
-                    // For this request, we assume ascending, so if start > end, parts remains empty
-                }
-            } else {
-                parts = []; // Invalid '::' format
-            }
-        } else {
-            parts = input.split(':').map(s => s.trim()).filter(s => s.length > 0 && !isNaN(s));
+        if (!trimmed) {
+            return { parts: [], denominator: 1 };
         }
 
+        function parseParts(expression) {
+            const normalized = (expression || "").trim();
+            if (!normalized) {
+                return [];
+            }
+
+            if (normalized.includes('::')) {
+                const rangeParts = normalized.split('::').map(s => parseInt(s.trim(), 10));
+                if (rangeParts.length === 2 && !isNaN(rangeParts[0]) && !isNaN(rangeParts[1])) {
+                    const start = rangeParts[0];
+                    const end = rangeParts[1];
+                    const sequence = [];
+                    if (start <= end) {
+                        for (let i = start; i <= end; i++) {
+                            sequence.push(i);
+                        }
+                    }
+                    return sequence;
+                }
+                return [];
+            }
+
+            return normalized
+                .split(':')
+                .map(s => s.trim())
+                .filter(s => s.length > 0 && !isNaN(s))
+                .map(s => parseInt(s, 10));
+        }
+
+        const parenthesizedMatch = trimmed.match(/^\((.+)\)\s*(?:\/(\d+))?$/);
+        const slashMatch = trimmed.match(/^(.*)\s*\/(\d+)$/);
+
+        if (parenthesizedMatch) {
+            return {
+                parts: parseParts(parenthesizedMatch[1]),
+                denominator: parenthesizedMatch[2] !== undefined ? (parseInt(parenthesizedMatch[2], 10) || 1) : 1
+            };
+        }
+
+        if (slashMatch) {
+            return {
+                parts: parseParts(slashMatch[1]),
+                denominator: parseInt(slashMatch[2], 10) || 1
+            };
+        }
+
+        const parts = parseParts(trimmed);
+        return {
+            parts,
+            denominator: parts.length > 0 && parts[0] !== 0 ? parts[0] : 1
+        };
+    }
+
+    function calculateEnumeratedChord() {
+        const input = $("#enumerated-chord-input").val();
+        const { parts, denominator } = parseEnumeratedSequence(input);
+
         const baseNum = parseInt($("#enumerated-base-num").val(), 10) || 1;
-        const baseDen = parseInt($("#enumerated-base-den").val(), 10) || 1; // Corrected from 20 to 10
+        const baseDen = parseInt($("#enumerated-base-den").val(), 10) || 1;
 
         if (parts.length > 0) {
-            const denominator = parseInt(parts[0], 10);
             if (denominator === 0) return; // Avoid division by zero
 
             const chordSize = parts.length;
-            
+
             // Update chord size and generate fields
             $("#chord-size-input").val(chordSize).trigger('change');
 
             parts.forEach((part, index) => {
-                const numerator = parseInt(part, 10);
-                
+                const numerator = part;
+
                 // Multiply by the base ratio
                 const finalNum = numerator * baseNum;
                 const finalDen = denominator * baseDen;
 
                 const reduced = U.reduce(finalNum, finalDen);
-                
+
                 const fieldIndex = index + 1; // Use 1-based index for fields
-                
+
                 $(`#chordInputNum_${fieldIndex}`).val(reduced[0]);
                 $(`#chordInputDen_${fieldIndex}`).val(reduced[1]);
             });
