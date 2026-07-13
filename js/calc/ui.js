@@ -1207,10 +1207,47 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
             
             // Populate the cells for this row
             $(rowPrefix + `NoteName_${columnIndex}`).text(displayNoteName);
-            $(rowPrefix + `EvoAscii_${columnIndex}`).text(evoAsciiDisplay);
-            $(rowPrefix + `RevoAscii_${columnIndex}`).text(revoAsciiDisplay);
-            $(rowPrefix + `EvoUni_${columnIndex}`).text(evoUniDisplay);
-            $(rowPrefix + `RevoUni_${columnIndex}`).text(revoUniDisplay);
+            
+            // For ASCII columns: note letter in default font, symbols in monospace font
+            if (evoAsciiDisplay && evoAsciiDisplay !== baseLetterOnly) {
+                const parts = evoAsciiDisplay.split(' ');
+                if (parts.length === 2) {
+                    $(rowPrefix + `EvoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${parts[0]}</span>&nbsp;<span style="font-family: 'Courier New', monospace;">${parts[1]}</span>`);
+                } else {
+                    $(rowPrefix + `EvoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${evoAsciiDisplay}</span>`);
+                }
+            } else {
+                // Solo letter: display in default font, overriding cell's monospace styling
+                $(rowPrefix + `EvoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${evoAsciiDisplay}</span>`);
+            }
+            
+            if (revoAsciiDisplay && revoAsciiDisplay !== baseLetterOnly) {
+                const parts = revoAsciiDisplay.split(' ');
+                if (parts.length === 2) {
+                    $(rowPrefix + `RevoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${parts[0]}</span>&nbsp;<span style="font-family: 'Courier New', monospace;">${parts[1]}</span>`);
+                } else {
+                    $(rowPrefix + `RevoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${revoAsciiDisplay}</span>`);
+                }
+            } else {
+                // Solo letter: display in default font, overriding cell's monospace styling
+                $(rowPrefix + `RevoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${revoAsciiDisplay}</span>`);
+            }
+            
+            // For Unicode columns: note letter in default font, symbol in Bravura font (1.35em size)
+            if (keyInfo.evo_unicode) {
+                $(rowPrefix + `EvoUni_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${baseLetterOnly}</span>&nbsp;<span style="font-family: 'Bravura'; font-size: 1.35em;">${keyInfo.evo_unicode}</span>`);
+            } else {
+                // No symbol: display solo letter in default font, overriding cell's Bravura styling
+                $(rowPrefix + `EvoUni_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${baseLetterOnly}</span>`);
+            }
+            
+            if (keyInfo.revo_unicode) {
+                $(rowPrefix + `RevoUni_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${baseLetterOnly}</span>&nbsp;<span style="font-family: 'Bravura'; font-size: 1.35em;">${keyInfo.revo_unicode}</span>`);
+            } else {
+                // No symbol: display solo letter in default font, overriding cell's Bravura styling
+                $(rowPrefix + `RevoUni_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${baseLetterOnly}</span>`);
+            }
+            
             $(rowPrefix + `Fifths_${columnIndex}`).text(variant.fifthsCount);
             $(rowPrefix + `Error_${columnIndex}`).text(variant.errorCents.toFixed(3));
         });
