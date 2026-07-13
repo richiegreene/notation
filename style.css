@@ -45,11 +45,12 @@
     margin: 0;
     padding: 0;
     font-family: "Inter", sans-serif;
-    font-size: 14px;
+    font-size: 11.2px;
 }
 
 html {
     min-height: 100%;
+    font-size: 80%;
     --bg-main: #000; /* background */
     --bg-header: rgba(30, 30, 30, 0.8); /* settings menu background */
     --bg-button: #5a5a5a; /* button background */
@@ -365,7 +366,7 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
 }
 
 #clearOutputButton {
-    font-size: 14px;
+    font-size: 11.2px;
     margin: 10px 0; 
     display: block;
     width: 100%; 
@@ -697,14 +698,14 @@ input.ratioIn {
 #playOutputButton {
     display: block;
     width: 100%;
-    font-size: 14px; /* Same as clearOutputButton */
+    font-size: 11.2px; /* Same as clearOutputButton */
     margin: 10px 0; /* Same as clearOutputButton */
 }
 
 #clearEdoOutputButton, #playEdoOutputButton {
     display: block;
     width: 100%;
-    font-size: 14px; /* Same as clearOutputButton */
+    font-size: 11.2px; /* Same as clearOutputButton */
     margin: 10px 0; /* Same as clearOutputButton */
 }
 
@@ -713,7 +714,7 @@ input.ratioIn {
 .save-csv-button {
     display: none; /* Hidden by default */
     width: 100%; /* Match play buttons */
-    font-size: 14px; /* Match play buttons */
+    font-size: 11.2px; /* Match play buttons */
     margin: 5px 0; /* Adjust margin to fit below play buttons */
 }
 
@@ -725,7 +726,7 @@ input.ratioIn {
 #playOutputButton, #playEdoOutputButton {
     display: block;
     width: 100%;
-    font-size: 14px;
+    font-size: 11.2px;
     margin: 10px 0;
 }
 
