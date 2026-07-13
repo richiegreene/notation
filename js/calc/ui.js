@@ -283,15 +283,14 @@ if ($("#paletteInput").prop("checked")){
 	} else if (refpc == 6){
 		ref12 = 11;
 	}
-	$("#refflat").click(function(c){ 
-		state.ref12acc = 1; 
-	})
-	$("#refsharp").click(function(c){ 
-		state.ref12acc = -1; 
-	})
-	$("#defaultRefAccidental").click(function(c){ 
-		state.ref12acc = 0; 
-	})
+	const refAcc = parseInt(getRefAccidental());
+	if (refAcc === 0) { // ♭
+		state.ref12acc = 1;
+	} else if (refAcc === 2) { // ♯
+		state.ref12acc = -1;
+	} else { // ♮
+		state.ref12acc = 0;
+	}
 	state.diat_to_refTempered = (C.diatonicTempered[pc] - C.diatonicTempered[refpc] + (100 * state.ref12acc) + 1200.0) % 1200.0;
 	state.cents_from_diatonic_tempered = ((((state.cents_toRef % 1200.0) + 1200.0) % 1200.0) - state.diat_to_refTempered + 1200.0) % 1200.0;
 	getBend();
