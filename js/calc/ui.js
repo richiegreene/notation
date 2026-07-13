@@ -3,6 +3,7 @@ import * as C from './constants.js';
 import * as U from './utils.js';
 import { state } from './state.js';
 import { calculateEdoNotation } from './edo.js'; // Import the new EDO notation function
+import { formatSpreadsheetOutput } from './spreadsheet-outputs.js';
 
 // Functions to retrieve input values 
 export function getRefOctave(){
@@ -1036,6 +1037,78 @@ export function generateChordRatioFields(numFields) {
         `;
         container.append(ratioHtml);
     }
+}
+
+const spreadsheetOutputConfig = {
+    medium: { containerSelector: '.athenian-output-container', prefix: 'athenian' },
+    high: { containerSelector: '.promethean-output-container', prefix: 'promethean' },
+    ultra: { containerSelector: '.herculean-output-container', prefix: 'herculean' },
+    extreme: { containerSelector: '.olympian-output-container', prefix: 'olympian' }
+};
+
+export function generateSpreadsheetOutputColumns(numColumns, precision) {
+    const config = spreadsheetOutputConfig[precision];
+    if (!config) {
+        return;
+    }
+
+    const container = $(config.containerSelector);
+    container.empty();
+
+    for (let i = 1; i <= numColumns; i++) {
+        const columnHtml = `
+            <div class="output-column spreadsheet-output-column">
+                <div class="spreadsheet-notation" id="${config.prefix}Notation_${i}"></div>
+                <div class="spreadsheet-meta-row">
+                    <div class="spreadsheet-meta" id="${config.prefix}Key_${i}"></div>
+                    <div class="spreadsheet-meta" id="${config.prefix}Steps_${i}"></div>
+                </div>
+                <div class="output-content">
+                    <div class="ratio-display-container">
+                        <div id="${config.prefix}Num_${i}" class="num" value="1"></div>
+                        <div id="${config.prefix}Den_${i}" class="den" value="1"></div>
+                    </div>
+                </div>
+                <div class="output-content">
+                    <div id="${config.prefix}Frequency_${i}" value="440"></div>
+                </div>
+                <div class="output-content">
+                    <div id="${config.prefix}JIgross_${i}" value="0">0</div>
+                </div>
+            </div>
+        `;
+        container.append(columnHtml);
+    }
+}
+
+export function updateSpreadsheetOutputDisplays(columnIndex, centsValue, outputFrequency, ratioNum, ratioDen) {
+    const precisions = Object.keys(spreadsheetOutputConfig);
+
+    precisions.forEach((precision) => {
+        const config = spreadsheetOutputConfig[precision];
+        const lookupValue = (() => {
+            if (!Number.isFinite(centsValue)) {
+                return 0;
+            }
+            const normalized = Math.abs(centsValue % 1200);
+            return (normalized / 1200) * 60;
+        })();
+
+        const entry = formatSpreadsheetOutput(lookupValue, precision);
+        const notation = entry.symbol || '';
+        const keyValue = entry.key ?? '';
+        const stepValue = entry.steps ?? '';
+
+        $(`#${config.prefix}Notation_${columnIndex}`).text(notation);
+        $(`#${config.prefix}Key_${columnIndex}`).text(keyValue !== '' ? `key ${keyValue}` : '');
+        $(`#${config.prefix}Steps_${columnIndex}`).text(stepValue !== '' ? `step ${stepValue}` : '');
+        $(`#${config.prefix}Num_${columnIndex}`).text(ratioNum ?? 1);
+        $(`#${config.prefix}Den_${columnIndex}`).text(ratioDen ?? 1);
+        $(`#${config.prefix}Frequency_${columnIndex}`).text((Number(outputFrequency) || 440).toFixed(state.precision) + 'Hz');
+
+        const centsText = Number.isFinite(state.cents_toRef) ? state.cents_toRef.toFixed(state.precision) : '0';
+        $(`#${config.prefix}JIgross_${columnIndex}`).text((state.cents_toRef > 0 ? '+' : '') + centsText + 'c');
+    });
 }
 
 export function generateEdoOutputColumns(numColumns) {

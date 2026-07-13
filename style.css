@@ -483,6 +483,8 @@ table.enharmonic-table > tr, td, th {
 .output-container {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .output-column {
@@ -500,6 +502,26 @@ table.enharmonic-table > tr, td, th {
 .notation-display-container {
     display: flex;
     align-items: center;
+}
+
+.spreadsheet-notation {
+    font-family: "HEJI2", "HEJI2Text", sans-serif;
+    font-size: 3rem;
+    min-height: 3.5rem;
+    text-align: center;
+}
+
+.spreadsheet-meta-row {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--bg-button);
+}
+
+.spreadsheet-output-column {
+    min-width: 110px;
 }
 
 .heji-dropdowns-centered {
@@ -635,6 +657,13 @@ input.ratioIn {
 
 #edo-output-item {
     grid-row: span 5; /* Adjust grid-row for EDO output */
+}
+
+#athenian-output-item,
+#promethean-output-item,
+#herculean-output-item,
+#olympian-output-item {
+    grid-row: span 3;
 }
 
 .settings-menu-item.collapsed-item {

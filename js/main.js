@@ -259,6 +259,10 @@ $(document).ready(function(){
 	sendA();
 	UI.getPC();
     UI.generateEdoOutputColumns(parseInt($("#chord-size-input").val())); // Generate initial EDO output columns
+    UI.generateSpreadsheetOutputColumns(parseInt($("#chord-size-input").val()), 'medium');
+    UI.generateSpreadsheetOutputColumns(parseInt($("#chord-size-input").val()), 'high');
+    UI.generateSpreadsheetOutputColumns(parseInt($("#chord-size-input").val()), 'ultra');
+    UI.generateSpreadsheetOutputColumns(parseInt($("#chord-size-input").val()), 'extreme');
     // Trigger the change event on edoApproximationInput to force a recalculation and update
     // of all EDO output columns upon page load, mimicking the user's successful interaction.
     $("#edoApproximationInput").trigger("change");
@@ -645,6 +649,10 @@ $(document).ready(function(){
         let numFields = $(this).val();
         UI.generateOutputColumns(numFields);
         UI.generateEdoOutputColumns(numFields); // Generate EDO output columns
+        UI.generateSpreadsheetOutputColumns(numFields, 'medium');
+        UI.generateSpreadsheetOutputColumns(numFields, 'high');
+        UI.generateSpreadsheetOutputColumns(numFields, 'ultra');
+        UI.generateSpreadsheetOutputColumns(numFields, 'extreme');
         UI.generateChordRatioFields(numFields);
         performCalculationsAndStopPlayback();
     });
