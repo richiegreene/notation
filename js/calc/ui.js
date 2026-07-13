@@ -1088,7 +1088,9 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
     }
 
     const hejiBaseNote = $(`#noteName_${columnIndex}`).text(); // Retrieve HEJI base note
-    const edoNotation = calculateEdoNotation(edoStep, edoQuantisation, ref12, getShowEnharmonics(), hejiBaseNote, getExcludeHalves());
+    const refpc = parseInt(getRefNote());
+    const ref12acc = state.ref12acc;
+    const edoNotation = calculateEdoNotation(edoStep, edoQuantisation, refpc, ref12acc, getShowEnharmonics(), hejiBaseNote, getExcludeHalves());
 
     // Get the base note name from the EDO notation string
     // Assuming the notation string will be like "C#", "D", "Ebb" etc.

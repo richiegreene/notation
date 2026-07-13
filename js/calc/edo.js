@@ -342,7 +342,7 @@ function printnote(note, halves, showEnharmonics, hejiBaseNote) {
     }
 }
 
-export function calculateEdoNotation(n, m, ref12, showEnharmonics = true, hejiBaseNote = "", excludeHalves = false) {
+export function calculateEdoNotation(n, m, refpc, ref12acc, showEnharmonics = true, hejiBaseNote = "", excludeHalves = false) {
     if (m < 7 && m !== 5) {
         return "n/a";
     }
@@ -364,29 +364,18 @@ export function calculateEdoNotation(n, m, ref12, showEnharmonics = true, hejiBa
 
     const notes = Array.from({ length: m }, () => new Note());
 
-    // Calculate the diatonic offset based on ref12
-    const refDiatonicOffset = getDiatonicOffsetFromRef12(ref12);
-
-    basicnotes(notes, m, p5, p2, penta, refDiatonicOffset);
+    // Generate the EDO scale starting with C at step 0 (C-centric)
+    basicnotes(notes, m, p5, p2, penta, 0);
     sharpnotes(notes, m, p5, p2, a1, ud, penta);
     flatnotes(notes, m, p5, p2, a1, ud, penta);
 
-    n = mod(n, m); // Ensure n is within bounds
+    // Number of fifths from C to the reference note
+    const fifths = (refpc - 1) - 7 * ref12acc;
+    // Step of the reference note relative to C
+    const stepRef_rel_C = fifths * p5;
+
+    // Shift the query step n to be relative to C
+    n = mod(n + stepRef_rel_C, m);
 
     return printnote(notes[n], halves, showEnharmonics, hejiBaseNote);
-}
-
-// Helper function to convert MIDI pitch class (ref12) to C-centric diatonic nominal (C=0, D=1, E=2, F=3, G=4, A=5, B=6)
-function getDiatonicOffsetFromRef12(ref12) {
-    const midiToNominalC0 = {
-        0: 0,  // C
-        2: 1,  // D
-        4: 2,  // E
-        5: 3,  // F
-        7: 4,  // G
-        9: 5,  // A
-        11: 6  // B
-    };
-    // Default to C (0) if not a diatonic MIDI pitch class, or if ref12 is undefined
-    return midiToNominalC0[ref12] !== undefined ? midiToNominalC0[ref12] : 0;
 }
