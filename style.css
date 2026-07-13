@@ -511,6 +511,87 @@ table.enharmonic-table > tr, td, th {
     text-align: center;
 }
 
+.sagittal-output-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--bg-button);
+    padding: 0;
+    min-width: 550px;
+}
+
+.sagittal-header-row,
+.sagittal-data-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+    border-bottom: 1px solid var(--bg-button);
+}
+
+.sagittal-header-row {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    color: #333;
+}
+
+.sagittal-cell {
+    padding: 0.35rem 0.25rem;
+    text-align: center;
+    font-size: 0.75rem;
+    border-right: 1px solid #ddd;
+    min-height: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.sagittal-cell:last-child {
+    border-right: none;
+}
+
+.sagittal-cell.header {
+    font-weight: bold;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.2rem;
+}
+
+.sagittal-cell.notename {
+    font-weight: bold;
+    font-size: 0.85rem;
+    min-width: 50px;
+    white-space: nowrap;
+}
+
+.sagittal-cell.evo-ascii,
+.sagittal-cell.revo-ascii {
+    font-family: monospace;
+    font-size: 0.65rem;
+    min-width: 55px;
+    white-space: pre-wrap;
+}
+
+.sagittal-cell.evo-unicode,
+.sagittal-cell.revo-unicode {
+    font-family: "Bravura", serif;
+    font-size: 1.1rem;
+    min-width: 55px;
+    white-space: pre-wrap;
+}
+
+.sagittal-cell.fifths {
+    min-width: 40px;
+    font-size: 0.7rem;
+}
+
+.sagittal-cell.error {
+    min-width: 55px;
+    font-size: 0.7rem;
+}
+
 .sagittal-meta-row {
     display: flex;
     gap: 0.5rem;
@@ -518,10 +599,6 @@ table.enharmonic-table > tr, td, th {
     margin-bottom: 0.25rem;
     font-size: 0.85rem;
     color: var(--bg-button);
-}
-
-.sagittal-output-column {
-    min-width: 110px;
 }
 
 .heji-dropdowns-centered {

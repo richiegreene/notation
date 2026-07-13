@@ -4,6 +4,7 @@ import * as U from './utils.js';
 import { state } from './state.js';
 import { calculateEdoNotation } from './edo.js'; // Import the new EDO notation function
 import { formatSagittalOutput } from './sagittal-outputs.js';
+import { sagittalKeyData } from './sagittal-key-data.js';
 
 // Functions to retrieve input values 
 export function getRefOctave(){
@@ -1058,22 +1059,43 @@ export function generateSagittalOutputColumns(numColumns, precision) {
     for (let i = 1; i <= numColumns; i++) {
         const columnHtml = `
             <div class="output-column sagittal-output-column">
-                <div class="sagittal-notation" id="${config.prefix}Notation_${i}"></div>
-                <div class="sagittal-meta-row">
-                    <div class="sagittal-meta" id="${config.prefix}Key_${i}"></div>
-                    <div class="sagittal-meta" id="${config.prefix}Steps_${i}"></div>
+                <!-- Header row with column labels -->
+                <div class="sagittal-header-row">
+                    <div class="sagittal-cell header">Note</div>
+                    <div class="sagittal-cell header">Evo ASCII</div>
+                    <div class="sagittal-cell header">Revo ASCII</div>
+                    <div class="sagittal-cell header">Evo Unicode</div>
+                    <div class="sagittal-cell header">Revo Unicode</div>
+                    <div class="sagittal-cell header">Fifths</div>
+                    <div class="sagittal-cell header">Error(¢)</div>
                 </div>
-                <div class="output-content">
-                    <div class="ratio-display-container">
-                        <div id="${config.prefix}Num_${i}" class="num" value="1"></div>
-                        <div id="${config.prefix}Den_${i}" class="den" value="1"></div>
-                    </div>
+                <!-- Data rows (3 enharmonic rows per column) -->
+                <div class="sagittal-data-row" id="${config.prefix}Row1_${i}">
+                    <div class="sagittal-cell notename" id="${config.prefix}R1NoteName_${i}"></div>
+                    <div class="sagittal-cell evo-ascii" id="${config.prefix}R1EvoAscii_${i}"></div>
+                    <div class="sagittal-cell revo-ascii" id="${config.prefix}R1RevoAscii_${i}"></div>
+                    <div class="sagittal-cell evo-unicode" id="${config.prefix}R1EvoUni_${i}"></div>
+                    <div class="sagittal-cell revo-unicode" id="${config.prefix}R1RevoUni_${i}"></div>
+                    <div class="sagittal-cell fifths" id="${config.prefix}R1Fifths_${i}"></div>
+                    <div class="sagittal-cell error" id="${config.prefix}R1Error_${i}"></div>
                 </div>
-                <div class="output-content">
-                    <div id="${config.prefix}Frequency_${i}" value="440"></div>
+                <div class="sagittal-data-row" id="${config.prefix}Row2_${i}">
+                    <div class="sagittal-cell notename" id="${config.prefix}R2NoteName_${i}"></div>
+                    <div class="sagittal-cell evo-ascii" id="${config.prefix}R2EvoAscii_${i}"></div>
+                    <div class="sagittal-cell revo-ascii" id="${config.prefix}R2RevoAscii_${i}"></div>
+                    <div class="sagittal-cell evo-unicode" id="${config.prefix}R2EvoUni_${i}"></div>
+                    <div class="sagittal-cell revo-unicode" id="${config.prefix}R2RevoUni_${i}"></div>
+                    <div class="sagittal-cell fifths" id="${config.prefix}R2Fifths_${i}"></div>
+                    <div class="sagittal-cell error" id="${config.prefix}R2Error_${i}"></div>
                 </div>
-                <div class="output-content">
-                    <div id="${config.prefix}JIgross_${i}" value="0">0</div>
+                <div class="sagittal-data-row" id="${config.prefix}Row3_${i}">
+                    <div class="sagittal-cell notename" id="${config.prefix}R3NoteName_${i}"></div>
+                    <div class="sagittal-cell evo-ascii" id="${config.prefix}R3EvoAscii_${i}"></div>
+                    <div class="sagittal-cell revo-ascii" id="${config.prefix}R3RevoAscii_${i}"></div>
+                    <div class="sagittal-cell evo-unicode" id="${config.prefix}R3EvoUni_${i}"></div>
+                    <div class="sagittal-cell revo-unicode" id="${config.prefix}R3RevoUni_${i}"></div>
+                    <div class="sagittal-cell fifths" id="${config.prefix}R3Fifths_${i}"></div>
+                    <div class="sagittal-cell error" id="${config.prefix}R3Error_${i}"></div>
                 </div>
             </div>
         `;
@@ -1081,33 +1103,117 @@ export function generateSagittalOutputColumns(numColumns, precision) {
     }
 }
 
+// Helper function: Get note name from accidental type
+function getNoteName(accidental) {
+    // Map accidental to note name
+    const noteMap = {
+        '': 'C',      // Natural
+        'bb': 'D',    // Double flat
+        '#': 'B'      // Sharp
+    };
+    return noteMap[accidental] || 'C';
+}
+
+// Helper function: Get accidental display string
+function getAccidentalDisplay(accidental) {
+    const accidentalMap = {
+        '': '',
+        'bb': 'bb',
+        '#': '#'
+    };
+    return accidentalMap[accidental] || '';
+}
+
+// Helper function: Generate three enharmonic key values
+// The spreadsheet uses exact key offsets: -1956 for flat enharmonic, +956 for sharp
+// These are NOT derived from cents, but are fixed values from the Sagittal system
+function generateEnharmonicKeys(baseKey) {
+    return [
+        { 
+            key: baseKey, 
+            accidental: '', 
+            fifthsCount: 0, 
+            errorCents: 0,
+            noteName: 'C'
+        },
+        { 
+            key: baseKey - 1956,  // Fixed offset for double-flat enharmonic
+            accidental: 'bb', 
+            fifthsCount: -12, 
+            errorCents: 1.954,    // Standard error for this enharmonic
+            noteName: 'D'
+        },
+        { 
+            key: baseKey + 956,   // Fixed offset for sharp enharmonic
+            accidental: '#', 
+            fifthsCount: 12, 
+            errorCents: 1.954,    // Standard error for this enharmonic
+            noteName: 'B'
+        }
+    ];
+}
+
 export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFrequency, ratioNum, ratioDen) {
+    // centsValue: the JI interval in cents (1200*log2(num/den)), NOT deviation from reference pitch
+    // This ensures display updates for different intervals independent of reference pitch setting
     const precisions = Object.keys(sagittalOutputConfig);
 
     precisions.forEach((precision) => {
         const config = sagittalOutputConfig[precision];
-        const lookupValue = (() => {
-            if (!Number.isFinite(centsValue)) {
-                return 0;
+        
+        // Calculate the base entry for this precision level
+        const baseEntry = formatSagittalOutput(Math.abs(centsValue), precision);
+        const baseKey = baseEntry.key !== undefined ? parseInt(baseEntry.key) : 0;
+        
+        // Generate three enharmonic variants with correct key offsets
+        const enharmonicVariants = generateEnharmonicKeys(baseKey);
+        
+        // Populate each of the three rows
+        enharmonicVariants.forEach((variant, rowIndex) => {
+            const rowNum = rowIndex + 1; // Rows are 1-indexed in the UI
+            const rowPrefix = `#${config.prefix}R${rowNum}`;
+            
+            // Look up Evo/Revo variants from key data
+            const keyString = String(variant.key);
+            const keyInfo = sagittalKeyData[keyString] || {
+                evo_ascii: '',
+                revo_ascii: '',
+                evo_unicode: '',
+                revo_unicode: '',
+            };
+            
+            // Build display note name with accidental
+            const accDisplay = getAccidentalDisplay(variant.accidental);
+            const displayNoteName = `${variant.noteName}${accDisplay}`;
+            const baseLetterOnly = variant.noteName;  // Just the letter without accidental
+            
+            // Format notation display
+            // Note column: Full name with accidental (C, Dbb, B#)
+            // ASCII/Unicode columns: Base letter only + space + notation (C, D /|bb, B \!#)
+            let evoAsciiDisplay, revoAsciiDisplay;
+            if (rowNum === 1) {
+                // Row 1: Just show the base letter
+                evoAsciiDisplay = baseLetterOnly;
+                revoAsciiDisplay = baseLetterOnly;
+            } else {
+                // Rows 2-3: Show base letter + space + notation
+                evoAsciiDisplay = keyInfo.evo_ascii ? `${baseLetterOnly} ${keyInfo.evo_ascii}` : baseLetterOnly;
+                revoAsciiDisplay = keyInfo.revo_ascii ? `${baseLetterOnly} ${keyInfo.revo_ascii}` : baseLetterOnly;
             }
-            const normalized = Math.abs(centsValue % 1200);
-            return (normalized / 1200) * 60;
-        })();
-
-        const entry = formatSagittalOutput(lookupValue, precision);
-        const notation = entry.symbol || '';
-        const keyValue = entry.key ?? '';
-        const stepValue = entry.steps ?? '';
-
-        $(`#${config.prefix}Notation_${columnIndex}`).text(notation);
-        $(`#${config.prefix}Key_${columnIndex}`).text(keyValue !== '' ? `key ${keyValue}` : '');
-        $(`#${config.prefix}Steps_${columnIndex}`).text(stepValue !== '' ? `step ${stepValue}` : '');
-        $(`#${config.prefix}Num_${columnIndex}`).text(ratioNum ?? 1);
-        $(`#${config.prefix}Den_${columnIndex}`).text(ratioDen ?? 1);
-        $(`#${config.prefix}Frequency_${columnIndex}`).text((Number(outputFrequency) || 440).toFixed(state.precision) + 'Hz');
-
-        const centsText = Number.isFinite(state.cents_toRef) ? state.cents_toRef.toFixed(state.precision) : '0';
-        $(`#${config.prefix}JIgross_${columnIndex}`).text((state.cents_toRef > 0 ? '+' : '') + centsText + 'c');
+            
+            // For Unicode columns, also use base letter only
+            const evoUniDisplay = keyInfo.evo_unicode ? `${baseLetterOnly} ${keyInfo.evo_unicode}` : baseLetterOnly;
+            const revoUniDisplay = keyInfo.revo_unicode ? `${baseLetterOnly} ${keyInfo.revo_unicode}` : baseLetterOnly;
+            
+            // Populate the cells for this row
+            $(rowPrefix + `NoteName_${columnIndex}`).text(displayNoteName);
+            $(rowPrefix + `EvoAscii_${columnIndex}`).text(evoAsciiDisplay);
+            $(rowPrefix + `RevoAscii_${columnIndex}`).text(revoAsciiDisplay);
+            $(rowPrefix + `EvoUni_${columnIndex}`).text(evoUniDisplay);
+            $(rowPrefix + `RevoUni_${columnIndex}`).text(revoUniDisplay);
+            $(rowPrefix + `Fifths_${columnIndex}`).text(variant.fifthsCount);
+            $(rowPrefix + `Error_${columnIndex}`).text(variant.errorCents.toFixed(3));
+        });
     });
 }
 

@@ -52,7 +52,10 @@ function performCalculationsForColumn(columnIndex, inputMonzoAbsolute) {
     getOutputFrequency(columnIndex);
     getCentDeviation(columnIndex);
     UI.updateEdoNotationDisplay(columnIndex, state.jiCents, state.edoQuantisation, $("#edoNormalize").prop("checked"), ref12, state.cents_toRef); // Pass ref12 and cents_toRef
-    UI.updateSagittalOutputDisplays(columnIndex, state.cents_toRef, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue);
+    // NOTE: Pass state.jiCents (actual JI interval in cents) to sagittal display, NOT state.cents_toRef
+    // state.cents_toRef is deviation from reference pitch (0 at 1/1), which causes display to always show default
+    // state.jiCents is the actual interval: 1200*log2(num/den), which updates correctly for any input
+    UI.updateSagittalOutputDisplays(columnIndex, state.jiCents, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue);
     
     // Only update the enharmonic search box for the first column to avoid confusion
     if (columnIndex === 1) {
