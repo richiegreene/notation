@@ -690,7 +690,7 @@ input.ratioIn {
     background-color: #2a2a2a;
     border-radius: 4px;
 }
-#playOutputButton.playing-active {
+#playOutputButton.playing-active, #playEdoOutputButton.playing-active {
     background-color: var(--bg-button-selected);
     border-color: var(--bg-button-selected);
 }
