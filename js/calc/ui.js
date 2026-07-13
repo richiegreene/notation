@@ -3,7 +3,7 @@ import * as C from './constants.js';
 import * as U from './utils.js';
 import { state } from './state.js';
 import { calculateEdoNotation } from './edo.js'; // Import the new EDO notation function
-import { formatSpreadsheetOutput } from './spreadsheet-outputs.js';
+import { formatSagittalOutput } from './sagittal-outputs.js';
 
 // Functions to retrieve input values 
 export function getRefOctave(){
@@ -1039,15 +1039,15 @@ export function generateChordRatioFields(numFields) {
     }
 }
 
-const spreadsheetOutputConfig = {
+const sagittalOutputConfig = {
     medium: { containerSelector: '.athenian-output-container', prefix: 'athenian' },
     high: { containerSelector: '.promethean-output-container', prefix: 'promethean' },
     ultra: { containerSelector: '.herculean-output-container', prefix: 'herculean' },
     extreme: { containerSelector: '.olympian-output-container', prefix: 'olympian' }
 };
 
-export function generateSpreadsheetOutputColumns(numColumns, precision) {
-    const config = spreadsheetOutputConfig[precision];
+export function generateSagittalOutputColumns(numColumns, precision) {
+    const config = sagittalOutputConfig[precision];
     if (!config) {
         return;
     }
@@ -1057,11 +1057,11 @@ export function generateSpreadsheetOutputColumns(numColumns, precision) {
 
     for (let i = 1; i <= numColumns; i++) {
         const columnHtml = `
-            <div class="output-column spreadsheet-output-column">
-                <div class="spreadsheet-notation" id="${config.prefix}Notation_${i}"></div>
-                <div class="spreadsheet-meta-row">
-                    <div class="spreadsheet-meta" id="${config.prefix}Key_${i}"></div>
-                    <div class="spreadsheet-meta" id="${config.prefix}Steps_${i}"></div>
+            <div class="output-column sagittal-output-column">
+                <div class="sagittal-notation" id="${config.prefix}Notation_${i}"></div>
+                <div class="sagittal-meta-row">
+                    <div class="sagittal-meta" id="${config.prefix}Key_${i}"></div>
+                    <div class="sagittal-meta" id="${config.prefix}Steps_${i}"></div>
                 </div>
                 <div class="output-content">
                     <div class="ratio-display-container">
@@ -1081,11 +1081,11 @@ export function generateSpreadsheetOutputColumns(numColumns, precision) {
     }
 }
 
-export function updateSpreadsheetOutputDisplays(columnIndex, centsValue, outputFrequency, ratioNum, ratioDen) {
-    const precisions = Object.keys(spreadsheetOutputConfig);
+export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFrequency, ratioNum, ratioDen) {
+    const precisions = Object.keys(sagittalOutputConfig);
 
     precisions.forEach((precision) => {
-        const config = spreadsheetOutputConfig[precision];
+        const config = sagittalOutputConfig[precision];
         const lookupValue = (() => {
             if (!Number.isFinite(centsValue)) {
                 return 0;
@@ -1094,7 +1094,7 @@ export function updateSpreadsheetOutputDisplays(columnIndex, centsValue, outputF
             return (normalized / 1200) * 60;
         })();
 
-        const entry = formatSpreadsheetOutput(lookupValue, precision);
+        const entry = formatSagittalOutput(lookupValue, precision);
         const notation = entry.symbol || '';
         const keyValue = entry.key ?? '';
         const stepValue = entry.steps ?? '';

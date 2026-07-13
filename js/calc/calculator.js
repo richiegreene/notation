@@ -52,7 +52,7 @@ function performCalculationsForColumn(columnIndex, inputMonzoAbsolute) {
     getOutputFrequency(columnIndex);
     getCentDeviation(columnIndex);
     UI.updateEdoNotationDisplay(columnIndex, state.jiCents, state.edoQuantisation, $("#edoNormalize").prop("checked"), ref12, state.cents_toRef); // Pass ref12 and cents_toRef
-    UI.updateSpreadsheetOutputDisplays(columnIndex, state.cents_toRef, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue);
+    UI.updateSagittalOutputDisplays(columnIndex, state.cents_toRef, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue);
     
     // Only update the enharmonic search box for the first column to avoid confusion
     if (columnIndex === 1) {

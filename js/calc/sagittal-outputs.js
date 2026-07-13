@@ -1,11 +1,11 @@
-import { spreadsheetBoundaries } from './spreadsheet-boundaries.js';
+import { sagittalBoundaries } from './sagittal-boundaries.js';
 
 function isBoundaryEntry(value) {
     return value && typeof value === 'object' && !Array.isArray(value);
 }
 
-export function getSpreadsheetBoundaryEntry(steps, precision = 'medium') {
-    const entries = spreadsheetBoundaries[precision] || [];
+export function getSagittalBoundaryEntry(steps, precision = 'medium') {
+    const entries = sagittalBoundaries[precision] || [];
     if (!Array.isArray(entries) || entries.length === 0) {
         return null;
     }
@@ -40,8 +40,8 @@ export function getSpreadsheetBoundaryEntry(steps, precision = 'medium') {
     return best;
 }
 
-export function formatSpreadsheetOutput(steps, precision = 'medium') {
-    const entry = getSpreadsheetBoundaryEntry(steps, precision);
+export function formatSagittalOutput(steps, precision = 'medium') {
+    const entry = getSagittalBoundaryEntry(steps, precision);
     if (!entry) {
         return { symbol: '', key: '', steps: steps, lowerBound: null };
     }

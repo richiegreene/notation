@@ -1,4 +1,4 @@
-export const spreadsheetBoundaries = {
+export const sagittalBoundaries = {
   medium: [
     { steps: 'Steps', lowerBound: 'Lower Bound', key: 'Key', symbol: 'Symbol' },
     { steps: 0.0, lowerBound: -0.21078802112060538, key: 0, symbol: ' ' },
