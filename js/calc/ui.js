@@ -1124,31 +1124,159 @@ function getAccidentalDisplay(accidental) {
     return accidentalMap[accidental] || '';
 }
 
-// Helper function: Generate three enharmonic key values
-// Calculates keys independently for each precision level
+// Helper function: Generate three enharmonic spellings dynamically based on interval
+// Finds the 3 closest enharmonic spellings within range for any interval
 function generateEnharmonicKeysForPrecision(centsValue, precision) {
-    // Use full keys (boundary key + accidental offset) for enharmonic variants per precision level
-    // These map directly to sagittal-key-data entries with complete symbols+accidentals
+    // Normalize to octave (0-1200)
+    let normalizedCents = centsValue % 1200;
+    if (normalizedCents < 0) normalizedCents += 1200;
+    
+    // Pythagorean nominal pitches in cents from C
+    const nominalsCents = {
+        'C': 0,
+        'D': 203.91,
+        'E': 407.82,
+        'F': 498.04,
+        'G': 701.96,
+        'A': 905.87,
+        'B': 1109.78
+    };
+    
+    // Accidental offsets in cents
+    const accidentalOffsets = {
+        '': 0,          // natural
+        '#': 100,       // sharp (semitone)
+        'x': 200,       // double sharp
+        'b': -100,      // flat
+        'bb': -200,     // double flat
+        'bbb': -300,    // triple flat
+    };
+    
+    // Precision-specific range threshold (in cents)
+    const thresholds = {
+        'medium': 5.4135717170339,    // apotome cents
+        'high': 2.4188299161215,
+        'ultra': 1.960,               // Herculean apotome
+        'extreme': 0.488              // Olympian apotome
+    };
+    
+    const rangeThreshold = thresholds[precision] * 2;  // Allow ±2 apotomes
+    
+    // Generate all possible note+accidental combinations
+    const candidates = [];
+    for (const [note, nominalCents] of Object.entries(nominalsCents)) {
+        for (const [acc, accCents] of Object.entries(accidentalOffsets)) {
+            const totalCents = nominalCents + accCents;
+            const distance = Math.abs(normalizedCents - totalCents);
+            
+            // If within range, add to candidates
+            if (distance <= rangeThreshold) {
+                candidates.push({
+                    noteName: note,
+                    accidental: acc,
+                    nominalCents: totalCents,
+                    distance: distance,
+                    fifthsCount: getFifthsCount(note, acc)
+                });
+            }
+        }
+    }
+    
+    // Sort by distance and take top 3
+    candidates.sort((a, b) => a.distance - b.distance);
+    const top3 = candidates.slice(0, 3);
+    
+    // If less than 3 candidates found, fall back to hardcoded set
+    if (top3.length < 3) {
+        return generateEnharmonicKeysForPrecisionFallback(precision);
+    }
+    
+    // Convert to key format and lookup errors
+    return top3.map(candidate => {
+        const key = getFullKeyForNoteAccidental(candidate.noteName, candidate.accidental, precision);
+        return {
+            key: key,
+            accidental: candidate.accidental,
+            fifthsCount: candidate.fifthsCount,
+            errorCents: calculateErrorForKey(key, precision),
+            noteName: candidate.noteName
+        };
+    });
+}
+
+// Helper: Convert note+accidental to full key
+function getFullKeyForNoteAccidental(noteName, accidental, precision) {
+    // Boundary keys per precision for natural notes
+    const boundaryKeys = {
+        'medium': { 'C': 0, 'D': 44, 'E': 0, 'F': 0, 'G': 0, 'A': 0, 'B': -44 },
+        'high': { 'C': 0, 'D': 52, 'E': 0, 'F': 0, 'G': 0, 'A': 0, 'B': -52 },
+        'ultra': { 'C': 0, 'D': 48, 'E': 0, 'F': 0, 'G': 0, 'A': 0, 'B': -48 },
+        'extreme': { 'C': 0, 'D': 48, 'E': 0, 'F': 0, 'G': 0, 'A': 0, 'B': -48 }
+    };
+    
+    // Accidental offsets
+    const accidentalKeyOffsets = {
+        '': 0,
+        '#': 1000,
+        'x': 2000,
+        'b': -1000,
+        'bb': -2000,
+        'bbb': -3000,
+    };
+    
+    const boundaryKey = boundaryKeys[precision][noteName] || 0;
+    const accOffset = accidentalKeyOffsets[accidental] || 0;
+    return boundaryKey + accOffset;
+}
+
+// Helper: Get fifths count for enharmonic spelling
+function getFifthsCount(noteName, accidental) {
+    const fifthsBase = {
+        'C': 0,
+        'G': 1,
+        'D': 2,
+        'A': 3,
+        'E': 4,
+        'B': 5,
+        'F': -1  // F# is 6 fifths up, F is 1 fifth down
+    };
+    
+    const accidentalFifths = {
+        '': 0,
+        '#': 7,
+        'x': 14,
+        'b': -7,
+        'bb': -14,
+        'bbb': -21,
+    };
+    
+    const baseFifths = fifthsBase[noteName] || 0;
+    const accFifths = accidentalFifths[accidental] || 0;
+    return baseFifths + accFifths;
+}
+
+// Fallback: Use hardcoded enharmonics if no candidates found
+function generateEnharmonicKeysForPrecisionFallback(precision) {
     const enharmonicKeys = {
         medium: { 
             natural: { key: 0, accidental: '', fifthsCount: 0, noteName: 'C' },
-            flat: { key: -1956, accidental: 'bb', fifthsCount: -12, noteName: 'D' },      // key 44 + offset(-2000)
-            sharp: { key: 956, accidental: '#', fifthsCount: 12, noteName: 'B' }         // key -44 + offset(1000)
+            flat: { key: -1956, accidental: 'bb', fifthsCount: -14, noteName: 'D' },
+            sharp: { key: 956, accidental: '#', fifthsCount: 12, noteName: 'B' }
         },
         high: { 
             natural: { key: 0, accidental: '', fifthsCount: 0, noteName: 'C' },
-            flat: { key: -1948, accidental: 'bb', fifthsCount: -12, noteName: 'D' },     // key 52 + offset(-2000)
-            sharp: { key: 948, accidental: '#', fifthsCount: 12, noteName: 'B' }        // key -52 + offset(1000)
+            flat: { key: -1948, accidental: 'bb', fifthsCount: -14, noteName: 'D' },
+            sharp: { key: 948, accidental: '#', fifthsCount: 12, noteName: 'B' }
         },
         ultra: { 
             natural: { key: 0, accidental: '', fifthsCount: 0, noteName: 'C' },
-            flat: { key: -1952, accidental: 'bb', fifthsCount: -12, noteName: 'D' },     // key 48 + offset(-2000)
-            sharp: { key: 952, accidental: '#', fifthsCount: 12, noteName: 'B' }        // key -48 + offset(1000)
+            flat: { key: -1952, accidental: 'bb', fifthsCount: -14, noteName: 'D' },
+            sharp: { key: 952, accidental: '#', fifthsCount: 12, noteName: 'B' }
         },
         extreme: { 
             natural: { key: 0, accidental: '', fifthsCount: 0, noteName: 'C' },
-            flat: { key: -1952, accidental: 'bb', fifthsCount: -12, noteName: 'D' },     // key 48 + offset(-2000)
-            sharp: { key: 952, accidental: '#', fifthsCount: 12, noteName: 'B' }        // key -48 + offset(1000)
+            flat: { key: -1952, accidental: 'bb', fifthsCount: -14, noteName: 'D' },
+            sharp: { key: 952, accidental: '#', fifthsCount: 12, noteName: 'B' }
         }
     };
     
