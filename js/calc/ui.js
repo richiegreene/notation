@@ -1372,7 +1372,11 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
             const evoUni    = variant.evo_unicode    || '';
             const revoUni   = variant.revo_unicode   || '';
             const fifths    = variant.fifthsAbove1over1 !== '' ? variant.fifthsAbove1over1 : '';
-            const error     = (typeof variant.error === 'number') ? variant.error.toFixed(3) : '0.000';
+            // Signed like the EDO cent-deviation display: positive means the true pitch is
+            // sharp of the notated Sagittal symbol, negative means it's flat.
+            // Rounded to the app-wide "Display" precision setting (0-6 decimal places).
+            const errorNum  = (typeof variant.error === 'number') ? variant.error : 0;
+            const error     = errorNum.toFixed(state.precision);
 
             // Note Name cell: letter + accidental (e.g. "E", "Eb", "C#")
             const accidentalDisplay = sharpFlat === '#'  ? '♯'

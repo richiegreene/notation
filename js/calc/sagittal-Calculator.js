@@ -41,7 +41,7 @@
  *   key     = VLOOKUP(alteration, BoundariesTable, approximate)
  *   symbol  = VLOOKUP(key, Key sheet)
  *   default = VLOOKUP(abs(key), Commas sheet)   [negated if key<0]
- *   error   = ABS(alteration - default)
+ *   error   = alteration - default   (signed; spreadsheet uses ABS(...), see note below)
  *
  * Col AB – fifthsAbove1over1
  *   = exponent3 + (FIND(accidental+letter+spaces, $A$1) - 46)/3 - ref1over1Fifths
@@ -195,10 +195,13 @@ function computeNominalRow(inputCents, nominal, ref1over1Fifths, exponent3) {
             if (key !== null && key !== "") {
                 fullKey      = key + colE;
                 defaultValue = getCommaCents(key);
+                // NB: deviates from the spreadsheet's ABS(alteration - default) — sign is
+                // kept so the UI can show direction (true pitch sharp/flat of the notated
+                // symbol), the same convention used by the EDO cent-deviation display.
                 error        = colB === "" ? "" :
                                colG === "" ? 0  :
                                defaultValue === "" ? colG :
-                               Math.abs(colG - defaultValue);
+                               colG - defaultValue;
             }
         }
 
