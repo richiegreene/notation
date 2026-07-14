@@ -1125,32 +1125,40 @@ function getAccidentalDisplay(accidental) {
 }
 
 // Helper function: Generate three enharmonic key values
-// The spreadsheet uses exact key offsets: -1956 for flat enharmonic, +956 for sharp
-// These are NOT derived from cents, but are fixed values from the Sagittal system
-function generateEnharmonicKeys(baseKey) {
+// Calculates keys independently for each precision level
+function generateEnharmonicKeysForPrecision(centsValue, precision) {
+    // Use fixed keys for enharmonic variants per precision level
+    // These are pre-calculated keys from the spreadsheet
+    const enharmonicKeys = {
+        medium: { natural: 0, flat: 44, sharp: -44 },
+        high: { natural: 0, flat: 52, sharp: -52 },
+        ultra: { natural: 0, flat: 48, sharp: -48 },
+        extreme: { natural: 0, flat: 48, sharp: -48 }
+    };
+    
+    const keys = enharmonicKeys[precision];
+    
     return [
-        { 
-            key: baseKey, 
-            accidental: '', 
-            fifthsCount: 0, 
-            errorCents: 0,
-            noteName: 'C'
-        },
-        { 
-            key: baseKey - 1956,  // Fixed offset for double-flat enharmonic
-            accidental: 'bb', 
-            fifthsCount: -12, 
-            errorCents: 1.954,    // Standard error for this enharmonic
-            noteName: 'D'
-        },
-        { 
-            key: baseKey + 956,   // Fixed offset for sharp enharmonic
-            accidental: '#', 
-            fifthsCount: 12, 
-            errorCents: 1.954,    // Standard error for this enharmonic
-            noteName: 'B'
-        }
+        { key: keys.natural, accidental: '', fifthsCount: 0, errorCents: calculateErrorForKey(keys.natural, precision), noteName: 'C' },
+        { key: keys.flat, accidental: 'bb', fifthsCount: -12, errorCents: calculateErrorForKey(keys.flat, precision), noteName: 'D' },
+        { key: keys.sharp, accidental: '#', fifthsCount: 12, errorCents: calculateErrorForKey(keys.sharp, precision), noteName: 'B' }
     ];
+}
+
+// Helper function to calculate error for a given key and precision level
+function calculateErrorForKey(key, precision) {
+    // Map of key values to error cents for each precision level
+    // These are from the spreadsheet: errors for standard enharmonic spellings
+    const errorMap = {
+        'medium': { '44': 1.954, '-44': 1.954, '0': 0 },      // Athenian
+        'high': { '52': 1.424, '-52': 1.424, '0': 0 },        // Promethean
+        'ultra': { '48': 0, '-48': 0, '0': 0 },               // Herculean
+        'extreme': { '48': 0, '-48': 0, '0': 0 }              // Olympian
+    };
+    
+    const keyStr = String(key);
+    const precisionErrors = errorMap[precision] || {};
+    return parseFloat(precisionErrors[keyStr] || 0);
 }
 
 export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFrequency, ratioNum, ratioDen) {
@@ -1161,12 +1169,8 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
     precisions.forEach((precision) => {
         const config = sagittalOutputConfig[precision];
         
-        // Calculate the base entry for this precision level
-        const baseEntry = formatSagittalOutput(Math.abs(centsValue), precision);
-        const baseKey = baseEntry.key !== undefined ? parseInt(baseEntry.key) : 0;
-        
-        // Generate three enharmonic variants with correct key offsets
-        const enharmonicVariants = generateEnharmonicKeys(baseKey);
+        // Generate three enharmonic variants, calculating keys independently for each precision level
+        const enharmonicVariants = generateEnharmonicKeysForPrecision(centsValue, precision);
         
         // Populate each of the three rows
         enharmonicVariants.forEach((variant, rowIndex) => {
@@ -1189,16 +1193,18 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
             
             // Format notation display
             // Note column: Full name with accidental (C, Dbb, B#)
-            // ASCII/Unicode columns: Base letter only + space + notation (C, D /|bb, B \!#)
+            // ASCII/Unicode columns: Base letter only + space + notation + accidental (C, D /|bb, B )\!#)
             let evoAsciiDisplay, revoAsciiDisplay;
             if (rowNum === 1) {
                 // Row 1: Just show the base letter
                 evoAsciiDisplay = baseLetterOnly;
                 revoAsciiDisplay = baseLetterOnly;
             } else {
-                // Rows 2-3: Show base letter + space + notation
-                evoAsciiDisplay = keyInfo.evo_ascii ? `${baseLetterOnly} ${keyInfo.evo_ascii}` : baseLetterOnly;
-                revoAsciiDisplay = keyInfo.revo_ascii ? `${baseLetterOnly} ${keyInfo.revo_ascii}` : baseLetterOnly;
+                // Rows 2-3: Show base letter + space + notation + accidental
+                const evoWithAccidental = keyInfo.evo_ascii ? `${keyInfo.evo_ascii}${accDisplay}` : '';
+                const revoWithAccidental = keyInfo.revo_ascii ? `${keyInfo.revo_ascii}${accDisplay}` : '';
+                evoAsciiDisplay = evoWithAccidental ? `${baseLetterOnly} ${evoWithAccidental}` : baseLetterOnly;
+                revoAsciiDisplay = revoWithAccidental ? `${baseLetterOnly} ${revoWithAccidental}` : baseLetterOnly;
             }
             
             // For Unicode columns, also use base letter only

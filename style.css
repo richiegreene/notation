@@ -559,11 +559,12 @@ table.enharmonic-table > tr, td, th {
     padding: 0.4rem 0.2rem;
 }
 
+.sagittal-header-row .sagittal-cell:first-child {
+    display: none;
+}
+
 .sagittal-cell.notename {
-    font-weight: bold;
-    font-size: 0.85rem;
-    min-width: 50px;
-    white-space: nowrap;
+    display: none;
 }
 
 .sagittal-cell.evo-ascii,
