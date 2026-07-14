@@ -1127,33 +1127,61 @@ function getAccidentalDisplay(accidental) {
 // Helper function: Generate three enharmonic key values
 // Calculates keys independently for each precision level
 function generateEnharmonicKeysForPrecision(centsValue, precision) {
-    // Use fixed keys for enharmonic variants per precision level
-    // These are pre-calculated keys from the spreadsheet
+    // Use full keys (boundary key + accidental offset) for enharmonic variants per precision level
+    // These map directly to sagittal-key-data entries with complete symbols+accidentals
     const enharmonicKeys = {
-        medium: { natural: 0, flat: 44, sharp: -44 },
-        high: { natural: 0, flat: 52, sharp: -52 },
-        ultra: { natural: 0, flat: 48, sharp: -48 },
-        extreme: { natural: 0, flat: 48, sharp: -48 }
+        medium: { 
+            natural: { key: 0, accidental: '', fifthsCount: 0, noteName: 'C' },
+            flat: { key: -1956, accidental: 'bb', fifthsCount: -12, noteName: 'D' },      // key 44 + offset(-2000)
+            sharp: { key: 956, accidental: '#', fifthsCount: 12, noteName: 'B' }         // key -44 + offset(1000)
+        },
+        high: { 
+            natural: { key: 0, accidental: '', fifthsCount: 0, noteName: 'C' },
+            flat: { key: -1948, accidental: 'bb', fifthsCount: -12, noteName: 'D' },     // key 52 + offset(-2000)
+            sharp: { key: 948, accidental: '#', fifthsCount: 12, noteName: 'B' }        // key -52 + offset(1000)
+        },
+        ultra: { 
+            natural: { key: 0, accidental: '', fifthsCount: 0, noteName: 'C' },
+            flat: { key: -1952, accidental: 'bb', fifthsCount: -12, noteName: 'D' },     // key 48 + offset(-2000)
+            sharp: { key: 952, accidental: '#', fifthsCount: 12, noteName: 'B' }        // key -48 + offset(1000)
+        },
+        extreme: { 
+            natural: { key: 0, accidental: '', fifthsCount: 0, noteName: 'C' },
+            flat: { key: -1952, accidental: 'bb', fifthsCount: -12, noteName: 'D' },     // key 48 + offset(-2000)
+            sharp: { key: 952, accidental: '#', fifthsCount: 12, noteName: 'B' }        // key -48 + offset(1000)
+        }
     };
     
-    const keys = enharmonicKeys[precision];
+    const variants = enharmonicKeys[precision];
     
     return [
-        { key: keys.natural, accidental: '', fifthsCount: 0, errorCents: calculateErrorForKey(keys.natural, precision), noteName: 'C' },
-        { key: keys.flat, accidental: 'bb', fifthsCount: -12, errorCents: calculateErrorForKey(keys.flat, precision), noteName: 'D' },
-        { key: keys.sharp, accidental: '#', fifthsCount: 12, errorCents: calculateErrorForKey(keys.sharp, precision), noteName: 'B' }
+        { key: variants.natural.key, accidental: variants.natural.accidental, fifthsCount: variants.natural.fifthsCount, errorCents: calculateErrorForKey(variants.natural.key, precision), noteName: variants.natural.noteName },
+        { key: variants.flat.key, accidental: variants.flat.accidental, fifthsCount: variants.flat.fifthsCount, errorCents: calculateErrorForKey(variants.flat.key, precision), noteName: variants.flat.noteName },
+        { key: variants.sharp.key, accidental: variants.sharp.accidental, fifthsCount: variants.sharp.fifthsCount, errorCents: calculateErrorForKey(variants.sharp.key, precision), noteName: variants.sharp.noteName }
     ];
 }
 
 // Helper function to calculate error for a given key and precision level
 function calculateErrorForKey(key, precision) {
     // Map of key values to error cents for each precision level
-    // These are from the spreadsheet: errors for standard enharmonic spellings
+    // Uses full keys (including accidental offsets) from the spreadsheet
     const errorMap = {
-        'medium': { '44': 1.954, '-44': 1.954, '0': 0 },      // Athenian
-        'high': { '52': 1.424, '-52': 1.424, '0': 0 },        // Promethean
-        'ultra': { '48': 0, '-48': 0, '0': 0 },               // Herculean
-        'extreme': { '48': 0, '-48': 0, '0': 0 }              // Olympian
+        'medium': { 
+            '0': 0, '44': 1.954, '-44': 1.954,           // Boundary keys
+            '-1956': 1.954, '956': 1.954                 // Full keys with accidentals
+        },
+        'high': { 
+            '0': 0, '52': 1.424, '-52': 1.424,           // Boundary keys
+            '-1948': 1.424, '948': 1.424                 // Full keys with accidentals
+        },
+        'ultra': { 
+            '0': 0, '48': 0, '-48': 0,                   // Boundary keys
+            '-1952': 0, '952': 0                         // Full keys with accidentals
+        },
+        'extreme': { 
+            '0': 0, '48': 0, '-48': 0,                   // Boundary keys
+            '-1952': 0, '952': 0                         // Full keys with accidentals
+        }
     };
     
     const keyStr = String(key);
@@ -1193,21 +1221,19 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
             
             // Format notation display
             // Note column: Full name with accidental (C, Dbb, B#)
-            // ASCII/Unicode columns: Base letter only + space + notation + accidental (C, D /|bb, B )\!#)
+            // ASCII/Unicode columns: Base letter only + space + notation (symbols already include accidentals)
             let evoAsciiDisplay, revoAsciiDisplay;
             if (rowNum === 1) {
                 // Row 1: Just show the base letter
                 evoAsciiDisplay = baseLetterOnly;
                 revoAsciiDisplay = baseLetterOnly;
             } else {
-                // Rows 2-3: Show base letter + space + notation + accidental
-                const evoWithAccidental = keyInfo.evo_ascii ? `${keyInfo.evo_ascii}${accDisplay}` : '';
-                const revoWithAccidental = keyInfo.revo_ascii ? `${keyInfo.revo_ascii}${accDisplay}` : '';
-                evoAsciiDisplay = evoWithAccidental ? `${baseLetterOnly} ${evoWithAccidental}` : baseLetterOnly;
-                revoAsciiDisplay = revoWithAccidental ? `${baseLetterOnly} ${revoWithAccidental}` : baseLetterOnly;
+                // Rows 2-3: Show base letter + space + notation (symbols from key data already include accidentals)
+                evoAsciiDisplay = keyInfo.evo_ascii ? `${baseLetterOnly} ${keyInfo.evo_ascii}` : baseLetterOnly;
+                revoAsciiDisplay = keyInfo.revo_ascii ? `${baseLetterOnly} ${keyInfo.revo_ascii}` : baseLetterOnly;
             }
             
-            // For Unicode columns, also use base letter only
+            // For Unicode columns, also use base letter only + space + symbol
             const evoUniDisplay = keyInfo.evo_unicode ? `${baseLetterOnly} ${keyInfo.evo_unicode}` : baseLetterOnly;
             const revoUniDisplay = keyInfo.revo_unicode ? `${baseLetterOnly} ${keyInfo.revo_unicode}` : baseLetterOnly;
             

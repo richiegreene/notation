@@ -1,0 +1,80 @@
+{
+  "medium": {
+    "bounds": [
+      {
+        "steps": 0,
+        "lower_bound": -0.21078802112060538,
+        "key": 0
+      },
+      {
+        "steps": 1,
+        "lower_bound": 2.74024427456784,
+        "key": 12
+      },
+      {
+        "steps": 2,
+        "lower_bound": 8.08020747628978,
+        "key": 20
+      },
+      {
+        "steps": 3,
+        "lower_bound": 13.4201706780117,
+        "key": 30
+      },
+      {
+        "steps": 4,
+        "lower_bound": 18.7601338797337,
+        "key": 44
+      },
+      {
+        "steps": 5,
+        "lower_bound": 24.6621984711106,
+        "key": 58
+      },
+      {
+        "steps": 6,
+        "lower_bound": 30.0021616728325,
+        "key": 70
+      },
+      {
+        "steps": 7,
+        "lower_bound": 35.1180914643665,
+        "key": 84
+      },
+      {
+        "steps": 8,
+        "lower_bound": 40.2605120340352,
+        "key": 92
+      },
+      {
+        "steps": 9,
+        "lower_bound": 45.1124978365313,
+        "key": 104
+      },
+      {
+        "steps": 10,
+        "lower_bound": 51.21954024885571,
+        "key": 114
+      },
+      {
+        "steps": 11,
+        "lower_bound": 56.842503028856,
+        "key": 131
+      },
+      {
+        "steps": 12,
+        "lower_bound": 62.465465808856194,
+        "key": 141
+      }
+    ]
+  },
+  "high": {
+    "bounds": []
+  },
+  "ultra": {
+    "bounds": []
+  },
+  "extreme": {
+    "bounds": []
+  }
+}
