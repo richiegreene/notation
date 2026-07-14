@@ -5,6 +5,7 @@ import { state } from './state.js';
 import { calculateEdoNotation } from './edo.js'; // Import the new EDO notation function
 import { formatSagittalOutput } from './sagittal-outputs.js';
 import { sagittalKeyData } from './sagittal-key-data.js';
+import * as SagittalConverter from './sagittal-monzo-converter.js';
 
 // Functions to retrieve input values 
 export function getRefOctave(){
@@ -1327,16 +1328,24 @@ function calculateErrorForKey(key, precision) {
     return parseFloat(precisionErrors[keyStr] || 0);
 }
 
-export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFrequency, ratioNum, ratioDen) {
-    // centsValue: the JI interval in cents (1200*log2(num/den)), NOT deviation from reference pitch
+export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFrequency, ratioNum, ratioDen, monzo) {
+    // monzo: the monzo representation of the interval (properly handles 5-limit, 7-limit, etc.)
+    // centsValue: the JI interval in cents (1200*log2(num/den)), used as fallback
     // This ensures display updates for different intervals independent of reference pitch setting
     const precisions = Object.keys(sagittalOutputConfig);
 
     precisions.forEach((precision) => {
         const config = sagittalOutputConfig[precision];
         
-        // Generate three enharmonic variants, calculating keys independently for each precision level
-        const enharmonicVariants = generateEnharmonicKeysForPrecision(centsValue, precision);
+        // Generate three enharmonic variants using monzo if available, otherwise use cents
+        let enharmonicVariants;
+        if (monzo && monzo.length > 0) {
+            // Use proper monzo-based calculation for accurate sagittal output
+            enharmonicVariants = SagittalConverter.generateEnharmonicVariantsFromMonzo(monzo, precision);
+        } else {
+            // Fallback to cents-based calculation if monzo not available
+            enharmonicVariants = generateEnharmonicKeysForPrecision(centsValue, precision);
+        }
         
         // Populate each of the three rows
         enharmonicVariants.forEach((variant, rowIndex) => {
@@ -1418,8 +1427,12 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
                 $(rowPrefix + `RevoUni_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${baseLetterOnly}</span>`);
             }
             
-            $(rowPrefix + `Fifths_${columnIndex}`).text(variant.fifthsCount);
-            $(rowPrefix + `Error_${columnIndex}`).text(variant.errorCents.toFixed(3));
+            // Calculate and display fifths count and error from variant data
+            const fifthsCount = variant.fifthsCount !== undefined ? variant.fifthsCount : 0;
+            const errorCents = variant.errorCents !== undefined ? variant.errorCents : 0;
+            
+            $(rowPrefix + `Fifths_${columnIndex}`).text(fifthsCount);
+            $(rowPrefix + `Error_${columnIndex}`).text(errorCents.toFixed(3));
         });
     });
 }

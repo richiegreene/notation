@@ -2,6 +2,7 @@ import * as C from './constants.js';
 import * as U from './utils.js';
 import { state } from './state.js';
 import * as UI from './ui.js';
+import * as SagittalConverter from './sagittal-monzo-converter.js';
 
 /**
  * Main calculation controller.
@@ -55,7 +56,8 @@ function performCalculationsForColumn(columnIndex, inputMonzoAbsolute) {
     // NOTE: Pass state.jiCents (actual JI interval in cents) to sagittal display, NOT state.cents_toRef
     // state.cents_toRef is deviation from reference pitch (0 at 1/1), which causes display to always show default
     // state.jiCents is the actual interval: 1200*log2(num/den), which updates correctly for any input
-    UI.updateSagittalOutputDisplays(columnIndex, state.jiCents, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue);
+    // Pass both monzo and cents - monzo is used for proper sagittal key calculation
+    UI.updateSagittalOutputDisplays(columnIndex, state.jiCents, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue, state.inputSum);
     
     // Only update the enharmonic search box for the first column to avoid confusion
     if (columnIndex === 1) {
