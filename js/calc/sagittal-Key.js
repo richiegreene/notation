@@ -1000,10 +1000,14 @@ export const KEY_SYMBOLS = {
 
 /**
  * Look up notation symbols for any sagittal key (positive or negative).
- * Mirrors: =VLOOKUP(ABS(key), Key!$A$2:$E$982, col, FALSE)
+ * Mirrors: =VLOOKUP(key, Key!$A$2:$E$982, col, FALSE)
+ *
+ * NB: unlike the Commas lookup, this must NOT use ABS(key) — negative keys
+ * have their own table rows with distinct (mirror-image) glyphs for
+ * lowering accidentals, separate from the positive "raising" glyphs.
  */
 export function getKeySymbols(key) {
-    const k = String(Math.abs(Number(key)));
+    const k = String(Number(key));
     return KEY_SYMBOLS[k] || { evo_ascii: '', revo_ascii: '', evo_unicode: '', revo_unicode: '' };
 }
 

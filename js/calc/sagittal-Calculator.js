@@ -270,11 +270,13 @@ export function calculate(input = {}) {
     const totalMult  = monzoMult * ratioMult;
     const centsPitch = ((1200 * Math.log2(totalMult)) % 1200 + 1200) % 1200;
 
-    // AJ2: fifths-above-C of chosen 1/1 nominal
-    const ref1over1Fifths = getFifthsAboveC(nominal, NOMINALS_STRING) ?? 0;
-
     // Exponent of prime 3 (UI!C8)
     const exponent3 = fullExponents[3] ?? 0;
+
+    // AJ2: fifths-above-C of chosen 1/1 nominal
+    // Excel: =UI!$C$8+(FIND(nominal...)-46)/3 — the exponent-of-3 term is required;
+    // it cancels the same term added back in colAB (fifthsAbove1over1) below.
+    const ref1over1Fifths = exponent3 + (getFifthsAboveC(nominal, NOMINALS_STRING) ?? 0);
 
     // Compute one row per natural nominal
     const nominalRows  = NOMINALS.map(nom =>

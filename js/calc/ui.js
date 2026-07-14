@@ -1334,10 +1334,17 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
 
     // Convert monzo array to the {prime: exponent} object the new Calculator expects.
     // Prime 2 is skipped – the Calculator uses MOD(1200*log2, 1200) which ignores octave.
+    //
+    // The app's absolute monzo is anchored so all-zero == A natural (see
+    // constants.js: frequencyNote['A'] === 0, used for the "Defining 1/1" reference).
+    // The Sagittal Calculator's NOMINALS table is anchored so all-zero == C natural
+    // (fifthsFromC: 0). A sits 3 fifths above C, so the prime-3 exponent must be
+    // shifted by +3 to realign the two coordinate systems before spelling the note.
     const exponents = {};
     if (absoluteMonzo && absoluteMonzo.length > 0) {
         for (let i = 1; i < APP_PRIMES.length; i++) {  // start at 1 to skip prime 2
-            const exp = absoluteMonzo[i] || 0;
+            let exp = absoluteMonzo[i] || 0;
+            if (APP_PRIMES[i] === 3) exp += 3;
             if (exp !== 0) exponents[APP_PRIMES[i]] = exp;
         }
     }
