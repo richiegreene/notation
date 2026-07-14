@@ -198,6 +198,16 @@ export function generateStackingRatioFields(numFields) {
         `;
         container.append(ratioHtml);
     }
+    
+    // Attach change event handlers to dynamically created inputs for Interval Entry mode
+    // These handlers will update state and trigger calculations
+    container.off('change', '.ratioIn').on('change', '.ratioIn', function() {
+        // Trigger calculations when any stacking ratio field changes
+        // Import Calc from calculator.js would go here, but since we're in UI module,
+        // we need to trigger doCalc through a different method
+        // For now, dispatch a custom event that main.js can listen to
+        $(document).trigger('dynamicRatioChanged');
+    });
 }
 
 export function generateOutputColumns(numColumns) {

@@ -130,26 +130,41 @@ function getCombinedInputSum() {
         monzoForCalculation = hejiAbsoluteMonzo; // This is the absolute monzo of the HEJI note
     } else if ($("#intervalInput").prop("checked")){ // Interval Entry
         let intervalMonzo = C.reference; // Start with 0 monzo for interval (C.reference is all zeros)
-        let numStackingFields = $("#stacking-input").val();
-        for (let i = 1; i <= numStackingFields; i++) {
-            let currentInputNum = parseInt($(`#inputNum_${i}`).val());
-            let currentInputDen = parseInt($(`#inputDen_${i}`).val());
-
-            if (isNaN(currentInputNum) || currentInputNum <= 0) currentInputNum = 1;
-            if (isNaN(currentInputDen) || currentInputDen <= 0) currentInputDen = 1;
-
-            state.currentTotalNum *= currentInputNum; // Accumulate total ratio for hasPrimeGreaterThan89 check
-            state.currentTotalDen *= currentInputDen;
-
-            if (currentInputNum > 1 && U.getValue(U.getArray(currentInputNum)) !== currentInputNum) { state.hasPrimeGreaterThan89 = true; }
-            if (currentInputDen > 1 && U.getValue(U.getArray(currentInputDen)) !== currentInputDen) { state.hasPrimeGreaterThan89 = true; }
-
-            let smallestTerms = U.reduce(currentInputNum, currentInputDen);
-            let numArray = U.getArray(smallestTerms[0]);
-            let denArray = U.getArray(smallestTerms[1]);
-            let currentMonzo = U.diffArray(numArray, denArray);
-            intervalMonzo = U.sumArray(intervalMonzo, currentMonzo);
+        
+        // Use the saved ratio monzo directly (from #savedNum and #savedDen)
+        if (state.savedInputSum && state.savedInputSum.length > 0) {
+            intervalMonzo = state.savedInputSum;
         }
+        
+        // Also handle stacking fields if present (for advanced multi-ratio stacking)
+        let numStackingFields = $("#stacking-input").val();
+        if (numStackingFields > 1) {
+            // For stacking > 1, iterate through additional stacking fields and accumulate
+            for (let i = 2; i <= numStackingFields; i++) {
+                let currentInputNum = parseInt($(`#inputNum_${i}`).val());
+                let currentInputDen = parseInt($(`#inputDen_${i}`).val());
+
+                if (isNaN(currentInputNum) || currentInputNum <= 0) currentInputNum = 1;
+                if (isNaN(currentInputDen) || currentInputDen <= 0) currentInputDen = 1;
+
+                state.currentTotalNum *= currentInputNum;
+                state.currentTotalDen *= currentInputDen;
+
+                if (currentInputNum > 1 && U.getValue(U.getArray(currentInputNum)) !== currentInputNum) { state.hasPrimeGreaterThan89 = true; }
+                if (currentInputDen > 1 && U.getValue(U.getArray(currentInputDen)) !== currentInputDen) { state.hasPrimeGreaterThan89 = true; }
+
+                let smallestTerms = U.reduce(currentInputNum, currentInputDen);
+                let numArray = U.getArray(smallestTerms[0]);
+                let denArray = U.getArray(smallestTerms[1]);
+                let currentMonzo = U.diffArray(numArray, denArray);
+                intervalMonzo = U.sumArray(intervalMonzo, currentMonzo);
+            }
+        }
+        
+        // Track total ratio for hasPrimeGreaterThan89 check
+        state.currentTotalNum = state.savedNum;
+        state.currentTotalDen = state.savedDen;
+        
         // For interval input, the "absolute monzo" to be displayed is reference_monzo + interval_monzo
         monzoForCalculation = U.sumArray(state.currentReferenceMonzo, intervalMonzo);
     }

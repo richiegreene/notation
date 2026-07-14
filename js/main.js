@@ -669,6 +669,24 @@ $(document).ready(function(){
     clearRatio1();
     // Simulate the "Send default 12" bang at initialization of app
     $("#edoApproximationInput").trigger("change");
+    
+    // Listen for changes to dynamically created ratio inputs in Interval Entry mode
+    $(document).on('dynamicRatioChanged', function() {
+        console.log('dynamicRatioChanged event triggered');
+        // When a dynamic ratio input changes in Interval Entry mode, read from inputNum_1/inputDen_1
+        // and update state.savedNum/state.savedDen for compatibility with calculations
+        if ($("#intervalInput").prop("checked")) {
+            const num1 = parseInt($("#inputNum_1").val());
+            const den1 = parseInt($("#inputDen_1").val());
+            
+            if (!isNaN(num1) && !isNaN(den1) && num1 > 0 && den1 > 0) {
+                console.log('Updating state from dynamic inputs:', num1, '/', den1);
+                state.savedNum = num1;
+                state.savedDen = den1;
+                Calc.getSavedInputSum();
+            }
+        }
+    });
 
     // Event listener for the chord entry type dropdown
     $("#chord-entry-type-select").change(function() {
