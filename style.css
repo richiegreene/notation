@@ -524,7 +524,12 @@ table.enharmonic-table > tr, td, th {
 }
 
 .sagittal-type-row {
-    margin-bottom: 0.5rem;
+    margin-bottom: 10px; /* Same as .chord-entry-type-container */
+}
+
+#sagittalTypeDropdown {
+    width: 100%; /* Make it fill the available space, like #chord-entry-type-select */
+    box-sizing: border-box; /* Include padding and border in width */
 }
 
 .sagittal-toggle-row {
@@ -772,7 +777,7 @@ input.ratioIn {
     background-color: #2a2a2a;
     border-radius: 4px;
 }
-#playOutputButton.playing-active, #playEdoOutputButton.playing-active {
+#playOutputButton.playing-active, #playEdoOutputButton.playing-active, #playSagittalOutputButton.playing-active {
     background-color: var(--bg-button-selected);
     border-color: var(--bg-button-selected);
 }
@@ -783,7 +788,8 @@ input.ratioIn {
     margin: 10px 0; /* Same as clearOutputButton */
 }
 
-#clearEdoOutputButton, #playEdoOutputButton {
+#clearEdoOutputButton, #playEdoOutputButton,
+#clearSagittalOutputButton, #playSagittalOutputButton {
     display: block;
     width: 100%;
     font-size: 11.2px; /* Same as clearOutputButton */
@@ -804,7 +810,7 @@ input.ratioIn {
 }
 
 /* Original styles for play buttons for context, ensuring they remain block level */
-#playOutputButton, #playEdoOutputButton {
+#playOutputButton, #playEdoOutputButton, #playSagittalOutputButton {
     display: block;
     width: 100%;
     font-size: 11.2px;
