@@ -3,9 +3,7 @@ import * as C from './constants.js';
 import * as U from './utils.js';
 import { state } from './state.js';
 import { calculateEdoNotation } from './edo.js'; // Import the new EDO notation function
-import { formatSagittalOutput } from './sagittal-outputs.js';
-import { sagittalKeyData } from './sagittal-key-data.js';
-import * as SagittalConverter from './sagittal-monzo-converter.js';
+import { getEnharmonicVariants } from './sagittal-Calculator.js';
 
 // Functions to retrieve input values 
 export function getRefOctave(){
@@ -1328,111 +1326,87 @@ function calculateErrorForKey(key, precision) {
     return parseFloat(precisionErrors[keyStr] || 0);
 }
 
-export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFrequency, ratioNum, ratioDen, monzo) {
-    // monzo: the monzo representation of the interval (properly handles 5-limit, 7-limit, etc.)
-    // centsValue: the JI interval in cents (1200*log2(num/den)), used as fallback
-    // This ensures display updates for different intervals independent of reference pitch setting
+export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFrequency, ratioNum, ratioDen, absoluteMonzo) {
+    // absoluteMonzo: the absolute pitch monzo [exp2, exp3, exp5, exp7, exp11, ...]
+    // This encodes the full pitch (reference + interval), giving correct note names.
+    // Primes in the app's monzo array: index 0=2, 1=3, 2=5, 3=7, 4=11, 5=13, 6=17, 7=19, 8=23...
+    const APP_PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61];
+
+    // Convert monzo array to the {prime: exponent} object the new Calculator expects.
+    // Prime 2 is skipped – the Calculator uses MOD(1200*log2, 1200) which ignores octave.
+    const exponents = {};
+    if (absoluteMonzo && absoluteMonzo.length > 0) {
+        for (let i = 1; i < APP_PRIMES.length; i++) {  // start at 1 to skip prime 2
+            const exp = absoluteMonzo[i] || 0;
+            if (exp !== 0) exponents[APP_PRIMES[i]] = exp;
+        }
+    }
+
     const precisions = Object.keys(sagittalOutputConfig);
 
     precisions.forEach((precision) => {
         const config = sagittalOutputConfig[precision];
-        
-        // Generate three enharmonic variants using monzo if available, otherwise use cents
-        let enharmonicVariants;
-        if (monzo && monzo.length > 0) {
-            // Use proper monzo-based calculation for accurate sagittal output
-            enharmonicVariants = SagittalConverter.generateEnharmonicVariantsFromMonzo(monzo, precision);
-        } else {
-            // Fallback to cents-based calculation if monzo not available
-            enharmonicVariants = generateEnharmonicKeysForPrecision(centsValue, precision);
-        }
-        
+
+        // Call the 1:1 Excel conversion Calculator
+        const variants = getEnharmonicVariants(
+            { exponents, numerator: 1, denominator: 1, nominal: 'C' },
+            precision
+        );
+
         // Populate each of the three rows
-        enharmonicVariants.forEach((variant, rowIndex) => {
-            const rowNum = rowIndex + 1; // Rows are 1-indexed in the UI
+        variants.forEach((variant, rowIndex) => {
+            const rowNum   = rowIndex + 1;
             const rowPrefix = `#${config.prefix}R${rowNum}`;
-            
-            // Look up Evo/Revo variants from key data
-            const keyString = String(variant.key);
-            const keyInfo = sagittalKeyData[keyString] || {
-                evo_ascii: '',
-                revo_ascii: '',
-                evo_unicode: '',
-                revo_unicode: '',
-            };
-            
-            // Build display note name with accidental
-            const accDisplay = getAccidentalDisplay(variant.accidental);
-            const displayNoteName = `${variant.noteName}${accDisplay}`;
-            const baseLetterOnly = variant.noteName;  // Just the letter without accidental
-            
-            // Format notation display
-            // Note column: Full name with accidental (C, Dbb, B#)
-            // ASCII/Unicode columns: Base letter only + space + notation (symbols already include accidentals)
-            let evoAsciiDisplay, revoAsciiDisplay;
-            if (rowNum === 1) {
-                // Row 1: Just show the base letter
-                evoAsciiDisplay = baseLetterOnly;
-                revoAsciiDisplay = baseLetterOnly;
+
+            const letter    = variant.nominalLetter || '';
+            const sharpFlat = variant.sharpFlat     || '';
+            const evoAscii  = variant.evo_ascii      || '';
+            const revoAscii = variant.revo_ascii     || '';
+            const evoUni    = variant.evo_unicode    || '';
+            const revoUni   = variant.revo_unicode   || '';
+            const fifths    = variant.fifthsAbove1over1 !== '' ? variant.fifthsAbove1over1 : '';
+            const error     = (typeof variant.error === 'number') ? variant.error.toFixed(3) : '0.000';
+
+            // Note Name cell: letter + accidental (e.g. "E", "Eb", "C#")
+            const accidentalDisplay = sharpFlat === '#'  ? '♯'
+                                    : sharpFlat === 'b'  ? '♭'
+                                    : sharpFlat === 'bb' ? '𝄫'
+                                    : sharpFlat === 'x'  ? '𝄪'
+                                    : '';
+            $(rowPrefix + `NoteName_${columnIndex}`).text(`${letter}${accidentalDisplay}`);
+
+            // Evo ASCII: letter + sagittal ASCII symbol
+            const evoAsciiDisplay = evoAscii
+                ? `<span style="font-family:'Inter',sans-serif;">${letter}</span>&nbsp;<span style="font-family:'Courier New',monospace;">${evoAscii}</span>`
+                : `<span style="font-family:'Inter',sans-serif;">${letter}</span>`;
+            $(rowPrefix + `EvoAscii_${columnIndex}`).html(evoAsciiDisplay);
+
+            // Revo ASCII
+            const revoAsciiDisplay = revoAscii
+                ? `<span style="font-family:'Inter',sans-serif;">${letter}</span>&nbsp;<span style="font-family:'Courier New',monospace;">${revoAscii}</span>`
+                : `<span style="font-family:'Inter',sans-serif;">${letter}</span>`;
+            $(rowPrefix + `RevoAscii_${columnIndex}`).html(revoAsciiDisplay);
+
+            // Evo Unicode
+            if (evoUni) {
+                $(rowPrefix + `EvoUni_${columnIndex}`).html(
+                    `<span style="font-family:'Inter',sans-serif;">${letter}</span>&nbsp;<span style="font-family:'Bravura';font-size:1.35em;">${evoUni}</span>`
+                );
             } else {
-                // Rows 2-3: Show base letter + space + notation (symbols from key data already include accidentals)
-                evoAsciiDisplay = keyInfo.evo_ascii ? `${baseLetterOnly} ${keyInfo.evo_ascii}` : baseLetterOnly;
-                revoAsciiDisplay = keyInfo.revo_ascii ? `${baseLetterOnly} ${keyInfo.revo_ascii}` : baseLetterOnly;
+                $(rowPrefix + `EvoUni_${columnIndex}`).html(`<span style="font-family:'Inter',sans-serif;">${letter}</span>`);
             }
-            
-            // For Unicode columns, also use base letter only + space + symbol
-            const evoUniDisplay = keyInfo.evo_unicode ? `${baseLetterOnly} ${keyInfo.evo_unicode}` : baseLetterOnly;
-            const revoUniDisplay = keyInfo.revo_unicode ? `${baseLetterOnly} ${keyInfo.revo_unicode}` : baseLetterOnly;
-            
-            // Populate the cells for this row
-            $(rowPrefix + `NoteName_${columnIndex}`).text(displayNoteName);
-            
-            // For ASCII columns: note letter in default font, symbols in monospace font
-            if (evoAsciiDisplay && evoAsciiDisplay !== baseLetterOnly) {
-                const parts = evoAsciiDisplay.split(' ');
-                if (parts.length === 2) {
-                    $(rowPrefix + `EvoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${parts[0]}</span>&nbsp;<span style="font-family: 'Courier New', monospace;">${parts[1]}</span>`);
-                } else {
-                    $(rowPrefix + `EvoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${evoAsciiDisplay}</span>`);
-                }
+
+            // Revo Unicode
+            if (revoUni) {
+                $(rowPrefix + `RevoUni_${columnIndex}`).html(
+                    `<span style="font-family:'Inter',sans-serif;">${letter}</span>&nbsp;<span style="font-family:'Bravura';font-size:1.35em;">${revoUni}</span>`
+                );
             } else {
-                // Solo letter: display in default font, overriding cell's monospace styling
-                $(rowPrefix + `EvoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${evoAsciiDisplay}</span>`);
+                $(rowPrefix + `RevoUni_${columnIndex}`).html(`<span style="font-family:'Inter',sans-serif;">${letter}</span>`);
             }
-            
-            if (revoAsciiDisplay && revoAsciiDisplay !== baseLetterOnly) {
-                const parts = revoAsciiDisplay.split(' ');
-                if (parts.length === 2) {
-                    $(rowPrefix + `RevoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${parts[0]}</span>&nbsp;<span style="font-family: 'Courier New', monospace;">${parts[1]}</span>`);
-                } else {
-                    $(rowPrefix + `RevoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${revoAsciiDisplay}</span>`);
-                }
-            } else {
-                // Solo letter: display in default font, overriding cell's monospace styling
-                $(rowPrefix + `RevoAscii_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${revoAsciiDisplay}</span>`);
-            }
-            
-            // For Unicode columns: note letter in default font, symbol in Bravura font (1.35em size)
-            if (keyInfo.evo_unicode) {
-                $(rowPrefix + `EvoUni_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${baseLetterOnly}</span>&nbsp;<span style="font-family: 'Bravura'; font-size: 1.35em;">${keyInfo.evo_unicode}</span>`);
-            } else {
-                // No symbol: display solo letter in default font, overriding cell's Bravura styling
-                $(rowPrefix + `EvoUni_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${baseLetterOnly}</span>`);
-            }
-            
-            if (keyInfo.revo_unicode) {
-                $(rowPrefix + `RevoUni_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${baseLetterOnly}</span>&nbsp;<span style="font-family: 'Bravura'; font-size: 1.35em;">${keyInfo.revo_unicode}</span>`);
-            } else {
-                // No symbol: display solo letter in default font, overriding cell's Bravura styling
-                $(rowPrefix + `RevoUni_${columnIndex}`).html(`<span style="font-family: 'Inter', sans-serif;">${baseLetterOnly}</span>`);
-            }
-            
-            // Calculate and display fifths count and error from variant data
-            const fifthsCount = variant.fifthsCount !== undefined ? variant.fifthsCount : 0;
-            const errorCents = variant.errorCents !== undefined ? variant.errorCents : 0;
-            
-            $(rowPrefix + `Fifths_${columnIndex}`).text(fifthsCount);
-            $(rowPrefix + `Error_${columnIndex}`).text(errorCents.toFixed(3));
+
+            $(rowPrefix + `Fifths_${columnIndex}`).text(fifths);
+            $(rowPrefix + `Error_${columnIndex}`).text(error);
         });
     });
 }

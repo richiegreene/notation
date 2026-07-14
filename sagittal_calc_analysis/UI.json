@@ -1,0 +1,2036 @@
+{
+  "name": "UI",
+  "dimensions": "A1:AZ20",
+  "cells": {
+    "B2": {
+      "value": "Sagittal Standard Just Intonation Notation Calculator",
+      "formula": null,
+      "data_value": "Sagittal Standard Just Intonation Notation Calculator",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "U2": {
+      "value": "Precision Level",
+      "formula": null,
+      "data_value": "Precision Level",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W2": {
+      "value": "Medium",
+      "formula": null,
+      "data_value": "Medium",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AD2": {
+      "value": "High*",
+      "formula": null,
+      "data_value": "High*",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AK2": {
+      "value": "Ultra",
+      "formula": null,
+      "data_value": "Ultra",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AR2": {
+      "value": "Extreme**",
+      "formula": null,
+      "data_value": "Extreme**",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AY2": {
+      "value": "Single-shaft Sagittals are Representing (\u00a2)",
+      "formula": null,
+      "data_value": "Single-shaft Sagittals are Representing (\u00a2)",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "U3": {
+      "value": " Maximum Symbol Set",
+      "formula": null,
+      "data_value": " Maximum Symbol Set",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W3": {
+      "value": "Athenian",
+      "formula": null,
+      "data_value": "Athenian",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AD3": {
+      "value": "Promethean",
+      "formula": null,
+      "data_value": "Promethean",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AK3": {
+      "value": "Herculean",
+      "formula": null,
+      "data_value": "Herculean",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AR3": {
+      "value": "Olympian",
+      "formula": null,
+      "data_value": "Olympian",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "U4": {
+      "value": "Limit",
+      "formula": null,
+      "data_value": "Limit",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W4": {
+      "value": 17,
+      "formula": null,
+      "data_value": 17,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "AD4": {
+      "value": 23,
+      "formula": null,
+      "data_value": 23,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "AK4": {
+      "value": 23,
+      "formula": null,
+      "data_value": 23,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "AR4": {
+      "value": 47,
+      "formula": null,
+      "data_value": 47,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "U5": {
+      "value": "Resolution (\u2248\u00a2)",
+      "formula": null,
+      "data_value": "Resolution (\u2248\u00a2)",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W5": {
+      "value": 5.41,
+      "formula": null,
+      "data_value": 5.41,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "AD5": {
+      "value": 2.42,
+      "formula": null,
+      "data_value": 2.42,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "AK5": {
+      "value": 1.96,
+      "formula": null,
+      "data_value": 1.96,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "AR5": {
+      "value": 0.49,
+      "formula": null,
+      "data_value": 0.49,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "B6": {
+      "value": "You can enter your pitch's prime factor exponents in the light-blue-colored cells. Leave 0's to ignore.",
+      "formula": null,
+      "data_value": "You can enter your pitch's prime factor exponents in the light-blue-colored cells. Leave 0's to ignore.",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "U6": {
+      "value": "Diacritics",
+      "formula": null,
+      "data_value": "Diacritics",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W6": {
+      "value": "none",
+      "formula": null,
+      "data_value": "none",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AD6": {
+      "value": "none",
+      "formula": null,
+      "data_value": "none",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AK6": {
+      "value": "accents",
+      "formula": null,
+      "data_value": "accents",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AR6": {
+      "value": "accents & breves",
+      "formula": null,
+      "data_value": "accents & breves",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "B7": {
+      "value": "Prime:",
+      "formula": null,
+      "data_value": "Prime:",
+      "data_type": "s",
+      "number_format": "0.000"
+    },
+    "C7": {
+      "value": 3,
+      "formula": null,
+      "data_value": 3,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "D7": {
+      "value": 5,
+      "formula": null,
+      "data_value": 5,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "E7": {
+      "value": 7,
+      "formula": null,
+      "data_value": 7,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "F7": {
+      "value": 11,
+      "formula": null,
+      "data_value": 11,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "G7": {
+      "value": 13,
+      "formula": null,
+      "data_value": 13,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "H7": {
+      "value": 17,
+      "formula": null,
+      "data_value": 17,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "I7": {
+      "value": 19,
+      "formula": null,
+      "data_value": 19,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "J7": {
+      "value": 23,
+      "formula": null,
+      "data_value": 23,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "K7": {
+      "value": 29,
+      "formula": null,
+      "data_value": 29,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "L7": {
+      "value": 31,
+      "formula": null,
+      "data_value": 31,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "M7": {
+      "value": 37,
+      "formula": null,
+      "data_value": 37,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "N7": {
+      "value": 41,
+      "formula": null,
+      "data_value": 41,
+      "data_type": "n",
+      "number_format": "0"
+    },
+    "O7": {
+      "value": 43,
+      "formula": null,
+      "data_value": 43,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "P7": {
+      "value": 47,
+      "formula": null,
+      "data_value": 47,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "Q7": {
+      "value": 53,
+      "formula": null,
+      "data_value": 53,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "R7": {
+      "value": 59,
+      "formula": null,
+      "data_value": 59,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "S7": {
+      "value": 61,
+      "formula": null,
+      "data_value": 61,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "W7": {
+      "value": "ASCII",
+      "formula": null,
+      "data_value": "ASCII",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "Y7": {
+      "value": "Unicode",
+      "formula": null,
+      "data_value": "Unicode",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AA7": {
+      "value": "Fifths Count",
+      "formula": null,
+      "data_value": "Fifths Count",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AB7": {
+      "value": "Error\n(\u00a2)",
+      "formula": null,
+      "data_value": "Error\n(\u00a2)",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AD7": {
+      "value": "ASCII",
+      "formula": null,
+      "data_value": "ASCII",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AF7": {
+      "value": "Unicode",
+      "formula": null,
+      "data_value": "Unicode",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AH7": {
+      "value": "Fifths Count",
+      "formula": null,
+      "data_value": "Fifths Count",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AI7": {
+      "value": "Error\n(\u00a2)",
+      "formula": null,
+      "data_value": "Error\n(\u00a2)",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AK7": {
+      "value": "ASCII",
+      "formula": null,
+      "data_value": "ASCII",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AM7": {
+      "value": "Unicode",
+      "formula": null,
+      "data_value": "Unicode",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AO7": {
+      "value": "Fifths Count",
+      "formula": null,
+      "data_value": "Fifths Count",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AP7": {
+      "value": "Error\n(\u00a2)",
+      "formula": null,
+      "data_value": "Error\n(\u00a2)",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AR7": {
+      "value": "ASCII",
+      "formula": null,
+      "data_value": "ASCII",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AT7": {
+      "value": "Unicode",
+      "formula": null,
+      "data_value": "Unicode",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AV7": {
+      "value": "Fifths Count",
+      "formula": null,
+      "data_value": "Fifths Count",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AW7": {
+      "value": "Error\n(\u00a2)",
+      "formula": null,
+      "data_value": "Error\n(\u00a2)",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "B8": {
+      "value": "Exponent:",
+      "formula": null,
+      "data_value": "Exponent:",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "C8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "D8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "E8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "F8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "G8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "H8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "I8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "J8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "K8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "L8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "M8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "N8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "O8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "P8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "Q8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "R8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "S8": {
+      "value": 0,
+      "formula": null,
+      "data_value": 0,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "W8": {
+      "value": "Evo",
+      "formula": null,
+      "data_value": "Evo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "X8": {
+      "value": "Revo",
+      "formula": null,
+      "data_value": "Revo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "Y8": {
+      "value": "Evo",
+      "formula": null,
+      "data_value": "Evo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "Z8": {
+      "value": "Revo",
+      "formula": null,
+      "data_value": "Revo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AD8": {
+      "value": "Evo",
+      "formula": null,
+      "data_value": "Evo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AE8": {
+      "value": "Revo",
+      "formula": null,
+      "data_value": "Revo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AF8": {
+      "value": "Evo",
+      "formula": null,
+      "data_value": "Evo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AG8": {
+      "value": "Revo",
+      "formula": null,
+      "data_value": "Revo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AK8": {
+      "value": "Evo",
+      "formula": null,
+      "data_value": "Evo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AL8": {
+      "value": "Revo",
+      "formula": null,
+      "data_value": "Revo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AM8": {
+      "value": "Evo",
+      "formula": null,
+      "data_value": "Evo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AN8": {
+      "value": "Revo",
+      "formula": null,
+      "data_value": "Revo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AR8": {
+      "value": "Evo",
+      "formula": null,
+      "data_value": "Evo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AS8": {
+      "value": "Revo",
+      "formula": null,
+      "data_value": "Revo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AT8": {
+      "value": "Evo",
+      "formula": null,
+      "data_value": "Evo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AU8": {
+      "value": "Revo",
+      "formula": null,
+      "data_value": "Revo",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "B9": {
+      "value": "You can also directly enter your pitch as a ratio. Leave 1's to ignore.",
+      "formula": null,
+      "data_value": "You can also directly enter your pitch as a ratio. Leave 1's to ignore.",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H6,Key!$A$2:$E$982,2,FALSE),Calculator!$B6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "X9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H6,Key!$A$2:$E$982,3,FALSE),Calculator!$B6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Y9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H6,Key!$A$2:$E$982,4,FALSE),Calculator!$C6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Z9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H6,Key!$A$2:$E$982,5,FALSE),Calculator!$C6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AA9": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB6",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AB9": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$L6",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AD9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M6,Key!$A$2:$E$982,2,FALSE),Calculator!$B6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AE9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M6,Key!$A$2:$E$982,3,FALSE),Calculator!$B6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AF9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M6,Key!$A$2:$E$982,4,FALSE),Calculator!$C6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AG9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M6,Key!$A$2:$E$982,5,FALSE),Calculator!$C6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AH9": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB6",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AI9": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$Q6",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AK9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R6,Key!$A$2:$E$982,2,FALSE),Calculator!$B6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AL9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R6,Key!$A$2:$E$982,3,FALSE),Calculator!$B6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AM9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R6,Key!$A$2:$E$982,4,FALSE),Calculator!$C6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AN9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R6,Key!$A$2:$E$982,5,FALSE),Calculator!$C6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AO9": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB6",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AP9": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$V6",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AR9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W6,Key!$A$2:$E$982,2,FALSE),Calculator!$B6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AS9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W6,Key!$A$2:$E$982,3,FALSE),Calculator!$B6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AT9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W6,Key!$A$2:$E$982,4,FALSE),Calculator!$C6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AU9": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W6,Key!$A$2:$E$982,5,FALSE),Calculator!$C6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AV9": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB6",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AW9": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AA6",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AY9": {
+      "value": "FORMULA",
+      "formula": "=IF(Calculator!$G6=0,\"\",Calculator!$G6)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "C10": {
+      "value": 5,
+      "formula": null,
+      "data_value": 5,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "F10": {
+      "value": "Numerator",
+      "formula": null,
+      "data_value": "Numerator",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "M10": {
+      "value": "Your pitch is",
+      "formula": null,
+      "data_value": "Your pitch is",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "N10": {
+      "value": "FORMULA",
+      "formula": "=Calculator!AG5",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "P10": {
+      "value": "cents above 1/1.",
+      "formula": null,
+      "data_value": "cents above 1/1.",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H7,Key!$A$2:$E$982,2,FALSE),Calculator!$B7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "X10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H7,Key!$A$2:$E$982,3,FALSE),Calculator!$B7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Y10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H7,Key!$A$2:$E$982,4,FALSE),Calculator!$C7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Z10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H7,Key!$A$2:$E$982,5,FALSE),Calculator!$C7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AA10": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB7",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AB10": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$L7",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AD10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M7,Key!$A$2:$E$982,2,FALSE),Calculator!$B7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AE10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M7,Key!$A$2:$E$982,3,FALSE),Calculator!$B7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AF10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M7,Key!$A$2:$E$982,4,FALSE),Calculator!$C7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AG10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M7,Key!$A$2:$E$982,5,FALSE),Calculator!$C7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AH10": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB7",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AI10": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$Q7",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AK10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R7,Key!$A$2:$E$982,2,FALSE),Calculator!$B7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AL10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R7,Key!$A$2:$E$982,3,FALSE),Calculator!$B7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AM10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R7,Key!$A$2:$E$982,4,FALSE),Calculator!$C7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AN10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R7,Key!$A$2:$E$982,5,FALSE),Calculator!$C7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AO10": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB7",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AP10": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$V7",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AR10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W7,Key!$A$2:$E$982,2,FALSE),Calculator!$B7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AS10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W7,Key!$A$2:$E$982,3,FALSE),Calculator!$B7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AT10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W7,Key!$A$2:$E$982,4,FALSE),Calculator!$C7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AU10": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W7,Key!$A$2:$E$982,5,FALSE),Calculator!$C7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AV10": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB7",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AW10": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AA7",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AY10": {
+      "value": "FORMULA",
+      "formula": "=IF(Calculator!$G7=0,\"\",Calculator!$G7)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "C11": {
+      "value": 4,
+      "formula": null,
+      "data_value": 4,
+      "data_type": "n",
+      "number_format": "General"
+    },
+    "F11": {
+      "value": "Denominator",
+      "formula": null,
+      "data_value": "Denominator",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H8,Key!$A$2:$E$982,2,FALSE),Calculator!$B8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "X11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H8,Key!$A$2:$E$982,3,FALSE),Calculator!$B8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Y11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H8,Key!$A$2:$E$982,4,FALSE),Calculator!$C8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Z11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H8,Key!$A$2:$E$982,5,FALSE),Calculator!$C8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AA11": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB8",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AB11": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$L8",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AD11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M8,Key!$A$2:$E$982,2,FALSE),Calculator!$B8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AE11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M8,Key!$A$2:$E$982,3,FALSE),Calculator!$B8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AF11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M8,Key!$A$2:$E$982,4,FALSE),Calculator!$C8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AG11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M8,Key!$A$2:$E$982,5,FALSE),Calculator!$C8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AH11": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB8",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AI11": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$Q8",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AK11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R8,Key!$A$2:$E$982,2,FALSE),Calculator!$B8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AL11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R8,Key!$A$2:$E$982,3,FALSE),Calculator!$B8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AM11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R8,Key!$A$2:$E$982,4,FALSE),Calculator!$C8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AN11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R8,Key!$A$2:$E$982,5,FALSE),Calculator!$C8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AO11": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB8",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AP11": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$V8",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AR11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W8,Key!$A$2:$E$982,2,FALSE),Calculator!$B8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AS11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W8,Key!$A$2:$E$982,3,FALSE),Calculator!$B8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AT11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W8,Key!$A$2:$E$982,4,FALSE),Calculator!$C8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AU11": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W8,Key!$A$2:$E$982,5,FALSE),Calculator!$C8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AV11": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB8",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AW11": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AA8",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AY11": {
+      "value": "FORMULA",
+      "formula": "=IF(Calculator!$G8=0,\"\",Calculator!$G8)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "B12": {
+      "value": "Enter a Pythagorean nominal for your 1/1 (from bbF to xB).",
+      "formula": null,
+      "data_value": "Enter a Pythagorean nominal for your 1/1 (from bbF to xB).",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H9,Key!$A$2:$E$982,2,FALSE),Calculator!$B9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "X12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H9,Key!$A$2:$E$982,3,FALSE),Calculator!$B9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Y12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H9,Key!$A$2:$E$982,4,FALSE),Calculator!$C9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Z12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H9,Key!$A$2:$E$982,5,FALSE),Calculator!$C9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AA12": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB9",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AB12": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$L9",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AD12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M9,Key!$A$2:$E$982,2,FALSE),Calculator!$B9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AE12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M9,Key!$A$2:$E$982,3,FALSE),Calculator!$B9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AF12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M9,Key!$A$2:$E$982,4,FALSE),Calculator!$C9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AG12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M9,Key!$A$2:$E$982,5,FALSE),Calculator!$C9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AH12": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB9",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AI12": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$Q9",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AK12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R9,Key!$A$2:$E$982,2,FALSE),Calculator!$B9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AL12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R9,Key!$A$2:$E$982,3,FALSE),Calculator!$B9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AM12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R9,Key!$A$2:$E$982,4,FALSE),Calculator!$C9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AN12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R9,Key!$A$2:$E$982,5,FALSE),Calculator!$C9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AO12": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB9",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AP12": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$V9",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AR12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W9,Key!$A$2:$E$982,2,FALSE),Calculator!$B9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AS12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W9,Key!$A$2:$E$982,3,FALSE),Calculator!$B9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AT12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W9,Key!$A$2:$E$982,4,FALSE),Calculator!$C9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AU12": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W9,Key!$A$2:$E$982,5,FALSE),Calculator!$C9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AV12": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB9",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AW12": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AA9",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AY12": {
+      "value": "FORMULA",
+      "formula": "=IF(Calculator!$G9=0,\"\",Calculator!$G9)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "B13": {
+      "value": "1/1 =",
+      "formula": null,
+      "data_value": "1/1 =",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "C13": {
+      "value": "C",
+      "formula": null,
+      "data_value": "C",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H10,Key!$A$2:$E$982,2,FALSE),Calculator!$B10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "X13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H10,Key!$A$2:$E$982,3,FALSE),Calculator!$B10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Y13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H10,Key!$A$2:$E$982,4,FALSE),Calculator!$C10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Z13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H10,Key!$A$2:$E$982,5,FALSE),Calculator!$C10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AA13": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB10",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AB13": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$L10",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AD13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M10,Key!$A$2:$E$982,2,FALSE),Calculator!$B10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AE13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M10,Key!$A$2:$E$982,3,FALSE),Calculator!$B10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AF13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M10,Key!$A$2:$E$982,4,FALSE),Calculator!$C10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AG13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M10,Key!$A$2:$E$982,5,FALSE),Calculator!$C10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AH13": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB10",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AI13": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$Q10",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AK13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R10,Key!$A$2:$E$982,2,FALSE),Calculator!$B10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AL13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R10,Key!$A$2:$E$982,3,FALSE),Calculator!$B10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AM13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R10,Key!$A$2:$E$982,4,FALSE),Calculator!$C10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AN13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R10,Key!$A$2:$E$982,5,FALSE),Calculator!$C10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AO13": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB10",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AP13": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$V10",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AR13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W10,Key!$A$2:$E$982,2,FALSE),Calculator!$B10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AS13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W10,Key!$A$2:$E$982,3,FALSE),Calculator!$B10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AT13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W10,Key!$A$2:$E$982,4,FALSE),Calculator!$C10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AU13": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W10,Key!$A$2:$E$982,5,FALSE),Calculator!$C10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AV13": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB10",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AW13": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AA10",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AY13": {
+      "value": "FORMULA",
+      "formula": "=IF(Calculator!$G10=0,\"\",Calculator!$G10)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "C14": {
+      "value": "To view the Unicode characters, you must install the Bravura font.\nSupport for installing Bravura font can be found here: ",
+      "formula": null,
+      "data_value": "To view the Unicode characters, you must install the Bravura font.\nSupport for installing Bravura font can be found here: ",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H11,Key!$A$2:$E$982,2,FALSE),Calculator!$B11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "X14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H11,Key!$A$2:$E$982,3,FALSE),Calculator!$B11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Y14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H11,Key!$A$2:$E$982,4,FALSE),Calculator!$C11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Z14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H11,Key!$A$2:$E$982,5,FALSE),Calculator!$C11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AA14": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB11",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AB14": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$L11",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AD14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M11,Key!$A$2:$E$982,2,FALSE),Calculator!$B11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AE14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M11,Key!$A$2:$E$982,3,FALSE),Calculator!$B11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AF14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M11,Key!$A$2:$E$982,4,FALSE),Calculator!$C11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AG14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M11,Key!$A$2:$E$982,5,FALSE),Calculator!$C11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AH14": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB11",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AI14": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$Q11",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AK14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R11,Key!$A$2:$E$982,2,FALSE),Calculator!$B11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AL14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R11,Key!$A$2:$E$982,3,FALSE),Calculator!$B11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AM14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R11,Key!$A$2:$E$982,4,FALSE),Calculator!$C11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AN14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R11,Key!$A$2:$E$982,5,FALSE),Calculator!$C11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AO14": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB11",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AP14": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$V11",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AR14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W11,Key!$A$2:$E$982,2,FALSE),Calculator!$B11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AS14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W11,Key!$A$2:$E$982,3,FALSE),Calculator!$B11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AT14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W11,Key!$A$2:$E$982,4,FALSE),Calculator!$C11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AU14": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W11,Key!$A$2:$E$982,5,FALSE),Calculator!$C11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AV14": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB11",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AW14": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AA11",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AY14": {
+      "value": "FORMULA",
+      "formula": "=IF(Calculator!$G11=0,\"\",Calculator!$G11)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "C15": {
+      "value": "http://forum.sagittal.org/viewtopic.php?f=16&t=429",
+      "formula": null,
+      "data_value": "http://forum.sagittal.org/viewtopic.php?f=16&t=429",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "W15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H12,Key!$A$2:$E$982,2,FALSE),Calculator!$B12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "X15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H12,Key!$A$2:$E$982,3,FALSE),Calculator!$B12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Y15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H12,Key!$A$2:$E$982,4,FALSE),Calculator!$C12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "Z15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$H12,Key!$A$2:$E$982,5,FALSE),Calculator!$C12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AA15": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB12",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AB15": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$L12",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AD15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M12,Key!$A$2:$E$982,2,FALSE),Calculator!$B12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AE15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M12,Key!$A$2:$E$982,3,FALSE),Calculator!$B12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AF15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M12,Key!$A$2:$E$982,4,FALSE),Calculator!$C12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AG15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$M12,Key!$A$2:$E$982,5,FALSE),Calculator!$C12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AH15": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB12",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AI15": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$Q12",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AK15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R12,Key!$A$2:$E$982,2,FALSE),Calculator!$B12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AL15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R12,Key!$A$2:$E$982,3,FALSE),Calculator!$B12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AM15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R12,Key!$A$2:$E$982,4,FALSE),Calculator!$C12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AN15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$R12,Key!$A$2:$E$982,5,FALSE),Calculator!$C12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AO15": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB12",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AP15": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$V12",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AR15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W12,Key!$A$2:$E$982,2,FALSE),Calculator!$B12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AS15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W12,Key!$A$2:$E$982,3,FALSE),Calculator!$B12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AT15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W12,Key!$A$2:$E$982,4,FALSE),Calculator!$C12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AU15": {
+      "value": "FORMULA",
+      "formula": "=CONCATENATE(VLOOKUP(Calculator!$W12,Key!$A$2:$E$982,5,FALSE),Calculator!$C12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AV15": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AB12",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "General"
+    },
+    "AW15": {
+      "value": "FORMULA",
+      "formula": "=Calculator!$AA12",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "AY15": {
+      "value": "FORMULA",
+      "formula": "=IF(Calculator!$G12=0,\"\",Calculator!$G12)",
+      "data_value": null,
+      "data_type": "f",
+      "number_format": "0.000"
+    },
+    "C16": {
+      "value": "Standard JI notation precision levels are visualized here:",
+      "formula": null,
+      "data_value": "Standard JI notation precision levels are visualized here:",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "C17": {
+      "value": "http://sagittal.org/SagittalJI.gif",
+      "formula": null,
+      "data_value": "http://sagittal.org/SagittalJI.gif",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AD17": {
+      "value": "*This notation is not recommended.",
+      "formula": null,
+      "data_value": "*This notation is not recommended.",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AR17": {
+      "value": "**Note that if the ASCII above shows commas , or back-quotes `",
+      "formula": null,
+      "data_value": "**Note that if the ASCII above shows commas , or back-quotes `",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AR18": {
+      "value": "the unicode above will not be correct ",
+      "formula": null,
+      "data_value": "the unicode above will not be correct ",
+      "data_type": "s",
+      "number_format": "General"
+    },
+    "AR19": {
+      "value": "until the breves (mina diacritics) are added to the Bravura font.",
+      "formula": null,
+      "data_value": "until the breves (mina diacritics) are added to the Bravura font.",
+      "data_type": "s",
+      "number_format": "General"
+    }
+  }
+}

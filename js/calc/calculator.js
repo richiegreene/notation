@@ -2,7 +2,7 @@ import * as C from './constants.js';
 import * as U from './utils.js';
 import { state } from './state.js';
 import * as UI from './ui.js';
-import * as SagittalConverter from './sagittal-monzo-converter.js';
+
 
 /**
  * Main calculation controller.
@@ -53,11 +53,9 @@ function performCalculationsForColumn(columnIndex, inputMonzoAbsolute) {
     getOutputFrequency(columnIndex);
     getCentDeviation(columnIndex);
     UI.updateEdoNotationDisplay(columnIndex, state.jiCents, state.edoQuantisation, $("#edoNormalize").prop("checked"), ref12, state.cents_toRef); // Pass ref12 and cents_toRef
-    // NOTE: Pass state.jiCents (actual JI interval in cents) to sagittal display, NOT state.cents_toRef
-    // state.cents_toRef is deviation from reference pitch (0 at 1/1), which causes display to always show default
-    // state.jiCents is the actual interval: 1200*log2(num/den), which updates correctly for any input
-    // Pass both monzo and cents - monzo is used for proper sagittal key calculation
-    UI.updateSagittalOutputDisplays(columnIndex, state.jiCents, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue, state.inputSum);
+    // Pass the absolute monzo (reference + interval) so sagittal finds the correct absolute pitch
+    // e.g. 5/4 above A shows C# (not just "E" for the interval 5/4)
+    UI.updateSagittalOutputDisplays(columnIndex, state.jiCents, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue, state.absoluteMonzoResult);
     
     // Only update the enharmonic search box for the first column to avoid confusion
     if (columnIndex === 1) {
