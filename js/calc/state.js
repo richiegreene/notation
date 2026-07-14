@@ -39,6 +39,7 @@ export let state = {
     currentCents: 0,
     outputFrequencies: {},
     edoOutputFrequencies: {},
+    sagittalOutputFrequencies: {},
     cat: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     monzoArray: [],
     bigArray: [],

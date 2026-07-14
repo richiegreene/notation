@@ -1049,62 +1049,16 @@ export function generateChordRatioFields(numFields) {
     }
 }
 
-const sagittalOutputConfig = {
-    medium: { containerSelector: '.athenian-output-container', prefix: 'athenian' },
-    high: { containerSelector: '.promethean-output-container', prefix: 'promethean' },
-    ultra: { containerSelector: '.herculean-output-container', prefix: 'herculean' },
-    extreme: { containerSelector: '.olympian-output-container', prefix: 'olympian' }
-};
-
-export function generateSagittalOutputColumns(numColumns, precision) {
-    const config = sagittalOutputConfig[precision];
-    if (!config) {
-        return;
-    }
-
-    const container = $(config.containerSelector);
+export function generateSagittalOutputColumns(numColumns) {
+    const container = $('.sagittal-output-container');
     container.empty();
 
     for (let i = 1; i <= numColumns; i++) {
         const columnHtml = `
             <div class="output-column sagittal-output-column">
-                <!-- Header row with column labels -->
-                <div class="sagittal-header-row">
-                    <div class="sagittal-cell header">Note</div>
-                    <div class="sagittal-cell header">Evo ASCII</div>
-                    <div class="sagittal-cell header">Revo ASCII</div>
-                    <div class="sagittal-cell header">Evo Unicode</div>
-                    <div class="sagittal-cell header">Revo Unicode</div>
-                    <div class="sagittal-cell header">Fifths</div>
-                    <div class="sagittal-cell header">Error(¢)</div>
-                </div>
-                <!-- Data rows (3 enharmonic rows per column) -->
-                <div class="sagittal-data-row" id="${config.prefix}Row1_${i}">
-                    <div class="sagittal-cell notename" id="${config.prefix}R1NoteName_${i}"></div>
-                    <div class="sagittal-cell evo-ascii" id="${config.prefix}R1EvoAscii_${i}"></div>
-                    <div class="sagittal-cell revo-ascii" id="${config.prefix}R1RevoAscii_${i}"></div>
-                    <div class="sagittal-cell evo-unicode" id="${config.prefix}R1EvoUni_${i}"></div>
-                    <div class="sagittal-cell revo-unicode" id="${config.prefix}R1RevoUni_${i}"></div>
-                    <div class="sagittal-cell fifths" id="${config.prefix}R1Fifths_${i}"></div>
-                    <div class="sagittal-cell error" id="${config.prefix}R1Error_${i}"></div>
-                </div>
-                <div class="sagittal-data-row" id="${config.prefix}Row2_${i}">
-                    <div class="sagittal-cell notename" id="${config.prefix}R2NoteName_${i}"></div>
-                    <div class="sagittal-cell evo-ascii" id="${config.prefix}R2EvoAscii_${i}"></div>
-                    <div class="sagittal-cell revo-ascii" id="${config.prefix}R2RevoAscii_${i}"></div>
-                    <div class="sagittal-cell evo-unicode" id="${config.prefix}R2EvoUni_${i}"></div>
-                    <div class="sagittal-cell revo-unicode" id="${config.prefix}R2RevoUni_${i}"></div>
-                    <div class="sagittal-cell fifths" id="${config.prefix}R2Fifths_${i}"></div>
-                    <div class="sagittal-cell error" id="${config.prefix}R2Error_${i}"></div>
-                </div>
-                <div class="sagittal-data-row" id="${config.prefix}Row3_${i}">
-                    <div class="sagittal-cell notename" id="${config.prefix}R3NoteName_${i}"></div>
-                    <div class="sagittal-cell evo-ascii" id="${config.prefix}R3EvoAscii_${i}"></div>
-                    <div class="sagittal-cell revo-ascii" id="${config.prefix}R3RevoAscii_${i}"></div>
-                    <div class="sagittal-cell evo-unicode" id="${config.prefix}R3EvoUni_${i}"></div>
-                    <div class="sagittal-cell revo-unicode" id="${config.prefix}R3RevoUni_${i}"></div>
-                    <div class="sagittal-cell fifths" id="${config.prefix}R3Fifths_${i}"></div>
-                    <div class="sagittal-cell error" id="${config.prefix}R3Error_${i}"></div>
+                <div class="sagittal-variants" id="sagittalVariants_${i}"></div>
+                <div class="output-content">
+                    <div type="text" id="sagittalFrequency_${i}" value="440"></div>
                 </div>
             </div>
         `;
@@ -1349,77 +1303,66 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
         }
     }
 
-    const precisions = Object.keys(sagittalOutputConfig);
+    // Read the unified Sagittal Output window controls
+    const precision   = $("#sagittalTypeDropdown").val() || 'medium';
+    const showEnh     = $("#sagittalShowEnharmonics").prop("checked");
+    const octaveReduce = $("#sagittalNormalize").prop("checked");
+    const useEvo      = $("#sagittalEvoToggle").prop("checked");
+    const useUnicode  = $("#sagittalUnicodeToggle").prop("checked");
 
-    precisions.forEach((precision) => {
-        const config = sagittalOutputConfig[precision];
+    // Call the 1:1 Excel conversion Calculator
+    const variants = getEnharmonicVariants(
+        { exponents, numerator: 1, denominator: 1, nominal: 'C' },
+        precision
+    ).filter(v => v.nominalLetter);
 
-        // Call the 1:1 Excel conversion Calculator
-        const variants = getEnharmonicVariants(
-            { exponents, numerator: 1, denominator: 1, nominal: 'C' },
-            precision
-        );
+    // When "enh equivalent" is off, show only the most accurate spelling —
+    // smallest absolute error, compared at full floating-point resolution.
+    let shown = variants;
+    if (!showEnh && variants.length > 1) {
+        shown = [variants.reduce((a, b) => {
+            const ea = (typeof a.error === 'number') ? Math.abs(a.error) : Infinity;
+            const eb = (typeof b.error === 'number') ? Math.abs(b.error) : Infinity;
+            return eb < ea ? b : a;
+        })];
+    }
 
-        // Populate each of the three rows
-        variants.forEach((variant, rowIndex) => {
-            const rowNum   = rowIndex + 1;
-            const rowPrefix = `#${config.prefix}R${rowNum}`;
+    const symbolField = (useEvo ? 'evo' : 'revo') + '_' + (useUnicode ? 'unicode' : 'ascii');
+    const symbolClass = useUnicode ? 'sagittal-symbol-unicode' : 'sagittal-symbol-ascii';
 
-            const letter    = variant.nominalLetter || '';
-            const sharpFlat = variant.sharpFlat     || '';
-            const evoAscii  = variant.evo_ascii      || '';
-            const revoAscii = variant.revo_ascii     || '';
-            const evoUni    = variant.evo_unicode    || '';
-            const revoUni   = variant.revo_unicode   || '';
-            const fifths    = variant.fifthsAbove1over1 !== '' ? variant.fifthsAbove1over1 : '';
-            // Signed like the EDO cent-deviation display: positive means the true pitch is
-            // sharp of the notated Sagittal symbol, negative means it's flat.
-            // Rounded to the app-wide "Display" precision setting (0-6 decimal places).
-            const errorNum  = (typeof variant.error === 'number') ? variant.error : 0;
-            const error     = errorNum.toFixed(state.precision);
+    const rowsHtml = shown.map(variant => {
+        const letter = variant.nominalLetter || '';
+        const symbol = variant[symbolField] || '';
+        // Signed like the EDO cent-deviation display: positive means the true pitch is
+        // sharp of the notated Sagittal symbol, negative means it's flat.
+        // Rounded to the app-wide "Display" precision setting (0-6 decimal places).
+        const errorNum = (typeof variant.error === 'number') ? variant.error : 0;
+        let error      = errorNum.toFixed(state.precision);
+        if (parseFloat(error) === 0) error = (0).toFixed(state.precision); // avoid "-0"
+        return `
+            <div class="sagittal-variant">
+                <div class="sagittal-notation-display">
+                    <span class="sagittal-letter">${letter}</span><!--
+                    --><span class="${symbolClass}">${symbol}</span>
+                </div>
+                <div class="output-content sagittal-error-value">${error}</div>
+            </div>
+        `;
+    }).join('');
 
-            // Note Name cell: letter + accidental (e.g. "E", "Eb", "C#")
-            const accidentalDisplay = sharpFlat === '#'  ? '♯'
-                                    : sharpFlat === 'b'  ? '♭'
-                                    : sharpFlat === 'bb' ? '𝄫'
-                                    : sharpFlat === 'x'  ? '𝄪'
-                                    : '';
-            $(rowPrefix + `NoteName_${columnIndex}`).text(`${letter}${accidentalDisplay}`);
+    $(`#sagittalVariants_${columnIndex}`).html(rowsHtml);
 
-            // Evo ASCII: letter + sagittal ASCII symbol
-            const evoAsciiDisplay = evoAscii
-                ? `<span style="font-family:'Inter',sans-serif;">${letter}</span>&nbsp;<span style="font-family:'Courier New',monospace;">${evoAscii}</span>`
-                : `<span style="font-family:'Inter',sans-serif;">${letter}</span>`;
-            $(rowPrefix + `EvoAscii_${columnIndex}`).html(evoAsciiDisplay);
-
-            // Revo ASCII
-            const revoAsciiDisplay = revoAscii
-                ? `<span style="font-family:'Inter',sans-serif;">${letter}</span>&nbsp;<span style="font-family:'Courier New',monospace;">${revoAscii}</span>`
-                : `<span style="font-family:'Inter',sans-serif;">${letter}</span>`;
-            $(rowPrefix + `RevoAscii_${columnIndex}`).html(revoAsciiDisplay);
-
-            // Evo Unicode
-            if (evoUni) {
-                $(rowPrefix + `EvoUni_${columnIndex}`).html(
-                    `<span style="font-family:'Inter',sans-serif;">${letter}</span>&nbsp;<span style="font-family:'Bravura';font-size:1.35em;">${evoUni}</span>`
-                );
-            } else {
-                $(rowPrefix + `EvoUni_${columnIndex}`).html(`<span style="font-family:'Inter',sans-serif;">${letter}</span>`);
-            }
-
-            // Revo Unicode
-            if (revoUni) {
-                $(rowPrefix + `RevoUni_${columnIndex}`).html(
-                    `<span style="font-family:'Inter',sans-serif;">${letter}</span>&nbsp;<span style="font-family:'Bravura';font-size:1.35em;">${revoUni}</span>`
-                );
-            } else {
-                $(rowPrefix + `RevoUni_${columnIndex}`).html(`<span style="font-family:'Inter',sans-serif;">${letter}</span>`);
-            }
-
-            $(rowPrefix + `Fifths_${columnIndex}`).text(fifths);
-            $(rowPrefix + `Error_${columnIndex}`).text(error);
-        });
-    });
+    // Frequency: same sounding pitch as the JI output; octave reduce folds the
+    // ratio into [1, 2) above the 1/1 (mirroring the JI Output normalize).
+    let frequency = outputFrequency;
+    if (octaveReduce && ratioNum > 0 && ratioDen > 0) {
+        const r = ratioNum / ratioDen;
+        frequency = state.freq1to1 * r * Math.pow(2, -Math.floor(Math.log2(r)));
+    }
+    state.sagittalOutputFrequencies[columnIndex] = frequency;
+    $(`#sagittalFrequency_${columnIndex}`).text(
+        (frequency !== undefined && !isNaN(frequency)) ? frequency.toFixed(state.precision) + "Hz" : ""
+    );
 }
 
 export function generateEdoOutputColumns(numColumns) {

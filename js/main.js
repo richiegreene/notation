@@ -149,6 +149,7 @@ function applyStoredTheme() {
 
 let isPlaying = false;
 let isPlayingEdo = false; // New state for EDO playback
+let isPlayingSagittal = false; // New state for Sagittal playback
 
 // New function to perform calculations and stop playback
 function performCalculationsAndStopPlayback() {
@@ -165,6 +166,12 @@ function performCalculationsAndStopPlayback() {
         isPlayingEdo = false;
         $("#playEdoOutputButton").text("play").removeClass("playing-active");
     }
+    // Stop playback for Sagittal output if active
+    if (isPlayingSagittal) {
+        stopAllFrequencies(0.1);
+        isPlayingSagittal = false;
+        $("#playSagittalOutputButton").text("play").removeClass("playing-active");
+    }
 }
 
 // Function to generate and download CSV for JI Output
@@ -175,6 +182,11 @@ function saveJIOutputAsCsv() {
 // Function to generate and download CSV for EDO Output
 function saveEdoOutputAsCsv() {
     generateCsvAndDownload(state.edoOutputFrequencies, "edo_output.csv");
+}
+
+// Function to generate and download CSV for Sagittal Output
+function saveSagittalOutputAsCsv() {
+    generateCsvAndDownload(state.sagittalOutputFrequencies, "sagittal_output.csv");
 }
 
 /**
@@ -253,16 +265,17 @@ $(document).ready(function(){
         saveEdoOutputAsCsv();
     });
 
+    $("#saveSagittalOutputButton").on("click", function() {
+        saveSagittalOutputAsCsv();
+    });
+
 	state.kammerTon = $("#frequencyA4").val();
 	state.precision = $("#precision").val();
     state.edoQuantisation = $("#edoApproximationInput").val(); // Initialize edoQuantisation
 	sendA();
 	UI.getPC();
     UI.generateEdoOutputColumns(parseInt($("#chord-size-input").val())); // Generate initial EDO output columns
-    UI.generateSagittalOutputColumns(parseInt($("#chord-size-input").val()), 'medium');
-    UI.generateSagittalOutputColumns(parseInt($("#chord-size-input").val()), 'high');
-    UI.generateSagittalOutputColumns(parseInt($("#chord-size-input").val()), 'ultra');
-    UI.generateSagittalOutputColumns(parseInt($("#chord-size-input").val()), 'extreme');
+    UI.generateSagittalOutputColumns(parseInt($("#chord-size-input").val()));
     // Trigger the change event on edoApproximationInput to force a recalculation and update
     // of all EDO output columns upon page load, mimicking the user's successful interaction.
     $("#edoApproximationInput").trigger("change");
@@ -598,6 +611,32 @@ $(document).ready(function(){
         performCalculationsAndStopPlayback();
     });
 
+    // Sagittal Output controls
+    $("#sagittalTypeDropdown").on("change", function() {
+        performCalculationsAndStopPlayback();
+    });
+
+    $("#sagittalNormalize, #sagittalShowEnharmonics").on("click", function() {
+        performCalculationsAndStopPlayback();
+    });
+
+    // Evo/Revo and ASCII/Unicode behave as mutually exclusive toggle pairs:
+    // clicking one checks it and unchecks its partner; exactly one is always on.
+    function bindSagittalTogglePair(idA, idB) {
+        $(idA).on("click", function() {
+            $(idA).prop("checked", true);
+            $(idB).prop("checked", false);
+            performCalculationsAndStopPlayback();
+        });
+        $(idB).on("click", function() {
+            $(idB).prop("checked", true);
+            $(idA).prop("checked", false);
+            performCalculationsAndStopPlayback();
+        });
+    }
+    bindSagittalTogglePair("#sagittalEvoToggle", "#sagittalRevoToggle");
+    bindSagittalTogglePair("#sagittalAsciiToggle", "#sagittalUnicodeToggle");
+
     // Collapsible menu functionality
     document.querySelectorAll('.settings-menu-item').forEach(item => {
         let headerToClick = item.querySelector('.toggle-header-placement') || item.querySelector('.settings-header');
@@ -649,10 +688,7 @@ $(document).ready(function(){
         let numFields = $(this).val();
         UI.generateOutputColumns(numFields);
         UI.generateEdoOutputColumns(numFields); // Generate EDO output columns
-        UI.generateSagittalOutputColumns(numFields, 'medium');
-        UI.generateSagittalOutputColumns(numFields, 'high');
-        UI.generateSagittalOutputColumns(numFields, 'ultra');
-        UI.generateSagittalOutputColumns(numFields, 'extreme');
+        UI.generateSagittalOutputColumns(numFields);
         UI.generateChordRatioFields(numFields);
         performCalculationsAndStopPlayback();
     });
@@ -880,6 +916,36 @@ $(document).ready(function(){
 
     // EDO Clear button event listener
     $("#clearEdoOutputButton").on("click", function() {
+        clearAllIntervals();
+    });
+
+    // Sagittal Play button event listener
+    $("#playSagittalOutputButton").on("click", function() {
+        if (isPlayingSagittal) {
+            stopAllFrequencies(0.2);
+            isPlayingSagittal = false;
+            $(this).text("play").removeClass("playing-active");
+        } else {
+            const chordSize = parseInt($("#chord-size-input").val());
+            const frequencies = [];
+            for (let i = 1; i <= chordSize; i++) {
+                const freqValue = state.sagittalOutputFrequencies[i];
+                if (freqValue !== undefined && !isNaN(freqValue)) {
+                    frequencies.push(freqValue);
+                }
+            }
+            if (frequencies.length > 0) {
+                playFrequencies(frequencies, 0.2, slideDuration); // Pass slideDuration
+                isPlayingSagittal = true;
+                $(this).text("stop").addClass("playing-active");
+            } else {
+                console.warn("No Sagittal frequencies to play.");
+            }
+        }
+    });
+
+    // Sagittal Clear button event listener
+    $("#clearSagittalOutputButton").on("click", function() {
         clearAllIntervals();
     });
 });

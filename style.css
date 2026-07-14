@@ -511,95 +511,72 @@ table.enharmonic-table > tr, td, th {
     text-align: center;
 }
 
+/* Sagittal Output (unified window, formatted like JI/EDO Output) */
+.sagittal-output-container {
+    display: flex;
+    justify-content: space-around;
+}
+
 .sagittal-output-column {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    border: 1px solid var(--bg-button);
-    padding: 0;
-    min-width: 550px;
+    align-items: center;
 }
 
-.sagittal-header-row,
-.sagittal-data-row {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 0;
-    border-bottom: 1px solid var(--bg-button);
+.sagittal-type-row {
+    margin-bottom: 0.5rem;
 }
 
-.sagittal-header-row {
-    background-color: #f0f0f0;
-    font-weight: bold;
-    color: #333;
+.sagittal-toggle-row {
+    display: inline-flex;
+    gap: 1rem;
+    justify-content: center;
 }
 
-.sagittal-cell {
-    padding: 0.35rem 0.25rem;
-    text-align: center;
-    font-size: 0.75rem;
-    border-right: 1px solid #ddd;
-    min-height: 1.8rem;
+.sagittal-variant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.sagittal-notation-display {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: pre-wrap;
-    word-break: break-word;
+    white-space: nowrap;
 }
 
-.sagittal-cell:last-child {
-    border-right: none;
+/* Letter name matches the EDO Output letter name (font + size), so letter
+   and accidental scale together as one unit. */
+.sagittal-letter {
+    color: var(--color-text);
+    font-family: "EdoAccidentals" !important, sans-serif;
+    font-weight: normal;
+    font-size: 4rem;
+    position: relative;
 }
 
-.sagittal-cell.header {
-    font-weight: bold;
-    font-size: 0.7rem;
-    padding: 0.4rem 0.2rem;
-}
-
-.sagittal-header-row .sagittal-cell:first-child {
-    display: none;
-}
-
-.sagittal-cell.notename {
-    display: none;
-}
-
-.sagittal-cell.evo-ascii,
-.sagittal-cell.revo-ascii {
-    font-family: monospace;
-    font-size: 0.65rem;
-    min-width: 55px;
-    white-space: pre-wrap;
-}
-
-.sagittal-cell.evo-unicode,
-.sagittal-cell.revo-unicode {
+.sagittal-symbol-unicode {
+    color: var(--color-text);
     font-family: "Bravura", serif;
-    font-size: 1.1rem;
-    min-width: 55px;
-    white-space: pre-wrap;
+    font-size: 4rem;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.75rem;
 }
 
-.sagittal-cell.fifths {
-    min-width: 40px;
-    font-size: 0.7rem;
+.sagittal-symbol-ascii {
+    color: var(--color-text);
+    font-family: "Courier New", monospace;
+    font-size: 2rem;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.75rem;
 }
 
-.sagittal-cell.error {
-    min-width: 55px;
-    font-size: 0.7rem;
-}
-
-.sagittal-meta-row {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-    margin-bottom: 0.25rem;
-    font-size: 0.85rem;
-    color: var(--bg-button);
+.sagittal-error-value {
+    margin-top: 0.25rem;
 }
 
 .heji-dropdowns-centered {
@@ -737,11 +714,8 @@ input.ratioIn {
     grid-row: span 5; /* Adjust grid-row for EDO output */
 }
 
-#athenian-output-item,
-#promethean-output-item,
-#herculean-output-item,
-#olympian-output-item {
-    grid-row: span 3;
+#sagittal-output-item {
+    grid-row: span 5; /* Match EDO output: controls + notation + buttons */
 }
 
 .settings-menu-item.collapsed-item {

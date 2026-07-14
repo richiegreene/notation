@@ -535,50 +535,36 @@
             </div>
         </div>
 
-        <div class="settings-menu-item" id="athenian-output-item">
+        <div class="settings-menu-item" id="sagittal-output-item">
             <div class="settings-header">
-                <span>Athenian Output</span>
+                <span>Sagittal Output</span>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="settings-content">
                 <div class="outputbox">
-                    <div class="output-container athenian-output-container"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="promethean-output-item">
-            <div class="settings-header">
-                <span>Promethean Output</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="outputbox">
-                    <div class="output-container promethean-output-container"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="herculean-output-item">
-            <div class="settings-header">
-                <span>Herculean Output</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="outputbox">
-                    <div class="output-container herculean-output-container"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="olympian-output-item">
-            <div class="settings-header">
-                <span>Olympian Output</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="outputbox">
-                    <div class="output-container olympian-output-container"></div>
+                    <div class="sagittal-type-row">
+                        <select id="sagittalTypeDropdown">
+                            <option value="medium" selected>Athenian</option>
+                            <option value="high">Promethean</option>
+                            <option value="ultra">Herculean</option>
+                            <option value="extreme">Olympian</option>
+                        </select>
+                    </div>
+                    <label><input type="checkbox" id="sagittalNormalize"> octave reduce</label><br>
+                    <label><input type="checkbox" id="sagittalShowEnharmonics"> enh equivalent</label><br>
+                    <div class="sagittal-toggle-row">
+                        <label><input type="checkbox" id="sagittalEvoToggle"> Evo</label>
+                        <label><input type="checkbox" id="sagittalRevoToggle" checked> Revo</label>
+                    </div>
+                    <div class="sagittal-toggle-row">
+                        <label><input type="checkbox" id="sagittalAsciiToggle"> ASCII</label>
+                        <label><input type="checkbox" id="sagittalUnicodeToggle" checked> Unicode</label>
+                    </div>
+                    <br>
+                    <div class="sagittal-output-container"></div>
+                    <button id="clearSagittalOutputButton" class="clear">clear</button>
+                    <button id="playSagittalOutputButton" class="clear">play</button>
+                    <button id="saveSagittalOutputButton" class="clear save-csv-button">save</button>
                 </div>
             </div>
         </div>
