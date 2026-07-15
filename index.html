@@ -113,6 +113,135 @@
                                                          </div>
                                                      </div>        </div>
 
+        <div class="settings-menu-item" id="output-item">
+            <div class="settings-header">
+                <span>HEJI Output</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="outputbox">
+                    <div class="output-controls"></div>
+                    <div class="output-container">
+                    </div>
+                    <div class="output-checkboxes">
+                        <label><input type="checkbox" name="inputType" id="normalize"> octave reduce</label>
+                    </div>
+                    <button id="clearOutputButton" class="clear" onclick="clearAllIntervals()">clear</button>
+                    <button id="playOutputButton" class="clear">play</button>
+                    <button id="saveHejiOutputButton" class="clear save-csv-button">save</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-menu-item" id="edo-output-item">
+            <div class="settings-header">
+                <span>Ups and Downs Output</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="outputbox">
+                    <div class="output-controls">
+                        <input type="number" id="edoApproximationInput" class="edo" value="41" min="1">
+                    </div>
+					<div class="edo-output-container">
+                    </div>
+                    <div class="output-checkboxes">
+                        <label><input type="checkbox" name="inputType" id="edoNormalize"> octave reduce</label>
+                        <label><input type="checkbox" id="showEnharmonics"> enh equivalent</label>
+                        <label><input type="checkbox" id="excludeHalvesCheckbox"> exclude halves</label>
+                    </div>
+                    <button id="clearEdoOutputButton" class="clear">clear</button>
+                    <button id="playEdoOutputButton" class="clear">play</button>
+                    <button id="saveEdoOutputButton" class="clear save-csv-button">save</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-menu-item" id="sagittal-output-item">
+            <div class="settings-header">
+                <span>Sagittal Output</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="outputbox">
+                    <div class="output-controls">
+                        <div class="sagittal-type-row">
+                            <select id="sagittalTypeDropdown">
+                                <option value="medium" selected>Athenian</option>
+                                <option value="high">Promethean</option>
+                                <option value="ultra">Herculean</option>
+                                <option value="extreme">Olympian</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="sagittal-output-container"></div>
+                    <div class="output-checkboxes">
+                        <label><input type="checkbox" id="sagittalNormalize"> octave reduce</label>
+                        <label><input type="checkbox" id="sagittalShowEnharmonics"> enh equivalent</label>
+                        <div class="sagittal-toggle-row">
+                            <button type="button" id="sagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
+                            <button type="button" id="sagittalEvoToggle" class="sagittal-toggle-button">evo</button>
+                        </div>
+                        <div class="sagittal-toggle-row">
+                            <button type="button" id="sagittalUnicodeToggle" class="sagittal-toggle-button selected">unicode</button>
+                            <button type="button" id="sagittalAsciiToggle" class="sagittal-toggle-button">ascii</button>
+                        </div>
+                    </div>
+                    <button id="clearSagittalOutputButton" class="clear">clear</button>
+                    <button id="playSagittalOutputButton" class="clear">play</button>
+                    <button id="saveSagittalOutputButton" class="clear save-csv-button">save</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-menu-item" id="chord-entry-item">
+            <div class="toggle-header-placement">
+                <input type="radio" name="inputType" id="chordInput" checked> <label for="chordInput">Chord Entry</label>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="ratiobox">
+                    <div class="chord-entry-type-container">
+                        <select id="chord-entry-type-select">
+                            <option value="enumerated-chord">Enumerated</option>
+                            <option value="note-by-note">Note-by-Note</option>
+                        </select>
+                    </div>
+
+                    <div id="enumerated-chord-entry" class="chord-entry-mode">
+                        <div class="enumerated-chord-layout">
+                            <div class="enumerated-column">
+
+                                <div class="interval-column">
+                                    <input type="number" class="ratioIn" id="enumerated-base-num" value="1">
+                                    <input type="number" class="ratioIn" id="enumerated-base-den" value="1">
+                                    <div class="interval-button-group">
+                                        <button id="load-enumerated-base" class="getCurrentPitch interval-button">load</button>
+                                        <button id="clear-enumerated-base" class="clearInputRatio interval-button">clear</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="enumerated-column">
+
+                                <input type="text" id="enumerated-chord-input" placeholder="e.g., 4:5:6, 4::8">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="note-by-note-entry" class="chord-entry-mode" style="display: none;">
+                        <div class="interval-entry-layout" id="chord-ratio-fields-container">
+                            <!-- Dynamic fields will be inserted here by JS -->
+                        </div>
+                        <div class="chord-size-container">
+                            <label for="chord-size-input">Size</label>
+                            <input type="number" id="chord-size-input" value="1" min="1" max="16">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
                                 <div class="settings-menu-item" id="heji-entry-item">
 
                                     <div class="toggle-header-placement">
@@ -407,135 +536,6 @@
             </div>
         </div>
 
-        <div class="settings-menu-item" id="chord-entry-item">
-            <div class="toggle-header-placement">
-                <input type="radio" name="inputType" id="chordInput" checked> <label for="chordInput">Chord Entry</label>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="ratiobox">
-                    <div class="chord-entry-type-container">
-                        <select id="chord-entry-type-select">
-                            <option value="enumerated-chord">Enumerated</option>
-                            <option value="note-by-note">Note-by-Note</option>
-                        </select>
-                    </div>
-
-                    <div id="enumerated-chord-entry" class="chord-entry-mode">
-                        <div class="enumerated-chord-layout">
-                            <div class="enumerated-column">
-
-                                <div class="interval-column">
-                                    <input type="number" class="ratioIn" id="enumerated-base-num" value="1">
-                                    <input type="number" class="ratioIn" id="enumerated-base-den" value="1">
-                                    <div class="interval-button-group">
-                                        <button id="load-enumerated-base" class="getCurrentPitch interval-button">load</button>
-                                        <button id="clear-enumerated-base" class="clearInputRatio interval-button">clear</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="enumerated-column">
-
-                                <input type="text" id="enumerated-chord-input" placeholder="e.g., 4:5:6, 4::8">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="note-by-note-entry" class="chord-entry-mode" style="display: none;">
-                        <div class="interval-entry-layout" id="chord-ratio-fields-container">
-                            <!-- Dynamic fields will be inserted here by JS -->
-                        </div>
-                        <div class="chord-size-container">
-                            <label for="chord-size-input">Size</label>
-                            <input type="number" id="chord-size-input" value="1" min="1" max="16">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="output-item">
-            <div class="settings-header">
-                <span>HEJI Output</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="outputbox">
-                    <div class="output-controls"></div>
-                    <div class="output-container">
-                    </div>
-                    <div class="output-checkboxes">
-                        <label><input type="checkbox" name="inputType" id="normalize"> octave reduce</label>
-                    </div>
-                    <button id="clearOutputButton" class="clear" onclick="clearAllIntervals()">clear</button>
-                    <button id="playOutputButton" class="clear">play</button>
-                    <button id="saveHejiOutputButton" class="clear save-csv-button">save</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="edo-output-item">
-            <div class="settings-header">
-                <span>Ups and Downs Output</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="outputbox">
-                    <div class="output-controls">
-                        <input type="number" id="edoApproximationInput" class="edo" value="41" min="1">
-                    </div>
-					<div class="edo-output-container">
-                    </div>
-                    <div class="output-checkboxes">
-                        <label><input type="checkbox" name="inputType" id="edoNormalize"> octave reduce</label>
-                        <label><input type="checkbox" id="showEnharmonics"> enh equivalent</label>
-                        <label><input type="checkbox" id="excludeHalvesCheckbox"> exclude halves</label>
-                    </div>
-                    <button id="clearEdoOutputButton" class="clear">clear</button>
-                    <button id="playEdoOutputButton" class="clear">play</button>
-                    <button id="saveEdoOutputButton" class="clear save-csv-button">save</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="sagittal-output-item">
-            <div class="settings-header">
-                <span>Sagittal Output</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="outputbox">
-                    <div class="output-controls">
-                        <div class="sagittal-type-row">
-                            <select id="sagittalTypeDropdown">
-                                <option value="medium" selected>Athenian</option>
-                                <option value="high">Promethean</option>
-                                <option value="ultra">Herculean</option>
-                                <option value="extreme">Olympian</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="sagittal-output-container"></div>
-                    <div class="output-checkboxes">
-                        <label><input type="checkbox" id="sagittalNormalize"> octave reduce</label>
-                        <label><input type="checkbox" id="sagittalShowEnharmonics"> enh equivalent</label>
-                        <div class="sagittal-toggle-row">
-                            <button type="button" id="sagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
-                            <button type="button" id="sagittalEvoToggle" class="sagittal-toggle-button">evo</button>
-                        </div>
-                        <div class="sagittal-toggle-row">
-                            <button type="button" id="sagittalUnicodeToggle" class="sagittal-toggle-button selected">unicode</button>
-                            <button type="button" id="sagittalAsciiToggle" class="sagittal-toggle-button">ascii</button>
-                        </div>
-                    </div>
-                    <button id="clearSagittalOutputButton" class="clear">clear</button>
-                    <button id="playSagittalOutputButton" class="clear">play</button>
-                    <button id="saveSagittalOutputButton" class="clear save-csv-button">save</button>
-                </div>
-            </div>
-        </div>
-
 		<div class="settings-menu-item" id="interval-entry-item">
             <div class="toggle-header-placement">
                 <input type="radio" name="inputType" id="intervalInput"> <label for="intervalInput">Interval Entry</label>
@@ -575,7 +575,7 @@
         </div>
 
     </div>
-    
+
 	    
 </body>
 </html>
