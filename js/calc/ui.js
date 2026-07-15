@@ -1260,8 +1260,8 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
     const precision   = $("#sagittalTypeDropdown").val() || 'medium';
     const showEnh     = $("#sagittalShowEnharmonics").prop("checked");
     const octaveReduce = $("#sagittalNormalize").prop("checked");
-    const useEvo      = $("#sagittalEvoToggle").prop("checked");
-    const useUnicode  = $("#sagittalUnicodeToggle").prop("checked");
+    const useEvo      = $("#sagittalEvoToggle").hasClass("selected");
+    const useUnicode  = $("#sagittalUnicodeToggle").hasClass("selected");
 
     // Call the 1:1 Excel conversion Calculator
     const variants = getEnharmonicVariants(

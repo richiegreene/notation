@@ -620,17 +620,17 @@ $(document).ready(function(){
         performCalculationsAndStopPlayback();
     });
 
-    // Evo/Revo and ASCII/Unicode behave as mutually exclusive toggle pairs:
-    // clicking one checks it and unchecks its partner; exactly one is always on.
+    // Evo/Revo and ASCII/Unicode behave as mutually exclusive toggle-button pairs:
+    // clicking one selects it and deselects its partner; exactly one is always selected.
     function bindSagittalTogglePair(idA, idB) {
         $(idA).on("click", function() {
-            $(idA).prop("checked", true);
-            $(idB).prop("checked", false);
+            $(idA).addClass("selected");
+            $(idB).removeClass("selected");
             performCalculationsAndStopPlayback();
         });
         $(idB).on("click", function() {
-            $(idB).prop("checked", true);
-            $(idA).prop("checked", false);
+            $(idB).addClass("selected");
+            $(idA).removeClass("selected");
             performCalculationsAndStopPlayback();
         });
     }
