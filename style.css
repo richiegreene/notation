@@ -484,7 +484,8 @@ table.enharmonic-table > tr, td, th {
 .output-container {
     display: flex;
     justify-content: space-around;
-    flex-wrap: wrap;
+    /* No flex-wrap: like the EDO and Sagittal windows, the note columns stay
+       on one horizontal row and prop the window open instead of stacking. */
     gap: 0.5rem;
 }
 
