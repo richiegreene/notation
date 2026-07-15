@@ -217,7 +217,6 @@ export function generateOutputColumns(numColumns) {
         let columnHtml = `
             <div class="output-column">
                 <em><div id="undefinedNotation_${i}"></div></em>
-                <br>
 				<div class="notation-display-container">
                     <div class="noteName" id="noteName_${i}"></div><!--
                     --><div class="notationOutput" id="notationOutput_${i}"></div>
@@ -843,22 +842,8 @@ if ($("#paletteInput").prop("checked")){
 		displayedHeji2String = displayedHeji2String.replace(/n/g, ' '); // Replace all 'n' with ' ' in this specific context
 	}
 
-	// Conditional alignment logic based on user feedback
-	const isHejiExtOnly = (heji2String.trim().length === 0 || heji2String.trim() === 'n') && hejiExtensionsPath.trim().length > 0;
-
-	if (isHejiExtOnly) {
-		// State: HEJI Extensions only
-		$('.noteName').css('top', '1rem');
-		$('.notation-display-container').css('padding-bottom', '2rem');
-	} else {
-		// Default state: HEJI2 only, or both together
-		$('.noteName').css('top', '0rem');
-		$('.notation-display-container').css('padding-bottom', '0rem');
-	}
-
-	// Reset other offsets to ensure clean state
-	$('.heji2').css('top', '0rem');
-
+	// Row alignment is handled by the fixed-height .notation-display-container in CSS;
+	// no per-state padding/offset compensation is needed.
 	var notationString;
 	var undefinedNotation;
 	// Check if HEJI notation is uncalculatable
@@ -866,7 +851,7 @@ if ($("#paletteInput").prop("checked")){
 		state.hasPrimeGreaterThan89 || // If prime > 89 is present
 		(heji2String.trim().length === 0 && hejiExtensionsPath.trim().length === 0 && natural.trim().length === 0) // Or if no HEJI symbols are found
 	)) {
-		notationString = "<span style='font-family: monospace; padding-top: 63px; padding-bottom: 63px;'>n/a</span>"; // Apply monospace font with padding
+		notationString = "<span style='font-family: monospace;'>n/a</span>";
 		outputDiatonic = "";
 		undefinedNotation = ""; // Clear undefinedNotation as we are explicitly showing n/a
 	} else {
@@ -887,38 +872,6 @@ if ($("#paletteInput").prop("checked")){
 	} else {
 		$("#midiAccidental_" + columnIndex).text(parsedMidiNote.accidental);
 	}
-
-    // New logic for padding:
-    const noteNameElement = $("#noteName_" + columnIndex);
-    if (hejiExtensionsPath.trim().length === 0 && displayedHeji2String.trim().length === 0) {
-        // If only letter name is displayed, add padding
-        noteNameElement.css({
-            'padding-top': '38px', //blank, "n" natural only padding for compensation formatting 
-            'padding-bottom': '38px' //blank, "n" natural only padding for compensation formatting (yeah same)
-        });
-    } else {
-        // Reset padding if not solo letter name (important for dynamic updates)
-        noteNameElement.css({
-            'padding-top': '0',
-            'padding-bottom': '0'
-        });
-    }
-
-    // New logic for padding for HEJI Extension only:
-    const notationOutputElement = $("#notationOutput_" + columnIndex);
-    if (displayedHeji2String.trim().length === 0 && hejiExtensionsPath.trim().length > 0) {
-        // If only HEJI Extension is displayed, add 10px padding
-        notationOutputElement.css({
-            'padding-top': '12px',
-            'padding-bottom': '12px'
-        });
-    } else {
-        // Reset padding if this condition is not met
-        notationOutputElement.css({
-            'padding-top': '0',
-            'padding-bottom': '0'
-        });
-    }
 
     return ref12; // Return ref12 for external use
 }
@@ -1330,6 +1283,10 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
     const symbolField = (useEvo ? 'evo' : 'revo') + '_' + (useUnicode ? 'unicode' : 'ascii');
     const symbolClass = useUnicode ? 'sagittal-symbol-unicode' : 'sagittal-symbol-ascii';
 
+    // Every column renders the same number of variant slots (3 in enh mode, 1 otherwise),
+    // padding with empty placeholders so rows below stay horizontally aligned.
+    const slotCount = showEnh ? 3 : 1;
+
     const rowsHtml = shown.map(variant => {
         const letter = variant.nominalLetter || '';
         const symbol = variant[symbolField] || '';
@@ -1350,7 +1307,14 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
         `;
     }).join('');
 
-    $(`#sagittalVariants_${columnIndex}`).html(rowsHtml);
+    const placeholderHtml = `
+        <div class="sagittal-variant sagittal-variant-placeholder">
+            <div class="sagittal-notation-display"></div>
+            <div class="output-content sagittal-error-value">&nbsp;</div>
+        </div>
+    `.repeat(Math.max(0, slotCount - shown.length));
+
+    $(`#sagittalVariants_${columnIndex}`).html(rowsHtml + placeholderHtml);
 
     // Frequency: same sounding pitch as the JI output; octave reduce folds the
     // ratio into [1, 2) above the 1/1 (mirroring the HEJI Output normalize).

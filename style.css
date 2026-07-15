@@ -499,9 +499,22 @@ table.enharmonic-table > tr, td, th {
     border: 2px dashed #ccc; /* Dashed border */
 }
 
+/* Fixed-height notation row: the note letter + accidental area is the same height
+   in every output column and window, regardless of which glyph fonts are present,
+   so note names stay horizontally aligned locally (across columns) and globally
+   (across the HEJI, EDO, and Sagittal windows). Glyph ink may overflow visibly. */
 .notation-display-container {
     display: flex;
     align-items: center;
+    justify-content: center;
+    height: 9rem;
+    overflow: visible;
+}
+
+/* Uniform controls header above every output window's notation area, so the
+   note-name row starts at the same vertical offset in all output windows. */
+.output-controls {
+    min-height: 10.5rem;
 }
 
 .sagittal-notation {
@@ -550,6 +563,8 @@ table.enharmonic-table > tr, td, th {
     align-items: center;
     justify-content: center;
     white-space: nowrap;
+    height: 9rem; /* Match .notation-display-container for global note-name alignment */
+    overflow: visible;
 }
 
 /* Letter name matches the EDO Output letter name (font + size), so letter
