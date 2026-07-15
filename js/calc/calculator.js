@@ -2,6 +2,7 @@ import * as C from './constants.js';
 import * as U from './utils.js';
 import { state } from './state.js';
 import * as UI from './ui.js';
+import { readSagittalEntry } from './sagittal-Entry.js';
 
 
 /**
@@ -128,6 +129,10 @@ function getCombinedInputSum() {
         hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.eightyNine[UI.getEightyNine()]);
 
         monzoForCalculation = hejiAbsoluteMonzo; // This is the absolute monzo of the HEJI note
+    } else if ($("#sagittalEntryInput").prop("checked")){ // Sagittal Entry
+        // Absolute monzo of letter + octave + typed sagittal accidental
+        // (exact ratio redeemed from the symbol's default comma).
+        monzoForCalculation = readSagittalEntry();
     } else if ($("#intervalInput").prop("checked")){ // Interval Entry
         let intervalMonzo = C.reference; // Start with 0 monzo for interval (C.reference is all zeros)
         
@@ -282,7 +287,7 @@ export function getDisplayValues(columnIndex){
 }
 
 export function prepareCentsCalculationData() {
-    if ($("#paletteInput").prop("checked")){ 
+    if ($("#paletteInput").prop("checked") || $("#sagittalEntryInput").prop("checked")){
         state.centsSum = state.inputSum; // Corrected: directly use inputSum for paletteInput
     } else if ($("#intervalInput").prop("checked") || $("#chordInput").prop("checked")){
         state.centsSum = state.inputSum;

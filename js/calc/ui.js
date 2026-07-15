@@ -262,7 +262,10 @@ export function getPC(columnIndex){
 	var refArray = U.productArray(state.currentReferenceMonzo, C.tonalIdentity);
 
     let tonalArray;
-	if ($("#paletteInput").prop("checked")){
+    // Sagittal Entry is an absolute-pitch entry mode like HEJI Entry, so it
+    // follows the palette path everywhere in this function.
+    const isAbsoluteEntry = $("#paletteInput").prop("checked") || $("#sagittalEntryInput").prop("checked");
+	if (isAbsoluteEntry){
         const refAccidentalMonzo = getRefAccidentalMonzo();
         const adjustedDisplaySum = U.diffArray(state.displaySum, refAccidentalMonzo);
 		tonalArray = U.productArray(adjustedDisplaySum, C.tonalIdentity);
@@ -271,9 +274,9 @@ export function getPC(columnIndex){
 	}
 	var refArraySum = U.sum(refArray);
 	var tonalArraySum = U.sum(tonalArray);
-	var refpc = U.mod((refArraySum + 4),7); 
+	var refpc = U.mod((refArraySum + 4),7);
 	var pc;
-if ($("#paletteInput").prop("checked")){
+if (isAbsoluteEntry){
     pc = U.mod((refpc + tonalArraySum),7);
 } else {
     pc = U.mod((tonalArraySum + 4),7); // For other Entry areas, map -3 to C (original logic)
@@ -333,7 +336,7 @@ if ($("#paletteInput").prop("checked")){
 	var eightyThree = "";
 	var eightyNine = "";
 	var chromatic;
-	if ($("#paletteInput").prop("checked")) {
+	if (isAbsoluteEntry) {
         const diatonicOffset = getDiatonicNoteOffset();
         const accidentalOffset = getRefAccidentalOffset();
         chromatic = tonalArraySum + (22 + diatonicOffset + accidentalOffset); // Adjusted for HEJI Entry with dynamic offsets

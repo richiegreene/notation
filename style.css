@@ -580,9 +580,34 @@ table.enharmonic-table > tr, td, th {
     margin-bottom: 10px; /* Same as .chord-entry-type-container */
 }
 
-#sagittalTypeDropdown {
+#sagittalTypeDropdown,
+#sagittalEntryTypeDropdown {
     width: 100%; /* Make it fill the available space, like #chord-entry-type-select */
     box-sizing: border-box; /* Include padding and border in width */
+}
+
+/* Sagittal Entry: letter + octave dropdowns sharing a row with the ASCII
+   accidental text field. */
+.sagittal-entry-note-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sagittal-entry-note-row input[type="text"] {
+    flex: 1 1 0;
+    min-width: 0;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Feedback line for unrecognized/out-of-set symbols. */
+.sagittal-entry-message {
+    min-height: 1.2rem;
+    margin-top: 0.4rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--bg-button); /* subdued grey, like .frequency/.JIgross */
 }
 
 /* EDO approximation entry at the top of the Ups and Downs Output window,
@@ -776,6 +801,10 @@ input.ratioIn {
 }
 
 #chord-entry-item {
+    grid-row: span 3;
+}
+
+#sagittal-entry-item {
     grid-row: span 3;
 }
 

@@ -556,6 +556,13 @@ $(document).ready(function(){
 		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
+	$("#sagittalEntryInput").click(function(c){
+		// When switching to Sagittal Entry, ensure only one output column is displayed
+		$("#chord-size-input").val(1);
+		$("#chord-size-input").trigger("change");
+		performCalculationsAndStopPlayback();
+		UI.getPC();
+	});
     $("#chordInput").click(function(c){
         performCalculationsAndStopPlayback();
         UI.getPC();
@@ -639,6 +646,15 @@ $(document).ready(function(){
     }
     bindSagittalTogglePair("#sagittalEvoToggle", "#sagittalRevoToggle");
     bindSagittalTogglePair("#sagittalAsciiToggle", "#sagittalUnicodeToggle");
+
+    // Sagittal Entry controls
+    bindSagittalTogglePair("#sagittalEntryRevoToggle", "#sagittalEntryEvoToggle");
+    $("#sagittalEntryTypeDropdown, #sagittalEntryNoteDropdown, #sagittalEntryOctaveDropdown").on("change", function() {
+        performCalculationsAndStopPlayback();
+    });
+    $("#sagittalEntryAccidentalInput").on("input", function() {
+        performCalculationsAndStopPlayback();
+    });
 
     // Collapsible menu functionality
     document.querySelectorAll('.settings-menu-item').forEach(item => {

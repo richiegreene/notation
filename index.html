@@ -574,6 +574,56 @@
             </div>
         </div>
 
+		<div class="settings-menu-item" id="sagittal-entry-item">
+            <div class="toggle-header-placement">
+                <input type="radio" name="inputType" id="sagittalEntryInput"> <label for="sagittalEntryInput">Sagittal Entry</label>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="ratiobox">
+                    <div class="sagittal-type-row">
+                        <select id="sagittalEntryTypeDropdown">
+                            <option value="medium" selected>Athenian</option>
+                            <option value="high">Promethean</option>
+                            <option value="ultra">Herculean</option>
+                            <option value="extreme">Olympian</option>
+                        </select>
+                    </div>
+                    <div class="sagittal-toggle-row">
+                        <button type="button" id="sagittalEntryRevoToggle" class="sagittal-toggle-button selected">revo</button>
+                        <button type="button" id="sagittalEntryEvoToggle" class="sagittal-toggle-button">evo</button>
+                    </div>
+                    <div class="sagittal-entry-note-row">
+                        <select id="sagittalEntryNoteDropdown">
+                            <option value="0">F</option>
+                            <option value="1" selected>C</option>
+                            <option value="2">G</option>
+                            <option value="3">D</option>
+                            <option value="4">A</option>
+                            <option value="5">E</option>
+                            <option value="6">B</option>
+                        </select>
+                        <select id="sagittalEntryOctaveDropdown">
+                            <option value="1">-4</option>
+                            <option value="2">-3</option>
+                            <option value="3">-2</option>
+                            <option value="4">-1</option>
+                            <option value="5">0</option>
+                            <option value="6">1</option>
+                            <option value="7">2</option>
+                            <option value="8">3</option>
+                            <option value="9" selected>4</option>
+                            <option value="10">5</option>
+                            <option value="11">6</option>
+                            <option value="12">7</option>
+                        </select>
+                        <input type="text" id="sagittalEntryAccidentalInput" placeholder="e.g. /|" autocomplete="off" spellcheck="false">
+                    </div>
+                    <div id="sagittalEntryMessage" class="sagittal-entry-message"></div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 	    
