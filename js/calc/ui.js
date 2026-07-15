@@ -1353,7 +1353,7 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
     $(`#sagittalVariants_${columnIndex}`).html(rowsHtml);
 
     // Frequency: same sounding pitch as the JI output; octave reduce folds the
-    // ratio into [1, 2) above the 1/1 (mirroring the JI Output normalize).
+    // ratio into [1, 2) above the 1/1 (mirroring the HEJI Output normalize).
     let frequency = outputFrequency;
     if (octaveReduce && ratioNum > 0 && ratioDen > 0) {
         const r = ratioNum / ratioDen;

@@ -174,9 +174,9 @@ function performCalculationsAndStopPlayback() {
     }
 }
 
-// Function to generate and download CSV for JI Output
-function saveJIOutputAsCsv() {
-    generateCsvAndDownload(state.outputFrequencies, "ji_output.csv");
+// Function to generate and download CSV for HEJI Output
+function saveHejiOutputAsCsv() {
+    generateCsvAndDownload(state.outputFrequencies, "heji_output.csv");
 }
 
 // Function to generate and download CSV for EDO Output
@@ -257,8 +257,8 @@ $(document).ready(function(){
     });
 
     // Event listeners for the new save buttons
-    $("#saveJiOutputButton").on("click", function() {
-        saveJIOutputAsCsv();
+    $("#saveHejiOutputButton").on("click", function() {
+        saveHejiOutputAsCsv();
     });
 
     $("#saveEdoOutputButton").on("click", function() {
