@@ -66,5 +66,5 @@ export let state = {
     absoluteMonzoResult: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     sibeliusRange: 200,
     midiRange: 1200,
-    edoQuantisation: 53,
+    edoQuantisation: 41,
 };

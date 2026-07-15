@@ -221,21 +221,23 @@ export function generateOutputColumns(numColumns) {
                     <div class="noteName" id="noteName_${i}"></div><!--
                     --><div class="notationOutput" id="notationOutput_${i}"></div>
                 </div>
-                <div class="output-content">
+                <div class="output-region-ratio">
                     <div class="ratio-display-container">
                         <div id="num_${i}" class="num" value="1"></div>
                         <div id="den_${i}" class="den" value="1"></div>
                         <span id="ratioCopyHelper_${i}" style="position: absolute; left: -9999px;"></span>
                     </div>
                 </div>
-                <div class="output-content">
-                    <span id="midiNote_${i}"></span><span id="midiAccidental_${i}" class="midiAccidental"></span><span id="cents_${i}" value="0"></span>
-                </div>
-                <div class="output-content">
-                    <div type="text" id="frequency_${i}" value="440"></div>
-                </div>
-                <div class="output-content">
-                    <div id="JIgross_${i}" value="0">0</div>
+                <div class="output-region-values">
+                    <div class="output-content">
+                        <span id="midiNote_${i}"></span><span id="midiAccidental_${i}" class="midiAccidental"></span><span id="cents_${i}" value="0"></span>
+                    </div>
+                    <div class="output-content">
+                        <div type="text" id="frequency_${i}" value="440"></div>
+                    </div>
+                    <div class="output-content">
+                        <div id="JIgross_${i}" value="0">0</div>
+                    </div>
                 </div>
             </div>
         `;
@@ -1010,8 +1012,12 @@ export function generateSagittalOutputColumns(numColumns) {
         const columnHtml = `
             <div class="output-column sagittal-output-column">
                 <div class="sagittal-variants" id="sagittalVariants_${i}"></div>
-                <div class="output-content">
-                    <div type="text" id="sagittalFrequency_${i}" value="440"></div>
+                <div class="output-region-ratio"></div>
+                <div class="output-region-values">
+                    <div id="sagittalError_${i}"></div>
+                    <div class="output-content">
+                        <div type="text" id="sagittalFrequency_${i}" value="440"></div>
+                    </div>
                 </div>
             </div>
         `;
@@ -1290,31 +1296,31 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
     const rowsHtml = shown.map(variant => {
         const letter = variant.nominalLetter || '';
         const symbol = variant[symbolField] || '';
-        // Signed like the EDO cent-deviation display: positive means the true pitch is
-        // sharp of the notated Sagittal symbol, negative means it's flat.
-        // Rounded to the app-wide "Display" precision setting (0-6 decimal places).
-        const errorNum = (typeof variant.error === 'number') ? variant.error : 0;
-        let error      = errorNum.toFixed(state.precision);
-        if (parseFloat(error) === 0) error = (0).toFixed(state.precision); // avoid "-0"
         return `
-            <div class="sagittal-variant">
-                <div class="sagittal-notation-display">
-                    <span class="sagittal-letter">${letter}</span><!--
-                    --><span class="${symbolClass}">${symbol}</span>
-                </div>
-                <div class="output-content sagittal-error-value">${error}</div>
+            <div class="sagittal-notation-display">
+                <span class="sagittal-letter">${letter}</span><!--
+                --><span class="${symbolClass}">${symbol}</span>
             </div>
         `;
     }).join('');
 
     const placeholderHtml = `
-        <div class="sagittal-variant sagittal-variant-placeholder">
-            <div class="sagittal-notation-display"></div>
-            <div class="output-content sagittal-error-value">&nbsp;</div>
-        </div>
+        <div class="sagittal-notation-display"></div>
     `.repeat(Math.max(0, slotCount - shown.length));
 
     $(`#sagittalVariants_${columnIndex}`).html(rowsHtml + placeholderHtml);
+
+    // Error(¢) lines live in the values region (with Hz), one per shown variant.
+    // Signed like the EDO cent-deviation display: positive means the true pitch is
+    // sharp of the notated Sagittal symbol, negative means it's flat.
+    // Rounded to the app-wide "Display" precision setting (0-6 decimal places).
+    const errorsHtml = shown.map(variant => {
+        const errorNum = (typeof variant.error === 'number') ? variant.error : 0;
+        let error      = errorNum.toFixed(state.precision);
+        if (parseFloat(error) === 0) error = (0).toFixed(state.precision); // avoid "-0"
+        return `<div class="output-content sagittal-error-value">${error}</div>`;
+    }).join('');
+    $(`#sagittalError_${columnIndex}`).html(errorsHtml);
 
     // Frequency: same sounding pitch as the JI output; octave reduce folds the
     // ratio into [1, 2) above the 1/1 (mirroring the HEJI Output normalize).
@@ -1339,20 +1345,20 @@ export function generateEdoOutputColumns(numColumns) {
                 <div class="notation-display-container edo-notation-display-container">
                     <div class="edoNoteName" id="edoNoteName_${i}"></div><!--
                     --><div class="edoNotationOutput" id="edoNotationOutput_${i}"></div>
-                </div><br><br>
-                <div class="output-spacer"></div> <!-- Blank row beneath note name -->
-                <div class="output-content">
+                </div>
+                <div class="output-region-ratio">
                     <div id="edoStepDistance_${i}"></div>
-                </div><br>
-                <div class="output-spacer"></div> <!-- Blank row beneath edoStepDistance -->
-                <div class="output-content">
-                    <span id="edoCentDeviation_${i}" value="0"></span>
                 </div>
-                <div class="output-content">
-                    <div type="text" id="edoFrequency_${i}" value="440"></div>
-                </div>
-                <div class="output-content">
-                    <div id="edoJIgross_${i}" value="0">0</div>
+                <div class="output-region-values">
+                    <div class="output-content">
+                        <span id="edoCentDeviation_${i}" value="0"></span>
+                    </div>
+                    <div class="output-content">
+                        <div type="text" id="edoFrequency_${i}" value="440"></div>
+                    </div>
+                    <div class="output-content">
+                        <div id="edoJIgross_${i}" value="0">0</div>
+                    </div>
                 </div>
             </div>
         `;

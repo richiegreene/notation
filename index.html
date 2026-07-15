@@ -79,11 +79,6 @@
                         <h3>1/1 (Hz)</h3><br>
                         <input type="number" id="1to1Frequency" value="261.6256"></input>
                     </div>
-					<br>
-					                     <div class="row">
-					                     	<h3>Approx by EDO</h3><br>
-					 						<input type="number" id="edoApproximationInput" class="edo" value="12" min="1"><br>
-					                     </div>
                     <br>
                     <h3>Tuning Meter Settings</h3>
                     <br>
@@ -471,7 +466,7 @@
                     <div class="output-container">
                     </div>
                     <div class="output-checkboxes">
-                        <label><input type="checkbox" name="inputType" id="normalize"> octave reduce</label><br>
+                        <label><input type="checkbox" name="inputType" id="normalize"> octave reduce</label>
                     </div>
                     <button id="clearOutputButton" class="clear" onclick="clearAllIntervals()">clear</button>
                     <button id="playOutputButton" class="clear">play</button>
@@ -482,18 +477,20 @@
 
         <div class="settings-menu-item" id="edo-output-item">
             <div class="settings-header">
-                <span>EDO Output</span>
+                <span>Ups and Downs Output</span>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="settings-content">
                 <div class="outputbox">
-                    <div class="output-controls"></div>
+                    <div class="output-controls">
+                        <input type="number" id="edoApproximationInput" class="edo" value="41" min="1">
+                    </div>
 					<div class="edo-output-container">
                     </div>
                     <div class="output-checkboxes">
-                        <label><input type="checkbox" name="inputType" id="edoNormalize"> octave reduce</label><br>
-                        <label><input type="checkbox" id="showEnharmonics"> enh equivalent</label><br>
-                        <label><input type="checkbox" id="excludeHalvesCheckbox"> exclude halves</label><br>
+                        <label><input type="checkbox" name="inputType" id="edoNormalize"> octave reduce</label>
+                        <label><input type="checkbox" id="showEnharmonics"> enh equivalent</label>
+                        <label><input type="checkbox" id="excludeHalvesCheckbox"> exclude halves</label>
                     </div>
                     <button id="clearEdoOutputButton" class="clear">clear</button>
                     <button id="playEdoOutputButton" class="clear">play</button>
@@ -521,8 +518,8 @@
                     </div>
                     <div class="sagittal-output-container"></div>
                     <div class="output-checkboxes">
-                        <label><input type="checkbox" id="sagittalNormalize"> octave reduce</label><br>
-                        <label><input type="checkbox" id="sagittalShowEnharmonics"> enh equivalent</label><br>
+                        <label><input type="checkbox" id="sagittalNormalize"> octave reduce</label>
+                        <label><input type="checkbox" id="sagittalShowEnharmonics"> enh equivalent</label>
                         <div class="sagittal-toggle-row">
                             <button type="button" id="sagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
                             <button type="button" id="sagittalEvoToggle" class="sagittal-toggle-button">evo</button>

@@ -507,8 +507,26 @@ table.enharmonic-table > tr, td, th {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 9rem;
+    height: 7rem;
     overflow: visible;
+}
+
+/* Region 2: ratio (HEJI) or EDO step; intentionally left blank in Sagittal.
+   Fixed height so region 3 starts at the same offset in every window. */
+.output-region-ratio {
+    height: 6rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Region 3: octave/Hz/cent-deviation-or-error lines. Fixed minimum so the
+   checkbox region below starts at the same offset in every window. */
+.output-region-values {
+    min-height: 6rem;
+    width: 100%;
+    text-align: center;
 }
 
 /* Uniform controls header above every output window's notation area, so the
@@ -520,9 +538,22 @@ table.enharmonic-table > tr, td, th {
 }
 
 /* Checkboxes relocated beneath the output readings, above the buttons. */
+/* Region 4: checkboxes (and the Sagittal toggle-button rows). Fixed minimum
+   height (sized to the tallest set, Sagittal's) so the clear/play/save
+   buttons below start at the same offset in every window. Content is
+   left-justified and anchored to the bottom, just above the clear button. */
 .output-checkboxes {
-    margin: 0.75rem 0 0.25rem;
-    text-align: center;
+    margin: 0.5rem 0 0.25rem;
+    text-align: left;
+    min-height: 6.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+}
+
+.output-checkboxes .sagittal-toggle-row {
+    width: 100%; /* Toggle-button pairs keep filling the row despite left-justified items */
 }
 
 .sagittal-notation {
@@ -553,6 +584,13 @@ table.enharmonic-table > tr, td, th {
     box-sizing: border-box; /* Include padding and border in width */
 }
 
+/* EDO approximation entry at the top of the Ups and Downs Output window,
+   formatted like the Sagittal type dropdown. */
+#edoApproximationInput {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .sagittal-toggle-row {
     display: flex;
     width: 100%;
@@ -567,19 +605,12 @@ table.enharmonic-table > tr, td, th {
     padding: 2px 4px;
 }
 
-.sagittal-variant {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
 .sagittal-notation-display {
     display: flex;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-    height: 9rem; /* Match .notation-display-container for global note-name alignment */
+    height: 7rem; /* Match .notation-display-container for global note-name alignment */
     overflow: visible;
 }
 
@@ -612,7 +643,7 @@ table.enharmonic-table > tr, td, th {
 }
 
 .sagittal-error-value {
-    margin-top: 0.25rem;
+    margin-top: 0;
 }
 
 .heji-dropdowns-centered {

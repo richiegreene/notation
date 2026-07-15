@@ -71,7 +71,7 @@ window.clearAllIntervals = function() {
     $("#enumerated-chord-input").trigger("input");
 
     // Reset EDO Approximation input
-    $("#edoApproximationInput").val(12);
+    $("#edoApproximationInput").val(41);
     $("#edoNormalize").prop("checked", false); // Uncheck EDO octave reduce
 
     // Clear EDO output
@@ -81,7 +81,7 @@ window.clearAllIntervals = function() {
     sendA();
 }
 
-// Function to clear the EDO Output window
+// Function to clear the Ups and Downs (EDO) Output window
 window.clearEdoOutput = function() {
     // Iterate through all existing EDO output columns and clear their dynamic content
     // The number of columns is determined by the current chord size input
@@ -182,7 +182,7 @@ function saveHejiOutputAsCsv() {
     generateCsvAndDownload(state.outputFrequencies, "heji_output.csv");
 }
 
-// Function to generate and download CSV for EDO Output
+// Function to generate and download CSV for Ups and Downs (EDO) Output
 function saveEdoOutputAsCsv() {
     generateCsvAndDownload(state.edoOutputFrequencies, "edo_output.csv");
 }
