@@ -1021,6 +1021,9 @@ export function generateSagittalOutputColumns(numColumns) {
                     <div class="output-content">
                         <div type="text" id="sagittalFrequency_${i}" value="440"></div>
                     </div>
+                    <div class="output-content">
+                        <div id="sagittalJIgross_${i}" value="0">0</div>
+                    </div>
                 </div>
             </div>
         `;
@@ -1336,6 +1339,20 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
     $(`#sagittalFrequency_${columnIndex}`).text(
         (frequency !== undefined && !isNaN(frequency)) ? frequency.toFixed(state.precision) + "Hz" : ""
     );
+
+    // Cents from the 1/1 reference (like #JIgross / #edoJIgross beneath Hz in
+    // the HEJI and EDO windows), folded when this window's octave reduce is on
+    // so it always agrees with the frequency line above.
+    if (ratioNum > 0 && ratioDen > 0) {
+        let centsToRef = 1200 * Math.log2(ratioNum / ratioDen);
+        if (octaveReduce) {
+            centsToRef = ((centsToRef % 1200) + 1200) % 1200;
+        }
+        const sign = centsToRef > 0 ? "+" : "";
+        $(`#sagittalJIgross_${columnIndex}`).text(sign + centsToRef.toFixed(state.precision) + "c");
+    } else {
+        $(`#sagittalJIgross_${columnIndex}`).text("");
+    }
 }
 
 export function generateEdoOutputColumns(numColumns) {
