@@ -1,6 +1,6 @@
 /**
  * UI.js
- * 1:1 conversion of the "UI" sheet from
+ * conversion of the "UI" sheet from
  * "Sagittal Standard JI Notation Calculator Spreadsheet - C.xlsx"
  *
  * The UI sheet is the user-facing entry point of the spreadsheet. It:

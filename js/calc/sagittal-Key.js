@@ -1,6 +1,6 @@
 /**
  * sagittal-Key.js
- * 1:1 conversion of the "Key" sheet from
+ * conversion of the "Key" sheet from
  * "Sagittal Standard JI Notation Calculator Spreadsheet - C.xlsx"
  *
  * Maps each sagittal key integer to four notation forms.
