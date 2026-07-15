@@ -505,10 +505,11 @@
             </div>
             <div class="settings-content">
                 <div class="outputbox">
-                    <div class="output-controls">
-                        <label><input type="checkbox" name="inputType" id="normalize"> octave reduce</label><br>
-                    </div>
+                    <div class="output-controls"></div>
                     <div class="output-container">
+                    </div>
+                    <div class="output-checkboxes">
+                        <label><input type="checkbox" name="inputType" id="normalize"> octave reduce</label><br>
                     </div>
                     <button id="clearOutputButton" class="clear" onclick="clearAllIntervals()">clear</button>
                     <button id="playOutputButton" class="clear">play</button>
@@ -524,12 +525,13 @@
             </div>
             <div class="settings-content">
                 <div class="outputbox">
-                    <div class="output-controls">
+                    <div class="output-controls"></div>
+					<div class="edo-output-container">
+                    </div>
+                    <div class="output-checkboxes">
                         <label><input type="checkbox" name="inputType" id="edoNormalize"> octave reduce</label><br>
                         <label><input type="checkbox" id="showEnharmonics"> enh equivalent</label><br>
                         <label><input type="checkbox" id="excludeHalvesCheckbox"> exclude halves</label><br>
-                    </div>
-					<div class="edo-output-container">
                     </div>
                     <button id="clearEdoOutputButton" class="clear">clear</button>
                     <button id="playEdoOutputButton" class="clear">play</button>
@@ -554,6 +556,9 @@
                                 <option value="extreme">Olympian</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="sagittal-output-container"></div>
+                    <div class="output-checkboxes">
                         <label><input type="checkbox" id="sagittalNormalize"> octave reduce</label><br>
                         <label><input type="checkbox" id="sagittalShowEnharmonics"> enh equivalent</label><br>
                         <div class="sagittal-toggle-row">
@@ -565,7 +570,6 @@
                             <label><input type="checkbox" id="sagittalUnicodeToggle" checked> Unicode</label>
                         </div>
                     </div>
-                    <div class="sagittal-output-container"></div>
                     <button id="clearSagittalOutputButton" class="clear">clear</button>
                     <button id="playSagittalOutputButton" class="clear">play</button>
                     <button id="saveSagittalOutputButton" class="clear save-csv-button">save</button>
