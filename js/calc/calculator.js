@@ -164,7 +164,9 @@ function getCombinedInputSum() {
         // Track total ratio for hasPrimeGreaterThan89 check
         state.currentTotalNum = state.savedNum;
         state.currentTotalDen = state.savedDen;
-        
+        if (state.currentTotalNum > 1 && U.getValue(U.getArray(state.currentTotalNum)) !== state.currentTotalNum) { state.hasPrimeGreaterThan89 = true; }
+        if (state.currentTotalDen > 1 && U.getValue(U.getArray(state.currentTotalDen)) !== state.currentTotalDen) { state.hasPrimeGreaterThan89 = true; }
+
         // For interval input, the "absolute monzo" to be displayed is reference_monzo + interval_monzo
         monzoForCalculation = U.sumArray(state.currentReferenceMonzo, intervalMonzo);
     }

@@ -596,7 +596,7 @@ table.enharmonic-table > tr, td, th {
 .sagittal-symbol-unicode {
     color: var(--color-text);
     font-family: "Bravura", serif;
-    font-size: 4rem;
+    font-size: calc(4rem * 4 / 3); /* was 4rem, increased by one third */
     display: inline-flex;
     align-items: center;
     margin-left: 0.75rem;

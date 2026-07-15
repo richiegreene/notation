@@ -36,6 +36,9 @@ window.clearRatio1 = function() {
 	$("#savedNum").val(state.savedNum);
 	$("#savedDen").val(state.savedDen);
 	Calc.getSavedInputSum();
+	// Bang the output windows to 1/1 and stop any stale playback, matching
+	// every other clear button in the app (clearRatio, clearChordRatio, clearAllIntervals).
+	performCalculationsAndStopPlayback();
 }
 
 window.getCurrentPitch = function() {
