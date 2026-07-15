@@ -667,10 +667,17 @@ $(document).ready(function(){
             return; 
         }
 
-        headerToClick.classList.remove('collapsed');
-        content.style.display = 'grid';
-        toggleIconSpan.textContent = '▼';
-        item.classList.remove('collapsed-item');
+        // Initial state: cards carrying .collapsed-item in the HTML start
+        // minimized; all others start expanded.
+        if (item.classList.contains('collapsed-item')) {
+            headerToClick.classList.add('collapsed');
+            content.style.display = 'none';
+            toggleIconSpan.textContent = '';
+        } else {
+            headerToClick.classList.remove('collapsed');
+            content.style.display = 'grid';
+            toggleIconSpan.textContent = '▼';
+        }
 
         headerToClick.addEventListener('click', () => {
             const isCollapsed = headerToClick.classList.toggle('collapsed');
