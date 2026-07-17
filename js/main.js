@@ -974,4 +974,9 @@ $(document).ready(function(){
     $("#clearSagittalOutputButton").on("click", function() {
         clearAllIntervals();
     });
+
+    // Pre-fill the enumerated chord entry with an example chord on page load.
+    // Clearing the field reverts to the placeholder ("e.g. 4:5:6, 4::8").
+    $("#enumerated-chord-input").val("6:7:9");
+    calculateEnumeratedChord();
 });

@@ -1,4 +1,9 @@
 @font-face {
+    font-family: "Bravura";
+    src: url("fonts/Bravura.woff2") format("woff2");
+    font-display: block;
+}
+@font-face {
     font-family: "EdoAccidentals";
     src: url("fonts/notes.otf") format("opentype");
 }
