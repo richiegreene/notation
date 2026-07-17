@@ -698,6 +698,11 @@ table.enharmonic-table > tr, td, th {
     padding: 0; /* Remove default padding */
 }
 
+.heji-entry-checkboxes {
+    margin: 0.5rem 0 0.25rem;
+    text-align: left;
+}
+
 .heji-button-row .label,
 .heji-button-row button {
     flex-shrink: 0; /* Prevent items from shrinking */

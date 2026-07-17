@@ -852,10 +852,14 @@ if (isAbsoluteEntry){
 	var notationString;
 	var undefinedNotation;
 	// Check if HEJI notation is uncalculatable
-	if (($("#intervalInput").prop("checked") || $("#chordInput").prop("checked")) && (
+	if ((($("#intervalInput").prop("checked") || $("#chordInput").prop("checked")) && (
 		state.hasPrimeGreaterThan89 || // If prime > 89 is present
 		(heji2String.trim().length === 0 && hejiExtensionsPath.trim().length === 0 && natural.trim().length === 0) // Or if no HEJI symbols are found
-	)) {
+	)) ||
+		// With "unofficial extensions" unchecked, primes 53-89 fall outside the (official 47) limit
+		// regardless of entry mode, including symbols selected directly in HEJI Entry
+		(!$("#unofficialExtensionsOutput").prop("checked") && state.displaySum.slice(15, 24).some(v => v !== 0))
+	) {
 		notationString = "<span style='font-family: monospace;'>n/a</span>";
 		outputDiatonic = "";
 		undefinedNotation = ""; // Clear undefinedNotation as we are explicitly showing n/a

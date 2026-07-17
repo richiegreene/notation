@@ -1,9 +1,5 @@
 /**
  * Commas.js
- * 1:1 conversion of the "Commas" sheet from
- * "Sagittal Standard JI Notation Calculator Spreadsheet - C.xlsx"
- *
- * Columns in original sheet:
  *   A = key    (sagittal key integer, 0-based)
  *   B = name   (comma name, e.g. "5/7k")
  *   C = denominator

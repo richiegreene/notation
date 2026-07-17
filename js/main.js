@@ -577,6 +577,15 @@ $(document).ready(function(){
 		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
+	// Show/hide the unofficial-extension prime rows (53-89) in HEJI Entry
+	$("#unofficialExtensionsEntry").on("change", function() {
+		$(".unofficial-extension-row").toggle(this.checked);
+	});
+	// Limit HEJI Output to the official 47 limit when unchecked
+	$("#unofficialExtensionsOutput").on("change", function() {
+		performCalculationsAndStopPlayback();
+		UI.getPC();
+	});
 	$("#bendParameter").change(function(c){
 		UI.getBend();
 	});
