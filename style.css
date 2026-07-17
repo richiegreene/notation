@@ -106,7 +106,8 @@ body {
     display: inline-block;
 }
 
-.settings-header.collapsed .toggle-icon {
+.settings-header.collapsed .toggle-icon,
+.toggle-header-placement.collapsed .toggle-icon {
     transform: rotate(-90deg);
 }
 

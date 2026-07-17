@@ -677,26 +677,24 @@ $(document).ready(function(){
         }
 
         // Initial state: cards carrying .collapsed-item in the HTML start
-        // minimized; all others start expanded.
+        // minimized; all others start expanded. The triangle stays visible in
+        // both states; the .collapsed class rotates it to point at the header.
+        toggleIconSpan.textContent = '▼';
         if (item.classList.contains('collapsed-item')) {
             headerToClick.classList.add('collapsed');
             content.style.display = 'none';
-            toggleIconSpan.textContent = '';
         } else {
             headerToClick.classList.remove('collapsed');
             content.style.display = 'grid';
-            toggleIconSpan.textContent = '▼';
         }
 
         headerToClick.addEventListener('click', () => {
             const isCollapsed = headerToClick.classList.toggle('collapsed');
             if (isCollapsed) {
                 content.style.display = 'none';
-                toggleIconSpan.textContent = '';
                 item.classList.add('collapsed-item');
             } else {
                 content.style.display = 'grid';
-                toggleIconSpan.textContent = '▼';
                 item.classList.remove('collapsed-item');
             }
         });
