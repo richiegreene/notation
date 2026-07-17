@@ -1332,12 +1332,27 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
     }).join('');
     $(`#sagittalError_${columnIndex}`).html(errorsHtml);
 
-    // Frequency: same sounding pitch as the JI output; octave reduce folds the
+    // The notated Sagittal symbol deviates from the exact JI input by the
+    // error shown above (error = true JI pitch - notated pitch). The Hz and
+    // cents readouts (and playback) sound the notated symbol, not the raw JI
+    // ratio, so subtract that error. With multiple enharmonic variants shown,
+    // the most accurate spelling (smallest absolute error) is used.
+    const bestVariant = shown.length ? shown.reduce((a, b) => {
+        const ea = (typeof a.error === 'number') ? Math.abs(a.error) : Infinity;
+        const eb = (typeof b.error === 'number') ? Math.abs(b.error) : Infinity;
+        return eb < ea ? b : a;
+    }) : null;
+    const notationError = (bestVariant && typeof bestVariant.error === 'number') ? bestVariant.error : 0;
+
+    // Frequency: the notated Sagittal pitch; octave reduce folds the
     // ratio into [1, 2) above the 1/1 (mirroring the HEJI Output normalize).
     let frequency = outputFrequency;
     if (octaveReduce && ratioNum > 0 && ratioDen > 0) {
         const r = ratioNum / ratioDen;
         frequency = state.freq1to1 * r * Math.pow(2, -Math.floor(Math.log2(r)));
+    }
+    if (frequency !== undefined && !isNaN(frequency)) {
+        frequency = frequency * Math.pow(2, -notationError / 1200);
     }
     state.sagittalOutputFrequencies[columnIndex] = frequency;
     $(`#sagittalFrequency_${columnIndex}`).text(
@@ -1346,12 +1361,14 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
 
     // Cents from the 1/1 reference (like #JIgross / #edoJIgross beneath Hz in
     // the HEJI and EDO windows), folded when this window's octave reduce is on
-    // so it always agrees with the frequency line above.
+    // so it always agrees with the frequency line above. The notation error is
+    // subtracted after folding so both lines describe the same sounding pitch.
     if (ratioNum > 0 && ratioDen > 0) {
         let centsToRef = 1200 * Math.log2(ratioNum / ratioDen);
         if (octaveReduce) {
             centsToRef = ((centsToRef % 1200) + 1200) % 1200;
         }
+        centsToRef = centsToRef - notationError;
         const sign = centsToRef > 0 ? "+" : "";
         $(`#sagittalJIgross_${columnIndex}`).text(sign + centsToRef.toFixed(state.precision) + "c");
     } else {
