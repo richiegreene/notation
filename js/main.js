@@ -154,27 +154,23 @@ let isPlaying = false;
 let isPlayingEdo = false; // New state for EDO playback
 let isPlayingSagittal = false; // New state for Sagittal playback
 
+// Stop playback in every output window: fade out the audio and reset all
+// play-state flags and button visuals, so only one window can play at a time.
+function stopAllPlayback(fadeTime) {
+    if (isPlaying || isPlayingEdo || isPlayingSagittal) {
+        stopAllFrequencies(fadeTime);
+    }
+    isPlaying = false;
+    isPlayingEdo = false;
+    isPlayingSagittal = false;
+    $("#playOutputButton, #playEdoOutputButton, #playSagittalOutputButton")
+        .text("play").removeClass("playing-active");
+}
+
 // New function to perform calculations and stop playback
 function performCalculationsAndStopPlayback() {
     Calc.doCalc(); // Perform the original calculation
-    // Stop playback for main output if active
-    if (isPlaying) {
-        stopAllFrequencies(0.1);
-        isPlaying = false;
-        $("#playOutputButton").text("play").removeClass("playing-active");
-    }
-    // Stop playback for EDO output if active
-    if (isPlayingEdo) {
-        stopAllFrequencies(0.1);
-        isPlayingEdo = false;
-        $("#playEdoOutputButton").text("play").removeClass("playing-active");
-    }
-    // Stop playback for Sagittal output if active
-    if (isPlayingSagittal) {
-        stopAllFrequencies(0.1);
-        isPlayingSagittal = false;
-        $("#playSagittalOutputButton").text("play").removeClass("playing-active");
-    }
+    stopAllPlayback(0.1);
 }
 
 // Function to generate and download CSV for HEJI Output
@@ -899,11 +895,9 @@ $(document).ready(function(){
 
     // Play button event listener
     $("#playOutputButton").on("click", function() {
-        if (isPlaying) {
-            stopAllFrequencies(0.2); // Fade out over 0.2 seconds
-            isPlaying = false;
-            $(this).text("play").removeClass("playing-active");
-        } else {
+        const wasPlaying = isPlaying;
+        stopAllPlayback(0.2); // Fade out over 0.2 seconds; also stops the other windows
+        if (!wasPlaying) {
             const chordSize = parseInt($("#chord-size-input").val());
             const frequencies = [];
             for (let i = 1; i <= chordSize; i++) {
@@ -924,11 +918,9 @@ $(document).ready(function(){
 
     // EDO Play button event listener
     $("#playEdoOutputButton").on("click", function() {
-        if (isPlayingEdo) {
-            stopAllFrequencies(0.2);
-            isPlayingEdo = false;
-            $(this).text("play").removeClass("playing-active");
-        } else {
+        const wasPlaying = isPlayingEdo;
+        stopAllPlayback(0.2); // Also stops the other windows
+        if (!wasPlaying) {
             const chordSize = parseInt($("#chord-size-input").val());
             const frequencies = [];
             for (let i = 1; i <= chordSize; i++) {
@@ -954,11 +946,9 @@ $(document).ready(function(){
 
     // Sagittal Play button event listener
     $("#playSagittalOutputButton").on("click", function() {
-        if (isPlayingSagittal) {
-            stopAllFrequencies(0.2);
-            isPlayingSagittal = false;
-            $(this).text("play").removeClass("playing-active");
-        } else {
+        const wasPlaying = isPlayingSagittal;
+        stopAllPlayback(0.2); // Also stops the other windows
+        if (!wasPlaying) {
             const chordSize = parseInt($("#chord-size-input").val());
             const frequencies = [];
             for (let i = 1; i <= chordSize; i++) {
