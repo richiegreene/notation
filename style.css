@@ -663,7 +663,6 @@ table.enharmonic-table > tr, td, th {
     font-size: calc(4rem * 4 / 3); /* was 4rem, increased by one third */
     display: inline-flex;
     align-items: center;
-    margin-left: 0.75rem;
 }
 
 .sagittal-symbol-ascii {
@@ -672,7 +671,6 @@ table.enharmonic-table > tr, td, th {
     font-size: 2rem;
     display: inline-flex;
     align-items: center;
-    margin-left: 0.75rem;
 }
 
 .sagittal-error-value {
