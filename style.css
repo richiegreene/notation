@@ -1000,7 +1000,7 @@ input.ratioIn {
     background-color: #2a2a2a;
     border-radius: 4px;
 }
-#playOutputButton.playing-active, #playEdoOutputButton.playing-active, #playSagittalOutputButton.playing-active {
+#playOutputButton.playing-active, #playEdoOutputButton.playing-active, #playSagittalOutputButton.playing-active, #playJohnstonOutputButton.playing-active {
     background-color: var(--bg-button-selected);
     border-color: var(--bg-button-selected);
 }
@@ -1012,7 +1012,8 @@ input.ratioIn {
 }
 
 #clearEdoOutputButton, #playEdoOutputButton,
-#clearSagittalOutputButton, #playSagittalOutputButton {
+#clearSagittalOutputButton, #playSagittalOutputButton,
+#clearJohnstonOutputButton, #playJohnstonOutputButton {
     display: block;
     width: 100%;
     font-size: 11.2px; /* Same as clearOutputButton */
