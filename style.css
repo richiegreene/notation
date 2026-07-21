@@ -677,6 +677,122 @@ table.enharmonic-table > tr, td, th {
     margin-top: 0;
 }
 
+/* Johnston Output (formatted like the HEJI Output window) */
+.johnston-output-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 0.5rem;
+}
+
+.johnston-output-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.johnston-notation-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    height: 7rem; /* Match .notation-display-container for global note-name alignment */
+    overflow: visible;
+}
+
+/* Nominal letter, matching the HEJI Output note name. */
+.johnston-letter {
+    color: var(--color-text);
+    font-family: "Inter", sans-serif;
+    font-weight: normal;
+    font-size: 4rem;
+    position: relative;
+}
+
+.johnston-symbols {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* SMuFL accidentals (sharps/flats, +/-, seven, arrows) sized like the
+   Sagittal unicode symbols so the two windows read at the same scale. */
+.johnston-accidental {
+    color: var(--color-text);
+    font-family: "Bravura", serif;
+    font-size: calc(4rem * 4 / 3);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
+/* Primes 13-31 have no SMuFL glyph: Johnston writes them as raised numerals,
+   rotated 180 degrees for the reciprocal comma. */
+.johnston-numeral {
+    color: var(--color-text);
+    font-family: "EdoAccidentals", sans-serif;
+    font-size: 1.6rem;
+    display: inline-block;
+    vertical-align: super;
+    position: relative;
+    top: -1.4rem;
+    line-height: 1;
+    margin-left: 0.05em;
+}
+
+.johnston-numeral.inverted {
+    transform: rotate(180deg);
+}
+
+.johnston-na {
+    font-family: monospace;
+    font-size: 2rem;
+    color: var(--color-text);
+}
+
+/* Johnston Entry palette: same row rhythm as the HEJI palette. */
+.johnston-button-row {
+    white-space: nowrap;
+}
+
+/* Every cell is the same width so the ten rows line up in a grid, the way the
+   HEJI palette does. The width is set by the widest content (three stacked
+   numerals), not by the SMuFL rows. */
+.johnston-button {
+    font-family: "Bravura", serif;
+    font-size: 1.5rem;
+    line-height: 1;
+    width: 2.9rem;
+    min-width: 2.9rem;
+    box-sizing: border-box;
+    padding: 0;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+    vertical-align: middle;
+}
+
+/* Inside a palette button the glyphs sit inline at button scale, overriding
+   the large output sizing. Bravura's metric box is several times its font
+   size, so an untouched glyph span overflows its button far enough to swallow
+   clicks meant for neighbouring rows; pointer-events: none lets every click
+   reach the button itself. */
+.johnston-button .johnston-accidental,
+.johnston-button .johnston-numeral {
+    pointer-events: none;
+}
+
+.johnston-button .johnston-accidental {
+    font-size: 1.5rem;
+    display: inline;
+}
+
+.johnston-button .johnston-numeral {
+    font-size: 0.62rem;
+    letter-spacing: -0.03em;
+    top: 0;
+    vertical-align: middle;
+    margin-left: 0;
+}
+
 .heji-dropdowns-centered {
     display: flex; /* Use flexbox for centering */
     justify-content: center; /* Center horizontally */

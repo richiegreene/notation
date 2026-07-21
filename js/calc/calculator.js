@@ -3,6 +3,7 @@ import * as U from './utils.js';
 import { state } from './state.js';
 import * as UI from './ui.js';
 import { readSagittalEntry } from './sagittal-Entry.js';
+import { readJohnstonEntry, updateJohnstonOutputDisplays } from './johnston.js';
 
 
 /**
@@ -57,7 +58,10 @@ function performCalculationsForColumn(columnIndex, inputMonzoAbsolute) {
     // Pass the absolute monzo (reference + interval) so sagittal finds the correct absolute pitch
     // e.g. 5/4 above A shows C# (not just "E" for the interval 5/4)
     UI.updateSagittalOutputDisplays(columnIndex, state.jiCents, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue, state.absoluteMonzoResult);
-    
+    // Johnston spells the same absolute pitch exactly (no approximation), so it
+    // takes the absolute monzo like Sagittal but needs no error correction.
+    updateJohnstonOutputDisplays(columnIndex, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue, state.absoluteMonzoResult);
+
     // Only update the enharmonic search box for the first column to avoid confusion
     if (columnIndex === 1) {
         getCurrentCents();
@@ -129,6 +133,10 @@ function getCombinedInputSum() {
         hejiAbsoluteMonzo = U.sumArray(hejiAbsoluteMonzo, C.eightyNine[UI.getEightyNine()]);
 
         monzoForCalculation = hejiAbsoluteMonzo; // This is the absolute monzo of the HEJI note
+    } else if ($("#johnstonInput").prop("checked")){ // Johnston Entry
+        // Absolute monzo of the Ptolemy-Zarlino nominal + octave + the
+        // selected Johnston accidentals.
+        monzoForCalculation = readJohnstonEntry();
     } else if ($("#sagittalEntryInput").prop("checked")){ // Sagittal Entry
         // Absolute monzo of letter + octave + typed sagittal accidental
         // (exact ratio redeemed from the symbol's default comma).
@@ -287,7 +295,7 @@ export function getDisplayValues(columnIndex){
 }
 
 export function prepareCentsCalculationData() {
-    if ($("#paletteInput").prop("checked") || $("#sagittalEntryInput").prop("checked")){
+    if ($("#paletteInput").prop("checked") || $("#sagittalEntryInput").prop("checked") || $("#johnstonInput").prop("checked")){
         state.centsSum = state.inputSum; // Corrected: directly use inputSum for paletteInput
     } else if ($("#intervalInput").prop("checked") || $("#chordInput").prop("checked")){
         state.centsSum = state.inputSum;

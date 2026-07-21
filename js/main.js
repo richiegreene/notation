@@ -3,6 +3,7 @@ import * as U from './calc/utils.js';
 import { state } from './calc/state.js';
 import * as Calc from './calc/calculator.js';
 import * as UI from './calc/ui.js';
+import { generateJohnstonPalette, generateJohnstonOutputColumns } from './calc/johnston.js';
 import { initAudio, updateWaveform, playFrequencies, stopAllFrequencies, currentPeriodicWave } from './audio-playback.js'; // Import audio functions
 import { initMidiOutput, setPlaybackMode, midiOutputSelect, midiDeviceSelectorDiv } from './mpe-playback.js'; // Import MPE functions
 
@@ -73,6 +74,7 @@ window.clearAllIntervals = function() {
     // Reset EDO Approximation input
     $("#edoApproximationInput").val(41);
     $("#edoNormalize").prop("checked", false); // Uncheck EDO octave reduce
+    $("#johnstonNormalize").prop("checked", false); // Uncheck Johnston octave reduce
 
     // Clear EDO output
     clearEdoOutput();
@@ -132,6 +134,10 @@ window.sendA = function() {
 	$("#default79").click();
 	$("#default83").click();
 	$("#default89").click();
+	// Reset every Johnston palette row to its natural (value 3). Set directly
+	// rather than clicking, so this does not fire a recalculation per row.
+	$(".johnston-button").removeClass("selected");
+	$(".johnston-button[value='3']").addClass("selected");
 	performCalculationsAndStopPlayback();
 	Calc.getFrequency1to1();
 	Calc.getFrequencyKammerTon();
@@ -153,17 +159,19 @@ function applyStoredTheme() {
 let isPlaying = false;
 let isPlayingEdo = false; // New state for EDO playback
 let isPlayingSagittal = false; // New state for Sagittal playback
+let isPlayingJohnston = false; // New state for Johnston playback
 
 // Stop playback in every output window: fade out the audio and reset all
 // play-state flags and button visuals, so only one window can play at a time.
 function stopAllPlayback(fadeTime) {
-    if (isPlaying || isPlayingEdo || isPlayingSagittal) {
+    if (isPlaying || isPlayingEdo || isPlayingSagittal || isPlayingJohnston) {
         stopAllFrequencies(fadeTime);
     }
     isPlaying = false;
     isPlayingEdo = false;
     isPlayingSagittal = false;
-    $("#playOutputButton, #playEdoOutputButton, #playSagittalOutputButton")
+    isPlayingJohnston = false;
+    $("#playOutputButton, #playEdoOutputButton, #playSagittalOutputButton, #playJohnstonOutputButton")
         .text("play").removeClass("playing-active");
 }
 
@@ -186,6 +194,11 @@ function saveEdoOutputAsCsv() {
 // Function to generate and download CSV for Sagittal Output
 function saveSagittalOutputAsCsv() {
     generateCsvAndDownload(state.sagittalOutputFrequencies, "sagittal_output.csv");
+}
+
+// Function to generate and download CSV for Johnston Output
+function saveJohnstonOutputAsCsv() {
+    generateCsvAndDownload(state.johnstonOutputFrequencies, "johnston_output.csv");
 }
 
 /**
@@ -268,6 +281,13 @@ $(document).ready(function(){
         saveSagittalOutputAsCsv();
     });
 
+    $("#saveJohnstonOutputButton").on("click", function() {
+        saveJohnstonOutputAsCsv();
+    });
+
+    // Build the Johnston Entry palette before any calculation reads it.
+    generateJohnstonPalette();
+
 	state.kammerTon = $("#frequencyA4").val();
 	state.precision = $("#precision").val();
     state.edoQuantisation = $("#edoApproximationInput").val(); // Initialize edoQuantisation
@@ -275,6 +295,7 @@ $(document).ready(function(){
 	UI.getPC();
     UI.generateEdoOutputColumns(parseInt($("#chord-size-input").val())); // Generate initial EDO output columns
     UI.generateSagittalOutputColumns(parseInt($("#chord-size-input").val()));
+    generateJohnstonOutputColumns(parseInt($("#chord-size-input").val()));
     // Trigger the change event on edoApproximationInput to force a recalculation and update
     // of all EDO output columns upon page load, mimicking the user's successful interaction.
     $("#edoApproximationInput").trigger("change");
@@ -330,6 +351,19 @@ $(document).ready(function(){
 		UI.getPC();
 	});
 	$("#hejiDiatonicNoteDropdown").change(function(c){
+		performCalculationsAndStopPlayback();
+		UI.getPC();
+	});
+	$("#johnstonOctaveDropdown, #johnstonDiatonicNoteDropdown").change(function(c){
+		performCalculationsAndStopPlayback();
+		UI.getPC();
+	});
+	// The Johnston palette is generated at runtime, so its buttons are bound by
+	// delegation. Each row keeps exactly one selection, like the HEJI palette.
+	$(document).on("click", ".johnston-button", function(c){
+		const row = $(this).data("johnston-row");
+		$(`.johnston-${row}`).removeClass("selected");
+		$(this).addClass("selected");
 		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
@@ -559,6 +593,13 @@ $(document).ready(function(){
 		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
+	$("#johnstonInput").click(function(c){
+		// When switching to Johnston Entry, ensure only one output column is displayed
+		$("#chord-size-input").val(1);
+		$("#chord-size-input").trigger("change");
+		performCalculationsAndStopPlayback();
+		UI.getPC();
+	});
     $("#chordInput").click(function(c){
         performCalculationsAndStopPlayback();
         UI.getPC();
@@ -632,6 +673,11 @@ $(document).ready(function(){
     });
 
     $("#sagittalNormalize, #sagittalShowEnharmonics").on("click", function() {
+        performCalculationsAndStopPlayback();
+    });
+
+    // Johnston Output controls
+    $("#johnstonNormalize").on("click", function() {
         performCalculationsAndStopPlayback();
     });
 
@@ -718,6 +764,7 @@ $(document).ready(function(){
         UI.generateOutputColumns(numFields);
         UI.generateEdoOutputColumns(numFields); // Generate EDO output columns
         UI.generateSagittalOutputColumns(numFields);
+        generateJohnstonOutputColumns(numFields);
         UI.generateChordRatioFields(numFields);
         performCalculationsAndStopPlayback();
     });
@@ -969,6 +1016,34 @@ $(document).ready(function(){
 
     // Sagittal Clear button event listener
     $("#clearSagittalOutputButton").on("click", function() {
+        clearAllIntervals();
+    });
+
+    // Johnston Play button event listener
+    $("#playJohnstonOutputButton").on("click", function() {
+        const wasPlaying = isPlayingJohnston;
+        stopAllPlayback(0.2); // Also stops the other windows
+        if (!wasPlaying) {
+            const chordSize = parseInt($("#chord-size-input").val());
+            const frequencies = [];
+            for (let i = 1; i <= chordSize; i++) {
+                const freqValue = state.johnstonOutputFrequencies[i];
+                if (freqValue !== undefined && !isNaN(freqValue)) {
+                    frequencies.push(freqValue);
+                }
+            }
+            if (frequencies.length > 0) {
+                playFrequencies(frequencies, 0.2, slideDuration); // Pass slideDuration
+                isPlayingJohnston = true;
+                $(this).text("stop").addClass("playing-active");
+            } else {
+                console.warn("No Johnston frequencies to play.");
+            }
+        }
+    });
+
+    // Johnston Clear button event listener
+    $("#clearJohnstonOutputButton").on("click", function() {
         clearAllIntervals();
     });
 

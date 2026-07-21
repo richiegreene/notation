@@ -262,9 +262,9 @@ export function getPC(columnIndex){
 	var refArray = U.productArray(state.currentReferenceMonzo, C.tonalIdentity);
 
     let tonalArray;
-    // Sagittal Entry is an absolute-pitch entry mode like HEJI Entry, so it
-    // follows the palette path everywhere in this function.
-    const isAbsoluteEntry = $("#paletteInput").prop("checked") || $("#sagittalEntryInput").prop("checked");
+    // Sagittal Entry and Johnston Entry are absolute-pitch entry modes like
+    // HEJI Entry, so they follow the palette path everywhere in this function.
+    const isAbsoluteEntry = $("#paletteInput").prop("checked") || $("#sagittalEntryInput").prop("checked") || $("#johnstonInput").prop("checked");
 	if (isAbsoluteEntry){
         const refAccidentalMonzo = getRefAccidentalMonzo();
         const adjustedDisplaySum = U.diffArray(state.displaySum, refAccidentalMonzo);

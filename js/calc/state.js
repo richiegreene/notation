@@ -40,6 +40,7 @@ export let state = {
     outputFrequencies: {},
     edoOutputFrequencies: {},
     sagittalOutputFrequencies: {},
+    johnstonOutputFrequencies: {},
     cat: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     monzoArray: [],
     bigArray: [],
