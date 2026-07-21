@@ -1026,6 +1026,10 @@ html[data-theme="light"] #theme-toggle .light-icon {
     display: block; /* Show light icon in light mode */
 }
 
+html[data-theme="light"] #waveformCanvas {
+    background-color: rgb(255, 255, 255);
+}
+
 .precision-control-group {
     display: flex;
     align-items: center;
