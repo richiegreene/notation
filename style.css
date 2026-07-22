@@ -733,17 +733,48 @@ table.enharmonic-table > tr, td, th {
 }
 
 /* Primes 13-31 have no SMuFL glyph: Johnston writes them as raised numerals,
-   rotated 180 degrees for the reciprocal comma. */
+   rotated 180 degrees for the reciprocal comma. Placement (above the lower
+   accidentals in Output, inline in the palette buttons) is handled by the
+   containers below, not here. */
 .johnston-numeral {
     color: var(--color-text);
     font-family: "EdoAccidentals", sans-serif;
     font-size: 1.6rem;
     display: inline-block;
-    vertical-align: super;
-    position: relative;
-    top: -1.4rem;
     line-height: 1;
-    margin-left: 0.05em;
+}
+
+/* Output: numerals sit centered and flush on top of the lower (prime 3-11)
+   accidentals. .johnston-numerals is lifted out of flow so it does not push
+   the accidental row off the note-name baseline; the accidental span alone
+   sizes .johnston-stack. */
+.johnston-stack {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.johnston-numerals {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: flex-end;
+    gap: 0.22em; /* slight horizontal spacing as numerals accrue */
+    white-space: nowrap;
+    line-height: 1;
+    margin-bottom: 0.05em;
+}
+
+/* A lone numeral (no lower accidental) stays in the accidental slot, raised
+   like a superscript. */
+.johnston-numerals-inline {
+    position: static;
+    transform: none;
+    display: inline-flex;
+    align-self: flex-start;
+    margin-top: 0.4rem;
 }
 
 .johnston-numeral.inverted {
@@ -799,9 +830,14 @@ table.enharmonic-table > tr, td, th {
 .johnston-button .johnston-numeral {
     font-size: 0.52rem;
     letter-spacing: -0.05em;
-    top: 0;
     vertical-align: middle;
     margin-left: 0;
+}
+
+/* Slight gap between accruing numerals in a palette button (e.g. the "13 13"
+   double-comma cell), so repeats read as separate symbols. */
+.johnston-button .johnston-numeral + .johnston-numeral {
+    margin-left: 0.12em;
 }
 
 .heji-dropdowns-centered {

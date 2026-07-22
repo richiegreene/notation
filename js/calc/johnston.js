@@ -278,17 +278,36 @@ export function renderJohnstonAccidentals(decomposition) {
             + repeatGlyph(families[2].glyph, Math.abs(commas.eleven));
     }
 
-    let html = bravuraSpan(bravura);
+    // The syntonic +/- is also a prime-3..11 (Bravura) accidental, shown after
+    // the others on the lower row.
+    const plusMinus = plus > 0 ? repeatGlyph(GLYPH.plus, plus) : repeatGlyph(GLYPH.minus, -plus);
+    const lowerRow = bravura + plusMinus;
 
-    // 13 through 31 print as raised numerals from notes.otf.
-    for (const key in NUMERAL_COMMAS) {
+    // Primes 13-31 print as raised numerals. In combination they read greatest
+    // prime first (left to right): 31, 29, 23, 19, 17, 13.
+    const numerals = renderNumerals(commas);
+
+    // The numerals sit centered and flush on top of the lower accidentals. With
+    // no lower accidentals they render in place at the accidental slot.
+    if (numerals && lowerRow) {
+        return `<span class="johnston-stack">`
+            + `<span class="johnston-numerals">${numerals}</span>`
+            + bravuraSpan(lowerRow)
+            + `</span>`;
+    }
+    if (numerals) {
+        return `<span class="johnston-numerals johnston-numerals-inline">${numerals}</span>`;
+    }
+    return bravuraSpan(lowerRow);
+}
+
+/** Numeral accidentals (13-31) as HTML, greatest prime first. */
+function renderNumerals(commas) {
+    const descendingPrimes = ['thirtyOne', 'twentyNine', 'twentyThree', 'nineteen', 'seventeen', 'thirteen'];
+    let html = '';
+    for (const key of descendingPrimes) {
         html += numeralSpan(NUMERAL_COMMAS[key], commas[key]);
     }
-
-    html += bravuraSpan(plus > 0
-        ? repeatGlyph(GLYPH.plus, plus)
-        : repeatGlyph(GLYPH.minus, -plus));
-
     return html;
 }
 
