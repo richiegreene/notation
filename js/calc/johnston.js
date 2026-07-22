@@ -179,6 +179,26 @@ const GLYPH = {
     down: '\uE2B5',     // down arrow - lowers by 33:32
 };
 
+// Bravura's precomposed Johnston ligature glyphs (single glyphs that fuse one
+// accidental from each of up to three families). Keyed by the family-direction
+// tokens in the fixed order chromatic -> seven -> eleven:
+//   chromatic  S = sharp   F = flat
+//   seven      7 = seven   L = inverted seven (el)
+//   eleven     U = up      D = down
+// Every pair and every triple of the three families has a ligature, so any
+// combination can be reduced to one glyph plus any leftover repeats.
+const LIGATURE = {
+    // chromatic + seven
+    'S7': '\uF5EB', 'SL': '\uF5E5', 'F7': '\uF5EC', 'FL': '\uF5E8',
+    // chromatic + eleven
+    'SU': '\uF5E6', 'SD': '\uF5E7', 'FU': '\uF5E9', 'FD': '\uF5EA',
+    // seven + eleven
+    '7U': '\uF5ED', '7D': '\uF5EE', 'LU': '\uF5EF', 'LD': '\uF5F0',
+    // chromatic + seven + eleven
+    'S7U': '\uF5F3', 'S7D': '\uF5F4', 'SLU': '\uF5F1', 'SLD': '\uF5F2',
+    'F7U': '\uF5F7', 'F7D': '\uF5F8', 'FLU': '\uF5F5', 'FLD': '\uF5F6',
+};
+
 // The higher primes that print as raised numerals rather than SMuFL glyphs.
 // The reciprocal comma is shown by rotating the numeral 180 degrees.
 const NUMERAL_COMMAS = {
@@ -223,20 +243,40 @@ function numeralSpan(numeral, count) {
  * (F#+, Bb7, Ab13, F7+, D-with-inverted-seven-minus): nominal, then
  * sharps/flats, then the higher-prime commas in ascending prime order, then
  * the syntonic +/- last.
+ *
+ * The chromatic (sharp/flat), seven and eleven accidentals ligate: Bravura has
+ * a single precomposed glyph for every pair and every triple of them (e.g.
+ * sharp+el, seven+sharp+up). We combine one unit from each present family into
+ * the maximal ligature, then stack any leftover repeats as loose glyphs. The
+ * numerals (13-31) and the syntonic +/- have no ligatures and stay separate.
  */
 export function renderJohnstonAccidentals(decomposition) {
     if (!decomposition) return '';
     const { sharp, plus, commas } = decomposition;
 
-    let bravura = chromaticGlyphs(sharp);
+    // The three ligature-eligible families, in ligature-key order. Each carries
+    // its signed count plus the single glyph for its current direction.
+    const families = [
+        { count: sharp,          token: sharp > 0 ? 'S' : 'F',          glyph: sharp > 0 ? GLYPH.sharp : GLYPH.flat },
+        { count: commas.seven,   token: commas.seven > 0 ? '7' : 'L',   glyph: commas.seven > 0 ? GLYPH.seven : GLYPH.el },
+        { count: commas.eleven,  token: commas.eleven > 0 ? 'U' : 'D',  glyph: commas.eleven > 0 ? GLYPH.up : GLYPH.down },
+    ];
+    const present = families.filter(f => f.count !== 0);
 
-    // 7 and 11 have dedicated SMuFL glyphs.
-    bravura += commas.seven > 0
-        ? repeatGlyph(GLYPH.seven, commas.seven)
-        : repeatGlyph(GLYPH.el, -commas.seven);
-    bravura += commas.eleven > 0
-        ? repeatGlyph(GLYPH.up, commas.eleven)
-        : repeatGlyph(GLYPH.down, -commas.eleven);
+    let bravura;
+    if (present.length >= 2) {
+        // One unit from each present family fuses into a single ligature glyph;
+        // the rest stack after it. Chromatic keeps its double/triple packing.
+        bravura = LIGATURE[present.map(f => f.token).join('')];
+        if (sharp !== 0) bravura += chromaticGlyphs(sharp - Math.sign(sharp));
+        if (commas.seven !== 0) bravura += repeatGlyph(families[1].glyph, Math.abs(commas.seven) - 1);
+        if (commas.eleven !== 0) bravura += repeatGlyph(families[2].glyph, Math.abs(commas.eleven) - 1);
+    } else {
+        // Zero or one family present: no ligature, render the glyphs as-is.
+        bravura = chromaticGlyphs(sharp)
+            + repeatGlyph(families[1].glyph, Math.abs(commas.seven))
+            + repeatGlyph(families[2].glyph, Math.abs(commas.eleven));
+    }
 
     let html = bravuraSpan(bravura);
 
