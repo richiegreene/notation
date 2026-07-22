@@ -694,51 +694,49 @@
             </div>
             <div class="settings-content">
                 <div class="tunerbox">
-                    <div class="tuner-controls-row">
-                        <select id="tunerLanguage">
-                            <option value="heji" selected>HEJI</option>
-                            <option value="sagittal">Sagittal</option>
-                            <option value="johnston">Johnston</option>
-                            <option value="updown">Ups and Downs</option>
-                        </select>
-                    </div>
+                    <div class="tuner-top">
+                        <div class="tuner-controls-row">
+                            <select id="tunerLanguage">
+                                <option value="heji" selected>HEJI</option>
+                                <option value="sagittal">Sagittal</option>
+                                <option value="johnston">Johnston</option>
+                                <option value="updown">Ups and Downs</option>
+                            </select>
+                        </div>
 
-                    <div class="tuner-controls-row" id="tunerSagittalType" style="display: none;">
-                        <select id="tunerSagittalTypeDropdown">
-                            <option value="medium" selected>Athenian</option>
-                            <option value="high">Promethean</option>
-                            <option value="ultra">Herculean</option>
-                            <option value="extreme">Olympian</option>
-                        </select>
-                    </div>
+                        <div class="tuner-controls-row" id="tunerSagittalType" style="display: none;">
+                            <select id="tunerSagittalTypeDropdown">
+                                <option value="medium" selected>Athenian</option>
+                                <option value="high">Promethean</option>
+                                <option value="ultra">Herculean</option>
+                                <option value="extreme">Olympian</option>
+                            </select>
+                        </div>
 
-                    <div class="tuner-controls-row" id="tunerJiSettings">
-                        <select id="tunerLimitType">
-                            <option value="integer">Integer-Limit</option>
-                            <option value="odd" selected>Odd-Limit</option>
-                            <option value="prime">Prime-Limit</option>
-                            <option value="custom">Custom Scale</option>
-                        </select>
-                        <span class="tuner-field" id="tunerLimitField">
-                            <input type="number" id="tunerLimitValue" class="tuner-num" value="13" min="1">
-                        </span>
-                        <span class="tuner-field tuner-field-grow" id="tunerMaxExpField" style="display: none;">
-                            <label for="tunerMaxExp">maximum exponent</label>
-                            <input type="number" id="tunerMaxExp" class="tuner-num tuner-num-grow" value="2" min="1">
-                        </span>
-                    </div>
+                        <div class="tuner-controls-row" id="tunerJiSettings">
+                            <select id="tunerLimitType">
+                                <option value="integer">Integer-Limit</option>
+                                <option value="odd" selected>Odd-Limit</option>
+                                <option value="prime">Prime-Limit</option>
+                                <option value="custom">Custom Scale</option>
+                            </select>
+                            <span class="tuner-field" id="tunerLimitField">
+                                <input type="number" id="tunerLimitValue" class="tuner-num" value="13" min="1">
+                            </span>
+                            <span class="tuner-field tuner-field-grow" id="tunerMaxExpField" style="display: none;">
+                                <label for="tunerMaxExp">maximum exponent</label>
+                                <input type="number" id="tunerMaxExp" class="tuner-num tuner-num-grow" value="2" min="1">
+                            </span>
+                        </div>
 
-                    <div class="tuner-controls-row" id="tunerCustomRow" style="display: none;">
-                        <textarea id="tunerCustomScale" rows="3" spellcheck="false"
-                            placeholder="ratios, e.g. 1/1, 9/8, 5/4, 4/3, 3/2, 5/3, 15/8"></textarea>
-                    </div>
+                        <div class="tuner-controls-row" id="tunerCustomRow" style="display: none;">
+                            <textarea id="tunerCustomScale" rows="3" spellcheck="false"
+                                placeholder="e.g.1/1 9/8 5/4 4/3 3/2 5/3 15/8"></textarea>
+                        </div>
 
-                    <div class="tuner-controls-row" id="tunerEdoSettings" style="display: none;">
-                        <input type="number" id="tunerEdo" class="edo tuner-edo-input" value="41" min="1">
-                    </div>
-                    <div class="output-checkboxes tuner-checkboxes" id="tunerEdoChecks" style="display: none;">
-                        <label><input type="checkbox" id="tunerShowEnharmonics"> enh equivalent</label>
-                        <label><input type="checkbox" id="tunerExcludeHalves" checked> exclude halves</label>
+                        <div class="tuner-controls-row" id="tunerEdoSettings" style="display: none;">
+                            <input type="number" id="tunerEdo" class="edo tuner-edo-input" value="41" min="1">
+                        </div>
                     </div>
 
                     <div class="tuner-readout" id="tunerReadout">
@@ -750,19 +748,30 @@
                         <div class="tuner-idle" id="tunerIdle">press <b>on</b> to start listening</div>
                     </div>
 
-                    <div class="output-checkboxes tuner-checkboxes" id="tunerHejiChecks">
-                        <label><input type="checkbox" id="tunerUnofficialExtensions" checked> unofficial extensions</label>
-                    </div>
-
-                    <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalChecks" style="display: none;">
-                        <label><input type="checkbox" id="tunerSagittalShowEnharmonics"> enh equivalent</label>
-                        <div class="sagittal-toggle-row">
-                            <button type="button" id="tunerSagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
-                            <button type="button" id="tunerSagittalEvoToggle" class="sagittal-toggle-button">evo</button>
+                    <div class="tuner-bottom">
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerEdoChecks" style="display: none;">
+                            <label><input type="checkbox" id="tunerShowEnharmonics"> enh equivalent</label>
+                            <label><input type="checkbox" id="tunerExcludeHalves" checked> exclude halves</label>
                         </div>
-                    </div>
 
-                    <button id="tunerToggleButton" class="clear">on</button>
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerHejiChecks">
+                            <label><input type="checkbox" id="tunerUnofficialExtensions" checked> unofficial extensions</label>
+                        </div>
+
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalChecks" style="display: none;">
+                            <label><input type="checkbox" id="tunerSagittalShowEnharmonics"> enh equivalent</label>
+                            <div class="sagittal-toggle-row">
+                                <button type="button" id="tunerSagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
+                                <button type="button" id="tunerSagittalEvoToggle" class="sagittal-toggle-button">evo</button>
+                            </div>
+                        </div>
+
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerComplexityChecks">
+                            <label><input type="checkbox" id="tunerComplexitySizing" checked> complexity sizing</label>
+                        </div>
+
+                        <button id="tunerToggleButton" class="clear">on</button>
+                    </div>
                 </div>
             </div>
         </div>

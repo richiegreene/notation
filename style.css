@@ -1263,13 +1263,28 @@ html[data-theme="dark"] .info-link {
    Tuner window
    --------------------------------------------------------------------------- */
 #tuner-item {
-    grid-row: span 6;
+    grid-row: span 5;
 }
 
+/* The tuner content is a fixed-height column (JS matches its height to an
+   Output card, so every language reads at the same card height): top settings,
+   a flexible readout that expands to fill the middle, and the toggles + on
+   button anchored at the bottom like an Output card's checkboxes + buttons. */
+/* JS sets an explicit pixel height on .tunerbox (matchTunerHeight) so the card
+   matches an Output card regardless of language; the readout flexes to fill. */
 .tunerbox {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+}
+.tuner-top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 0 0 auto;
+}
+.tuner-bottom {
+    flex: 0 0 auto;
 }
 
 .tuner-controls-row {
@@ -1278,43 +1293,20 @@ html[data-theme="dark"] .info-link {
     align-items: center;
     gap: 0.5rem;
 }
+.tuner-controls-row select { flex: 1 1 auto; }
 
-.tuner-controls-row select {
-    flex: 1 1 auto;
-}
-
-.tuner-field {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-
-input.tuner-num {
-    width: 4rem;
-    box-sizing: border-box;
-}
+.tuner-field { display: inline-flex; align-items: center; gap: 0.3rem; }
+input.tuner-num { width: 4rem; box-sizing: border-box; }
 
 /* Prime-limit "maximum exponent": label + input stretch to fill the row. */
-.tuner-field-grow {
-    flex: 3 1 auto;
-}
-input.tuner-num-grow {
-    flex: 1 1 auto;
-    width: auto;
-    min-width: 0;
-}
+.tuner-field-grow { flex: 3 1 auto; }
+input.tuner-num-grow { flex: 1 1 auto; width: auto; min-width: 0; }
 
 /* Ups-and-downs EDO entry: full-width, like #edoApproximationInput. */
-input.tuner-edo-input {
-    width: 100%;
-    box-sizing: border-box;
-}
+input.tuner-edo-input { width: 100%; box-sizing: border-box; }
 
 /* Tuner checkbox groups are compact (no fixed min-height like Output cards). */
-.tuner-checkboxes {
-    min-height: 0;
-    margin: 0.25rem 0;
-}
+.tuner-checkboxes { min-height: 0; margin: 0.15rem 0; }
 
 #tunerCustomScale {
     width: 100%;
@@ -1333,15 +1325,15 @@ html[data-theme="light"] #tunerCustomScale {
     border-color: rgb(187, 187, 187);
 }
 
-/* The strobe strip: a fixed-height band with a vertical centre line marking the
-   incoming pitch. Scale degrees are positioned by cents distance and glide past
-   the centre as the sounding pitch moves. Sizes reflect the Output cards, one
-   step down so several degrees fit across the strip. */
+/* The strobe strip fills the space between the top settings and bottom controls,
+   giving the readout the maximum available height. A vertical centre line marks
+   the incoming pitch; scale degrees glide past it, positioned by cents. */
 .tuner-readout {
     position: relative;
     display: flex;
     flex-direction: column;
-    height: 12rem;
+    flex: 1 1 auto;
+    min-height: 5rem;
     overflow: hidden;
     border: 1px solid #555;
     background-color: #2a2a2a;
@@ -1351,13 +1343,17 @@ html[data-theme="light"] #tunerCustomScale {
 .tuner-lane {
     position: relative;
     width: 100%;
+    overflow: visible;
 }
-.tuner-lane-names  { flex: 0 0 6rem; }
-.tuner-lane-ratios { flex: 0 0 2.6rem; }
-.tuner-lane-hz     { flex: 0 0 1.6rem; }
-.tuner-lane-cents  { flex: 0 0 1.6rem; }
+.tuner-lane-names  { flex: 5 1 0; }
+.tuner-lane-ratios { flex: 2 1 0; }
+.tuner-lane-hz     { flex: 1 1 0; }
+.tuner-lane-cents  { flex: 1 1 0; }
 
-/* A degree mark, absolutely placed; JS sets `left` in px each frame. */
+/* A degree mark, absolutely placed; JS sets `left` and `font-size` each frame.
+   Child glyphs size in em, so a single font-size on the mark scales the whole
+   label - this is how the density (anti-collision) and complexity (Tenney
+   height) sizing are applied. Full size (scale 1) equals the Output windows. */
 .tuner-mark {
     position: absolute;
     top: 50%;
@@ -1365,77 +1361,50 @@ html[data-theme="light"] #tunerCustomScale {
     white-space: nowrap;
     text-align: center;
     color: var(--color-text);
+    line-height: 1;
     pointer-events: none;
 }
-
 .tuner-lane-names .tuner-mark {
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
 }
+.tuner-lane-hz .tuner-mark,
+.tuner-lane-cents .tuner-mark { opacity: 0.8; }
 
-/* Nominal letter, reflecting the Output note name (4rem) one step smaller. */
-.tuner-note-letter {
-    font-family: "Inter", sans-serif;
-    font-size: 2.4rem;
-}
-
-/* In-tune: within 4 cents of a degree, the note name turns blue. */
-.tuner-mark.in-tune .tuner-note-letter,
-.tuner-mark.in-tune .heji2,
-.tuner-mark.in-tune .heji-extensions,
-.tuner-mark.in-tune .johnston-letter,
-.tuner-mark.in-tune .johnston-numeral,
-.tuner-mark.in-tune .sagittal-symbol-unicode,
-.tuner-mark.in-tune .sagittal-symbol-ascii,
-.tuner-mark.in-tune .tuner-edo-note,
-.tuner-mark.in-tune .tuner-edo-acc {
-    color: #007bff;
-}
-
-/* Notation glyphs inside the strip, scaled down from the Output windows. */
+/* Glyphs are em-relative to the mark's JS-set font-size (1em = Output letter). */
+.tuner-note-letter { font-family: "Inter", sans-serif; font-size: 1em; }
 .tuner-readout .heji2,
-.tuner-readout .heji-extensions {
-    font-size: 2.8rem;
-    top: 0;
-    letter-spacing: 0;
-}
-.tuner-readout .johnston-letter { font-size: 2.4rem; }
+.tuner-readout .heji-extensions { font-size: 1.5em; top: 0; letter-spacing: 0; }
+.tuner-readout .johnston-letter { font-size: 1em; }
 .tuner-readout .johnston-notation-display { height: auto; }
-.tuner-readout .sagittal-letter { font-size: 2.4rem; font-family: "Inter", sans-serif; }
+.tuner-readout .johnston-symbols { font-size: 1em; }
+.tuner-readout .sagittal-letter { font-size: 1em; font-family: "Inter", sans-serif; }
 .tuner-readout .sagittal-symbol-unicode,
-.tuner-readout .sagittal-symbol-ascii { font-size: 2.4rem; }
+.tuner-readout .sagittal-symbol-ascii { font-size: 1.333em; }
+.tuner-edo-note { font-family: "EdoAccidentals", sans-serif; font-size: 1em; }
+.tuner-edo-acc  { font-family: "EdoAccidentals", sans-serif; font-size: 1.5em; }
 
-/* Sagittal spellings stack vertically in the name lane; enharmonic sets
-   ("enh equivalent" on) shrink so several fit, like Sagittal Output. */
+/* Sagittal enharmonic spellings stack vertically and shrink so several fit. */
 .tuner-sagittal-stack {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    line-height: 1;
 }
 .tuner-sagittal-spelling {
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.tuner-sagittal-stack.multi .sagittal-letter { font-size: 1.5rem; }
+.tuner-sagittal-stack.multi .sagittal-letter { font-size: 0.62em; }
 .tuner-sagittal-stack.multi .sagittal-symbol-unicode,
-.tuner-sagittal-stack.multi .sagittal-symbol-ascii { font-size: 1.5rem; }
+.tuner-sagittal-stack.multi .sagittal-symbol-ascii { font-size: 0.82em; }
 
-.tuner-edo-note,
-.tuner-edo-acc {
-    font-family: "EdoAccidentals", sans-serif;
-    font-size: 2.4rem;
-}
-
-.tuner-lane-ratios .tuner-mark { font-size: 1.4rem; }
-.tuner-lane-hz .tuner-mark,
-.tuner-lane-cents .tuner-mark {
-    font-size: 0.85rem;
-    opacity: 0.8;
+/* In-tune (within 4c): note name, ratio/step and their glyphs turn blue. */
+.tuner-readout .tuner-mark.in-tune,
+.tuner-readout .tuner-mark.in-tune * {
+    color: #007bff;
 }
 
 /* Fixed centre line = the received pitch. */
@@ -1468,7 +1437,7 @@ html[data-theme="light"] #tunerCustomScale {
     display: block;
     width: 100%;
     font-size: 11.2px;
-    margin: 10px 0;
+    margin: 0.4rem 0 0 0;
 }
 #tunerToggleButton.listening-active {
     background-color: var(--bg-button-selected);
