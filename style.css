@@ -714,11 +714,19 @@ table.enharmonic-table > tr, td, th {
 }
 
 /* SMuFL accidentals (sharps/flats, +/-, seven, arrows) sized like the
-   Sagittal unicode symbols so the two windows read at the same scale. */
+   Sagittal unicode symbols so the two windows read at the same scale.
+   Bravura's plus/minus/seven/arrow glyphs have very narrow advance widths
+   (they're drawn as thin strokes), so stacked repeats of the same glyph
+   (e.g. two "-" for a double syntonic comma) render with zero gap and read
+   as a single connected line unless letter-spacing pries them apart.
+   margin-left gives the same breathing room from a preceding sibling group
+   (a sharp, a numeral) that .johnston-numeral already has. */
 .johnston-accidental {
     color: var(--color-text);
     font-family: "Bravura", serif;
     font-size: calc(4rem * 4 / 3);
+    letter-spacing: 0.15em;
+    margin-left: 0.1em;
     display: inline-flex;
     align-items: center;
     line-height: 1;
