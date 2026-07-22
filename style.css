@@ -742,12 +742,6 @@ table.enharmonic-table > tr, td, th {
     transform: rotate(180deg);
 }
 
-.johnston-na {
-    font-family: monospace;
-    font-size: 2rem;
-    color: var(--color-text);
-}
-
 /* Johnston Entry palette: same flush grid as the HEJI palette. Each row is a
    centered flex row with no margin, and every cell is a 2.5rem square, so the
    ten rows butt up against each other exactly like the HEJI prime rows. */

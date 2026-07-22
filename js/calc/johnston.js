@@ -418,6 +418,9 @@ export function generateJohnstonOutputColumns(numColumns) {
                 </div>
                 <div class="output-region-values">
                     <div class="output-content">
+                        <span id="johnstonMidiNote_${i}"></span><span id="johnstonMidiAccidental_${i}" class="midiAccidental"></span><span id="johnstonCents_${i}" value="0"></span>
+                    </div>
+                    <div class="output-content">
                         <div id="johnstonFrequency_${i}" value="440"></div>
                     </div>
                     <div class="output-content">
@@ -445,8 +448,20 @@ export function updateJohnstonOutputDisplays(columnIndex, outputFrequency, ratio
         $(`#johnstonNotation_${columnIndex}`).html(renderJohnstonAccidentals(decomposition));
     } else {
         $(`#johnstonNoteName_${columnIndex}`).text('');
-        $(`#johnstonNotation_${columnIndex}`).html("<span class='johnston-na'>n/a</span>");
+        // Matches HEJI Output's n/a exactly: no class, so it falls through to
+        // the app-wide `* { font-size: 11.2px }` rule instead of the large
+        // glyph sizing used for actual notation.
+        $(`#johnstonNotation_${columnIndex}`).html("<span style='font-family: monospace;'>n/a</span>");
     }
+
+    // Nearest 12-tET pitch class name and cent deviation, directly beneath the
+    // ratio like in HEJI Output. This reading describes the sounding pitch,
+    // not the Johnston spelling, so it's identical to HEJI's: copy the values
+    // already computed by UI.getPC()/getCentDeviation() earlier in this same
+    // calculation pass rather than recomputing them.
+    $(`#johnstonMidiNote_${columnIndex}`).text($(`#midiNote_${columnIndex}`).text());
+    $(`#johnstonMidiAccidental_${columnIndex}`).text($(`#midiAccidental_${columnIndex}`).text());
+    $(`#johnstonCents_${columnIndex}`).text($(`#cents_${columnIndex}`).text());
 
     // Ratio, folded into the octave above 1/1 when octave reduce is on.
     let num = ratioNum;
