@@ -748,20 +748,29 @@ table.enharmonic-table > tr, td, th {
     color: var(--color-text);
 }
 
-/* Johnston Entry palette: same row rhythm as the HEJI palette. */
+/* Johnston Entry palette: same flush grid as the HEJI palette. Each row is a
+   centered flex row with no margin, and every cell is a 2.5rem square, so the
+   ten rows butt up against each other exactly like the HEJI prime rows. */
 .johnston-button-row {
-    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
 }
 
-/* Every cell is the same width so the ten rows line up in a grid, the way the
-   HEJI palette does. The width is set by the widest content (three stacked
-   numerals), not by the SMuFL rows. */
+.johnston-button-row .label,
+.johnston-button {
+    flex-shrink: 0;
+    margin: 0;
+}
+
 .johnston-button {
     font-family: "Bravura", serif;
     font-size: 1.5rem;
-    line-height: 1;
-    width: 2.9rem;
-    min-width: 2.9rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    line-height: 2.5rem;
     box-sizing: border-box;
     padding: 0;
     text-align: center;
@@ -786,8 +795,8 @@ table.enharmonic-table > tr, td, th {
 }
 
 .johnston-button .johnston-numeral {
-    font-size: 0.62rem;
-    letter-spacing: -0.03em;
+    font-size: 0.52rem;
+    letter-spacing: -0.05em;
     top: 0;
     vertical-align: middle;
     margin-left: 0;
