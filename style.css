@@ -1042,10 +1042,11 @@ input.ratioIn {
 #playback-item input[type="range"]::-webkit-slider-runnable-track { height: 6px; background: #3d3d3d; border-radius: 6px; }
 #playback-item input[type="range"]::-moz-range-track { height: 6px; background: #3d3d3d; border-radius: 6px; }
 
-#waveformCanvas {
+#waveformSvg {
     border: 1px solid #555;
     background-color: #2a2a2a;
     border-radius: 4px;
+    display: block;
 }
 #playOutputButton.playing-active, #playEdoOutputButton.playing-active, #playSagittalOutputButton.playing-active, #playJohnstonOutputButton.playing-active {
     background-color: var(--bg-button-selected);
@@ -1194,8 +1195,9 @@ html[data-theme="light"] #theme-toggle .light-icon {
     display: block; /* Show light icon in light mode */
 }
 
-html[data-theme="light"] #waveformCanvas {
+html[data-theme="light"] #waveformSvg {
     background-color: rgb(255, 255, 255);
+    border-color: rgb(187, 187, 187);
 }
 
 .precision-control-group {

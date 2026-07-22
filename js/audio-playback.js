@@ -84,25 +84,26 @@ export function updateWaveform(sliderValue) {
     drawWaveform(interpolatedImag);
 }
 
+// Coordinate space of the SVG viewBox (see #waveformSvg in index.html). The
+// path is vector, so this only sets the aspect ratio - it renders crisply at
+// any physical size or device pixel ratio.
+const WAVEFORM_WIDTH = 60;
+const WAVEFORM_HEIGHT = 30;
+// Sample count is decoupled from pixel width now that the curve is vector: a
+// higher count gives a smoother trace (and cleaner square-wave edges).
+const WAVEFORM_SAMPLES = 256;
+
 export function drawWaveform(imag) {
-    const canvas = document.getElementById('waveformCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
+    const path = document.getElementById('waveformPath');
+    if (!path) return;
 
-    ctx.clearRect(0, 0, width, height);
-    ctx.strokeStyle = '#007bff';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-
-    const yCenter = height / 2;
-    const amplitude = height * 0.4;
+    const yCenter = WAVEFORM_HEIGHT / 2;
+    const amplitude = WAVEFORM_HEIGHT * 0.4;
 
     let maxVal = 0;
-    const wave = new Float32Array(width);
-    for (let i = 0; i < width; i++) {
-        const time = i / width;
+    const wave = new Float32Array(WAVEFORM_SAMPLES);
+    for (let i = 0; i < WAVEFORM_SAMPLES; i++) {
+        const time = i / WAVEFORM_SAMPLES;
         let y = 0;
         for (let n = 1; n < imag.length; n++) {
             y += imag[n] * Math.sin(2 * Math.PI * n * time);
@@ -113,13 +114,16 @@ export function drawWaveform(imag) {
         }
     }
 
-    // Normalize and draw
-    ctx.moveTo(0, yCenter);
-    for (let i = 0; i < width; i++) {
-        const normalizedY = (wave[i] / maxVal) * amplitude;
-        ctx.lineTo(i, yCenter - normalizedY);
+    if (maxVal === 0) maxVal = 1; // silence: keep the trace flat, avoid /0
+
+    // Build the SVG path, normalized so the peak fills `amplitude`.
+    let d = '';
+    for (let i = 0; i < WAVEFORM_SAMPLES; i++) {
+        const x = (i / (WAVEFORM_SAMPLES - 1)) * WAVEFORM_WIDTH;
+        const y = yCenter - (wave[i] / maxVal) * amplitude;
+        d += `${i === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`;
     }
-    ctx.stroke();
+    path.setAttribute('d', d);
 }
 
 let voices = [];
