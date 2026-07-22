@@ -82,7 +82,7 @@ body {
     border-radius: 8px;
     color: var(--color-text);
     font-family: "Inter", sans-serif;
-    margin: 10px; /* Space around each item */
+    margin: 2.5px; /* Space around each item */
     min-width: auto; /* Allow content to define min-width */
 }
 
@@ -207,7 +207,7 @@ div.version {
 .calc-container {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
+    gap: 2.5px;
     padding: 10px;
     margin: 0 auto;
     grid-auto-flow: dense; /* Added to allow items to fill in holes */
