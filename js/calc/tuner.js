@@ -34,10 +34,26 @@ export function initTuner() {
     ['tunerLimitValue', 'tunerMaxExp', 'tunerEdo'].forEach((id) =>
         el(id).addEventListener('input', rebuildScale));
 
+    // Option toggles that re-name the current scale when changed.
+    ['tunerSagittalTypeDropdown', 'tunerShowEnharmonics', 'tunerExcludeHalves',
+        'tunerUnofficialExtensions', 'tunerSagittalShowEnharmonics'].forEach((id) =>
+        el(id).addEventListener('change', rebuildScale));
+
+    // Sagittal revo/evo: a mutually-exclusive toggle-button pair (revo default),
+    // matching Sagittal Output's behavior.
+    bindTogglePair('tunerSagittalRevoToggle', 'tunerSagittalEvoToggle');
+
     el('tunerToggleButton').addEventListener('click', toggleListening);
 
     updateVisibility();
     rebuildScale();
+}
+
+function bindTogglePair(idA, idB) {
+    const a = el(idA);
+    const b = el(idB);
+    a.addEventListener('click', () => { a.classList.add('selected'); b.classList.remove('selected'); rebuildScale(); });
+    b.addEventListener('click', () => { b.classList.add('selected'); a.classList.remove('selected'); rebuildScale(); });
 }
 
 const language = () => el('tunerLanguage').value;
@@ -45,13 +61,25 @@ const limitType = () => el('tunerLimitType').value;
 
 /** Show/hide the settings that apply to the selected language & limit type. */
 function updateVisibility() {
-    const updown = language() === 'updown';
+    const lang = language();
+    const updown = lang === 'updown';
     const lt = limitType();
+
     el('tunerJiSettings').style.display = updown ? 'none' : '';
-    el('tunerEdoSettings').style.display = updown ? '' : 'none';
     el('tunerMaxExpField').style.display = (!updown && lt === 'prime') ? '' : 'none';
     el('tunerLimitField').style.display = (!updown && lt !== 'custom') ? '' : 'none';
     el('tunerCustomRow').style.display = (!updown && lt === 'custom') ? '' : 'none';
+
+    // Ups and Downs: full-width EDO field + its enh/exclude-halves checks.
+    el('tunerEdoSettings').style.display = updown ? '' : 'none';
+    el('tunerEdoChecks').style.display = updown ? '' : 'none';
+
+    // Sagittal-only: precision dropdown (top) and enh + revo/evo (below readout).
+    el('tunerSagittalType').style.display = lang === 'sagittal' ? '' : 'none';
+    el('tunerSagittalChecks').style.display = lang === 'sagittal' ? '' : 'none';
+
+    // HEJI-only: unofficial extensions toggle (below readout).
+    el('tunerHejiChecks').style.display = lang === 'heji' ? '' : 'none';
 }
 
 /** Rebuild the scale (degrees + names) and its DOM marks. */
@@ -60,7 +88,10 @@ function rebuildScale() {
     if (lang === 'updown') {
         isJiMode = false;
         const m = parseInt(el('tunerEdo').value, 10) || 41;
-        currentDegrees = buildEdoDegrees(m, { showEnh: false });
+        currentDegrees = buildEdoDegrees(m, {
+            showEnh: el('tunerShowEnharmonics').checked,
+            excludeHalves: el('tunerExcludeHalves').checked,
+        });
     } else {
         isJiMode = true;
         const scale = buildJiScale(limitType(), {
@@ -68,15 +99,39 @@ function rebuildScale() {
             maxExp: el('tunerMaxExp').value,
             custom: el('tunerCustomScale').value,
         });
-        currentDegrees = nameJiDegrees(scale, lang, { useEvo: false, useUnicode: true });
+        currentDegrees = nameJiDegrees(scale, lang, nameOptions(lang));
     }
     buildMarks();
+}
+
+/** Naming options for the current JI language, read from the control state. */
+function nameOptions(lang) {
+    if (lang === 'heji') {
+        return { unofficialExtensions: el('tunerUnofficialExtensions').checked };
+    }
+    if (lang === 'sagittal') {
+        return {
+            precision: el('tunerSagittalTypeDropdown').value,
+            useEvo: el('tunerSagittalEvoToggle').classList.contains('selected'),
+            useUnicode: true,
+            showEnh: el('tunerSagittalShowEnharmonics').checked,
+        };
+    }
+    return {};
 }
 
 function nameMarkHtml(deg) {
     if (!isJiMode) {
         return `<span class="tuner-edo-note">${deg.name.base}</span>`
             + `<span class="tuner-edo-acc">${deg.name.acc}</span>`;
+    }
+    if (language() === 'sagittal') {
+        const sp = deg.name && deg.name.spellings;
+        if (!sp || !sp.length) return `<span class="tuner-note-letter">n/a</span>`;
+        return `<span class="tuner-sagittal-stack${sp.length > 1 ? ' multi' : ''}">`
+            + sp.map((s) => `<span class="tuner-sagittal-spelling">`
+                + `<span class="sagittal-letter">${s.letter}</span>${s.symbolHtml}</span>`).join('')
+            + `</span>`;
     }
     if (!deg.name) return `<span class="tuner-note-letter">n/a</span>`;
     return `<span class="tuner-note-letter">${deg.name.letter}</span>${deg.name.html || ''}`;

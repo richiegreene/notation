@@ -703,6 +703,15 @@
                         </select>
                     </div>
 
+                    <div class="tuner-controls-row" id="tunerSagittalType" style="display: none;">
+                        <select id="tunerSagittalTypeDropdown">
+                            <option value="medium" selected>Athenian</option>
+                            <option value="high">Promethean</option>
+                            <option value="ultra">Herculean</option>
+                            <option value="extreme">Olympian</option>
+                        </select>
+                    </div>
+
                     <div class="tuner-controls-row" id="tunerJiSettings">
                         <select id="tunerLimitType">
                             <option value="integer">Integer-Limit</option>
@@ -713,9 +722,9 @@
                         <span class="tuner-field" id="tunerLimitField">
                             <input type="number" id="tunerLimitValue" class="tuner-num" value="13" min="1">
                         </span>
-                        <span class="tuner-field" id="tunerMaxExpField" style="display: none;">
-                            <label for="tunerMaxExp">Max Exp.</label>
-                            <input type="number" id="tunerMaxExp" class="tuner-num" value="2" min="1">
+                        <span class="tuner-field tuner-field-grow" id="tunerMaxExpField" style="display: none;">
+                            <label for="tunerMaxExp">maximum exponent</label>
+                            <input type="number" id="tunerMaxExp" class="tuner-num tuner-num-grow" value="2" min="1">
                         </span>
                     </div>
 
@@ -725,8 +734,11 @@
                     </div>
 
                     <div class="tuner-controls-row" id="tunerEdoSettings" style="display: none;">
-                        <label for="tunerEdo">EDO</label>
-                        <input type="number" id="tunerEdo" class="tuner-num" value="41" min="5">
+                        <input type="number" id="tunerEdo" class="edo tuner-edo-input" value="41" min="1">
+                    </div>
+                    <div class="output-checkboxes tuner-checkboxes" id="tunerEdoChecks" style="display: none;">
+                        <label><input type="checkbox" id="tunerShowEnharmonics"> enh equivalent</label>
+                        <label><input type="checkbox" id="tunerExcludeHalves" checked> exclude halves</label>
                     </div>
 
                     <div class="tuner-readout" id="tunerReadout">
@@ -736,6 +748,18 @@
                         <div class="tuner-lane tuner-lane-cents" id="tunerLaneCents"></div>
                         <div class="tuner-centerline"></div>
                         <div class="tuner-idle" id="tunerIdle">press <b>on</b> to start listening</div>
+                    </div>
+
+                    <div class="output-checkboxes tuner-checkboxes" id="tunerHejiChecks">
+                        <label><input type="checkbox" id="tunerUnofficialExtensions" checked> unofficial extensions</label>
+                    </div>
+
+                    <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalChecks" style="display: none;">
+                        <label><input type="checkbox" id="tunerSagittalShowEnharmonics"> enh equivalent</label>
+                        <div class="sagittal-toggle-row">
+                            <button type="button" id="tunerSagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
+                            <button type="button" id="tunerSagittalEvoToggle" class="sagittal-toggle-button">evo</button>
+                        </div>
                     </div>
 
                     <button id="tunerToggleButton" class="clear">on</button>

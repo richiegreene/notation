@@ -1294,12 +1294,43 @@ input.tuner-num {
     box-sizing: border-box;
 }
 
+/* Prime-limit "maximum exponent": label + input stretch to fill the row. */
+.tuner-field-grow {
+    flex: 3 1 auto;
+}
+input.tuner-num-grow {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+}
+
+/* Ups-and-downs EDO entry: full-width, like #edoApproximationInput. */
+input.tuner-edo-input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Tuner checkbox groups are compact (no fixed min-height like Output cards). */
+.tuner-checkboxes {
+    min-height: 0;
+    margin: 0.25rem 0;
+}
+
 #tunerCustomScale {
     width: 100%;
     box-sizing: border-box;
     resize: vertical;
     font-family: monospace;
     font-size: 0.9rem;
+    background-color: rgb(45, 45, 45);
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
+}
+html[data-theme="light"] #tunerCustomScale {
+    background-color: #fff;
+    color: #000;
+    border-color: rgb(187, 187, 187);
 }
 
 /* The strobe strip: a fixed-height band with a vertical centre line marking the
@@ -1375,6 +1406,24 @@ input.tuner-num {
 .tuner-readout .sagittal-letter { font-size: 2.4rem; font-family: "Inter", sans-serif; }
 .tuner-readout .sagittal-symbol-unicode,
 .tuner-readout .sagittal-symbol-ascii { font-size: 2.4rem; }
+
+/* Sagittal spellings stack vertically in the name lane; enharmonic sets
+   ("enh equivalent" on) shrink so several fit, like Sagittal Output. */
+.tuner-sagittal-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.tuner-sagittal-spelling {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tuner-sagittal-stack.multi .sagittal-letter { font-size: 1.5rem; }
+.tuner-sagittal-stack.multi .sagittal-symbol-unicode,
+.tuner-sagittal-stack.multi .sagittal-symbol-ascii { font-size: 1.5rem; }
 
 .tuner-edo-note,
 .tuner-edo-acc {

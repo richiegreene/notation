@@ -196,12 +196,20 @@ const clampBand = (i) => Math.max(0, Math.min(6, i));
 
 /**
  * Spell an absolute (1/1 = C) monzo in HEJI.
- * @returns {{letter:string, html:string}|null}  null if above the 89-limit.
+ * @param {number[]} monzo
+ * @param {{unofficialExtensions?:boolean}} opts  when unofficialExtensions is
+ *        false, pitches using primes 53-89 are un-notatable (null), matching
+ *        HEJI Output's "unofficial extensions" toggle.
+ * @returns {{letter:string, html:string}|null}  null if un-notatable.
  */
-export function hejiName(monzo) {
+export function hejiName(monzo, opts = {}) {
+    const { unofficialExtensions = true } = opts;
     const m = padMonzo(monzo);
     for (let i = 0; i < m.length; i++) {
         if (i >= 24 && m[i]) return null; // beyond the app's prime table
+    }
+    if (!unofficialExtensions) {
+        for (let i = 15; i < 24; i++) if (m[i]) return null; // primes 53-89
     }
 
     let fifths = 0;
@@ -257,30 +265,39 @@ export function johnstonName(monzo) {
     return { letter: decomp.letter, html: renderJohnstonAccidentals(decomp) };
 }
 
-/** Sagittal name for num/den (1/1 = C). */
-export function sagittalName(num, den, opts = {}) {
-    const { precision = 'medium', useEvo = false, useUnicode = true } = opts;
-    const variants = getEnharmonicVariants(
+/**
+ * Sagittal spellings for num/den (1/1 = C).
+ * @param {object} opts { precision, useEvo, useUnicode, showEnh }
+ * @returns {{letter:string, symbolHtml:string}[]}  one spelling, or the
+ *          enharmonic set when showEnh is true (like Sagittal Output).
+ */
+export function sagittalSpellings(num, den, opts = {}) {
+    const { precision = 'medium', useEvo = false, useUnicode = true, showEnh = false } = opts;
+    let variants = getEnharmonicVariants(
         { numerator: num, denominator: den, nominal: 'C' },
         precision
     ).filter((v) => v.nominalLetter);
-    if (!variants.length) return null;
+    if (!variants.length) return [];
 
-    let best = variants[0];
-    for (const v of variants) {
-        const eb = typeof v.error === 'number' ? Math.abs(v.error) : Infinity;
-        const ea = typeof best.error === 'number' ? Math.abs(best.error) : Infinity;
-        if (eb < ea) best = v;
+    if (!showEnh && variants.length > 1) {
+        variants = [variants.reduce((a, b) => {
+            const ea = typeof a.error === 'number' ? Math.abs(a.error) : Infinity;
+            const eb = typeof b.error === 'number' ? Math.abs(b.error) : Infinity;
+            return eb < ea ? b : a;
+        })];
     }
     const field = (useEvo ? 'evo' : 'revo') + '_' + (useUnicode ? 'unicode' : 'ascii');
     const cls = useUnicode ? 'sagittal-symbol-unicode' : 'sagittal-symbol-ascii';
-    return { letter: best.nominalLetter, html: `<span class="${cls}">${best[field] || ''}</span>` };
+    return variants.map((v) => ({
+        letter: v.nominalLetter,
+        symbolHtml: `<span class="${cls}">${v[field] || ''}</span>`,
+    }));
 }
 
 /** Ups-and-downs name for a step of m-EDO (1/1 = C, step 0 = C). */
 export function edoName(step, m, opts = {}) {
-    const { showEnh = true } = opts;
-    const notation = calculateEdoNotation(U.mod(step, m), m, 1, 0, showEnh, '', false);
+    const { showEnh = true, excludeHalves = false } = opts;
+    const notation = calculateEdoNotation(U.mod(step, m), m, 1, 0, showEnh, '', excludeHalves);
     if (notation === 'n/a') return { base: 'n/a', acc: '' };
     let base = notation.split(/[\^vb#x,\\/]/)[0].trim();
     let acc = notation.substring(base.length).trim();
@@ -297,9 +314,9 @@ export function nameJiDegrees(degrees, language, opts = {}) {
     return degrees.map((deg) => {
         let name = null;
         if (deg.supported) {
-            if (language === 'heji') name = hejiName(ratioMonzo(deg.num, deg.den));
+            if (language === 'heji') name = hejiName(ratioMonzo(deg.num, deg.den), opts);
             else if (language === 'johnston') name = johnstonName(ratioMonzo(deg.num, deg.den));
-            else if (language === 'sagittal') name = sagittalName(deg.num, deg.den, opts);
+            else if (language === 'sagittal') name = { spellings: sagittalSpellings(deg.num, deg.den, opts) };
         }
         return { ...deg, name };
     });
