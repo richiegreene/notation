@@ -686,6 +686,62 @@
                 </div>
             </div>
         </div>
+
+        <div class="settings-menu-item collapsed-item" id="tuner-item">
+            <div class="settings-header">
+                <span>Tuner</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="tunerbox">
+                    <div class="tuner-controls-row">
+                        <select id="tunerLanguage">
+                            <option value="heji" selected>HEJI</option>
+                            <option value="sagittal">Sagittal</option>
+                            <option value="johnston">Johnston</option>
+                            <option value="updown">Ups and Downs</option>
+                        </select>
+                    </div>
+
+                    <div class="tuner-controls-row" id="tunerJiSettings">
+                        <select id="tunerLimitType">
+                            <option value="integer">Integer-Limit</option>
+                            <option value="odd" selected>Odd-Limit</option>
+                            <option value="prime">Prime-Limit</option>
+                            <option value="custom">Custom Scale</option>
+                        </select>
+                        <span class="tuner-field" id="tunerLimitField">
+                            <input type="number" id="tunerLimitValue" class="tuner-num" value="13" min="1">
+                        </span>
+                        <span class="tuner-field" id="tunerMaxExpField" style="display: none;">
+                            <label for="tunerMaxExp">Max Exp.</label>
+                            <input type="number" id="tunerMaxExp" class="tuner-num" value="2" min="1">
+                        </span>
+                    </div>
+
+                    <div class="tuner-controls-row" id="tunerCustomRow" style="display: none;">
+                        <textarea id="tunerCustomScale" rows="3" spellcheck="false"
+                            placeholder="ratios, e.g. 1/1, 9/8, 5/4, 4/3, 3/2, 5/3, 15/8"></textarea>
+                    </div>
+
+                    <div class="tuner-controls-row" id="tunerEdoSettings" style="display: none;">
+                        <label for="tunerEdo">EDO</label>
+                        <input type="number" id="tunerEdo" class="tuner-num" value="41" min="5">
+                    </div>
+
+                    <div class="tuner-readout" id="tunerReadout">
+                        <div class="tuner-lane tuner-lane-names" id="tunerLaneNames"></div>
+                        <div class="tuner-lane tuner-lane-ratios" id="tunerLaneRatios"></div>
+                        <div class="tuner-lane tuner-lane-hz" id="tunerLaneHz"></div>
+                        <div class="tuner-lane tuner-lane-cents" id="tunerLaneCents"></div>
+                        <div class="tuner-centerline"></div>
+                        <div class="tuner-idle" id="tunerIdle">press <b>on</b> to start listening</div>
+                    </div>
+
+                    <button id="tunerToggleButton" class="clear">on</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 	    

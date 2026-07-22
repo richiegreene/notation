@@ -6,6 +6,7 @@ import * as UI from './calc/ui.js';
 import { generateJohnstonPalette, generateJohnstonOutputColumns } from './calc/johnston.js';
 import { initAudio, updateWaveform, playFrequencies, stopAllFrequencies, currentPeriodicWave } from './audio-playback.js'; // Import audio functions
 import { initMidiOutput, setPlaybackMode, midiOutputSelect, midiDeviceSelectorDiv } from './mpe-playback.js'; // Import MPE functions
+import { initTuner } from './calc/tuner.js'; // Import Tuner window controller
 
 let slideDuration = 0.25; // Default slide duration, can be made configurable
 
@@ -287,6 +288,9 @@ $(document).ready(function(){
 
     // Build the Johnston Entry palette before any calculation reads it.
     generateJohnstonPalette();
+
+    // Wire up the Tuner window (mic stays closed until its toggle is pressed).
+    initTuner();
 
 	state.kammerTon = $("#frequencyA4").val();
 	state.precision = $("#precision").val();

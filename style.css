@@ -1259,3 +1259,174 @@ html[data-theme="dark"] .info-link {
     height: 0.5rem; /* Height of the blank row */
     margin-bottom: 0.5rem; /* Space below the blank row */
 }
+/* ---------------------------------------------------------------------------
+   Tuner window
+   --------------------------------------------------------------------------- */
+#tuner-item {
+    grid-row: span 6;
+}
+
+.tunerbox {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tuner-controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tuner-controls-row select {
+    flex: 1 1 auto;
+}
+
+.tuner-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+input.tuner-num {
+    width: 4rem;
+    box-sizing: border-box;
+}
+
+#tunerCustomScale {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+/* The strobe strip: a fixed-height band with a vertical centre line marking the
+   incoming pitch. Scale degrees are positioned by cents distance and glide past
+   the centre as the sounding pitch moves. Sizes reflect the Output cards, one
+   step down so several degrees fit across the strip. */
+.tuner-readout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 12rem;
+    overflow: hidden;
+    border: 1px solid #555;
+    background-color: #2a2a2a;
+    border-radius: 4px;
+}
+
+.tuner-lane {
+    position: relative;
+    width: 100%;
+}
+.tuner-lane-names  { flex: 0 0 6rem; }
+.tuner-lane-ratios { flex: 0 0 2.6rem; }
+.tuner-lane-hz     { flex: 0 0 1.6rem; }
+.tuner-lane-cents  { flex: 0 0 1.6rem; }
+
+/* A degree mark, absolutely placed; JS sets `left` in px each frame. */
+.tuner-mark {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    text-align: center;
+    color: var(--color-text);
+    pointer-events: none;
+}
+
+.tuner-lane-names .tuner-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* Nominal letter, reflecting the Output note name (4rem) one step smaller. */
+.tuner-note-letter {
+    font-family: "Inter", sans-serif;
+    font-size: 2.4rem;
+}
+
+/* In-tune: within 4 cents of a degree, the note name turns blue. */
+.tuner-mark.in-tune .tuner-note-letter,
+.tuner-mark.in-tune .heji2,
+.tuner-mark.in-tune .heji-extensions,
+.tuner-mark.in-tune .johnston-letter,
+.tuner-mark.in-tune .johnston-numeral,
+.tuner-mark.in-tune .sagittal-symbol-unicode,
+.tuner-mark.in-tune .sagittal-symbol-ascii,
+.tuner-mark.in-tune .tuner-edo-note,
+.tuner-mark.in-tune .tuner-edo-acc {
+    color: #007bff;
+}
+
+/* Notation glyphs inside the strip, scaled down from the Output windows. */
+.tuner-readout .heji2,
+.tuner-readout .heji-extensions {
+    font-size: 2.8rem;
+    top: 0;
+    letter-spacing: 0;
+}
+.tuner-readout .johnston-letter { font-size: 2.4rem; }
+.tuner-readout .johnston-notation-display { height: auto; }
+.tuner-readout .sagittal-letter { font-size: 2.4rem; font-family: "Inter", sans-serif; }
+.tuner-readout .sagittal-symbol-unicode,
+.tuner-readout .sagittal-symbol-ascii { font-size: 2.4rem; }
+
+.tuner-edo-note,
+.tuner-edo-acc {
+    font-family: "EdoAccidentals", sans-serif;
+    font-size: 2.4rem;
+}
+
+.tuner-lane-ratios .tuner-mark { font-size: 1.4rem; }
+.tuner-lane-hz .tuner-mark,
+.tuner-lane-cents .tuner-mark {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* Fixed centre line = the received pitch. */
+.tuner-centerline {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    transform: translateX(-50%);
+    background-color: #007bff;
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+.tuner-idle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--color-text);
+    opacity: 0.6;
+    font-size: 0.9rem;
+    text-align: center;
+    width: 90%;
+    pointer-events: none;
+}
+
+#tunerToggleButton {
+    display: block;
+    width: 100%;
+    font-size: 11.2px;
+    margin: 10px 0;
+}
+#tunerToggleButton.listening-active {
+    background-color: var(--bg-button-selected);
+    border-color: var(--bg-button-selected);
+}
+
+html[data-theme="light"] .tuner-readout {
+    background-color: rgb(255, 255, 255);
+    border-color: rgb(187, 187, 187);
+}
