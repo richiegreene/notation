@@ -377,7 +377,8 @@ export const JOHNSTON_ROWS = {
     eleven: commaRow('eleven'),
     thirteen: commaRow('thirteen'),
     seventeen: commaRow('seventeen'),
-    nineteen: commaRow('nineteen'),
+    // Mirrored: 19 glyphs read 19/1919/191919 on the left, upside-down on the right.
+    nineteen: commaRow('nineteen', true),
     twentyThree: commaRow('twentyThree'),
     twentyNine: commaRow('twentyNine'),
     thirtyOne: commaRow('thirtyOne'),
@@ -394,17 +395,17 @@ export const JOHNSTON_ROW_SPECS = [
       glyphs: [GLYPH.seven.repeat(3), GLYPH.seven.repeat(2), GLYPH.seven, GLYPH.natural, GLYPH.el, GLYPH.el.repeat(2), GLYPH.el.repeat(3)] },
     { key: 'eleven', left: '/11', right: '11/', kind: 'bravura',
       glyphs: [GLYPH.down.repeat(3), GLYPH.down.repeat(2), GLYPH.down, GLYPH.natural, GLYPH.up, GLYPH.up.repeat(2), GLYPH.up.repeat(3)] },
-    { key: 'thirteen', left: '13/', right: '/13', kind: 'numeral', numeral: '13' },
-    { key: 'seventeen', left: '17/', right: '/17', kind: 'numeral', numeral: '17' },
-    { key: 'nineteen', left: '/19', right: '19/', kind: 'numeral', numeral: '19' },
-    { key: 'twentyThree', left: '23/', right: '/23', kind: 'numeral', numeral: '23' },
-    { key: 'twentyNine', left: '29/', right: '/29', kind: 'numeral', numeral: '29' },
-    { key: 'thirtyOne', left: '31/', right: '/31', kind: 'numeral', numeral: '31' },
+    { key: 'thirteen', left: '/13', right: '13/', kind: 'numeral', numeral: '13' },
+    { key: 'seventeen', left: '/17', right: '17/', kind: 'numeral', numeral: '17' },
+    { key: 'nineteen', left: '19/', right: '/19', kind: 'numeral', numeral: '19', reverse: true },
+    { key: 'twentyThree', left: '/23', right: '23/', kind: 'numeral', numeral: '23' },
+    { key: 'twentyNine', left: '/29', right: '29/', kind: 'numeral', numeral: '29' },
+    { key: 'thirtyOne', left: '/31', right: '31/', kind: 'numeral', numeral: '31' },
 ];
 
 /** Build the button face for one palette cell (value 0..6). */
 function paletteButtonFace(spec, value) {
-    const count = value - 3;
+    const count = spec.reverse ? 3 - value : value - 3;
     if (spec.kind === 'bravura') {
         return `<span class="johnston-accidental">${spec.glyphs[value]}</span>`;
     }
