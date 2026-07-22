@@ -22,8 +22,7 @@ Choose whichever way of describing a pitch is most natural:
 - **Johnston Entry** — a diatonic nominal plus stacked comma accidentals.
 
 ### Notation output
-Every entered pitch is rendered simultaneously in whichever notation windows you
-open:
+Every entered pitch is rendered simultaneously across all notation systems:
 
 - **HEJI Output** — Helmholtz-Ellis JI Pitch Notation, extendable to the 89-limit.
 - **Ups and Downs Output** — an EDO approximation of each pitch (e.g. 41-edo),
@@ -31,7 +30,7 @@ open:
 - **Sagittal Output** — evo/revo and Unicode/ASCII variants.
 - **Johnston Output** — Ben Johnston's extended just-intonation spelling.
 
-Each output column reports the exact ratio, the nearest 12-TET pitch class and
+Each output column reports the exact ratio, the nearest 12EDO pitch class and
 its cent deviation, the resulting frequency in Hz, and the interval size in
 cents from 1/1.
 
