@@ -356,16 +356,24 @@ export const JOHNSTON_NOTES = [
     nominalMonzo(-3, 1, 1),  // B  15/8
 ];
 
-// Each palette row offers -3..+3 of one comma; index 3 is the natural.
-function commaRow(commaKey) {
+// Each palette row offers -3..+3 of one comma; index 3 is the natural. A
+// button's DOM position, its `value` attribute, its visual glyph
+// (JOHNSTON_ROW_SPECS.glyphs[value]) and the comma it applies
+// (JOHNSTON_ROWS[key][value]) all share that same index, so mirroring a row's
+// left-right layout means reversing the k sequence here to match the reversed
+// glyphs array below - otherwise a button's glyph and its actual pitch effect
+// would fall out of sync.
+function commaRow(commaKey, reverse) {
     const comma = JOHNSTON_COMMAS[commaKey];
-    return [-3, -2, -1, 0, 1, 2, 3].map(k => scale(comma, k));
+    const ks = reverse ? [3, 2, 1, 0, -1, -2, -3] : [-3, -2, -1, 0, 1, 2, 3];
+    return ks.map(k => scale(comma, k));
 }
 
 export const JOHNSTON_ROWS = {
     chromatic: commaRow('sharp'),
     syntonic: commaRow('plus'),
-    seven: commaRow('seven'),
+    // Mirrored: seven glyphs read 7/77/777 on the left, el on the right.
+    seven: commaRow('seven', true),
     eleven: commaRow('eleven'),
     thirteen: commaRow('thirteen'),
     seventeen: commaRow('seventeen'),
@@ -382,8 +390,8 @@ export const JOHNSTON_ROW_SPECS = [
       glyphs: [GLYPH.tripleFlat, GLYPH.doubleFlat, GLYPH.flat, GLYPH.natural, GLYPH.sharp, GLYPH.doubleSharp, GLYPH.tripleSharp] },
     { key: 'syntonic', left: '&nbsp;5/', right: '/5&nbsp;', kind: 'bravura',
       glyphs: [GLYPH.minus.repeat(3), GLYPH.minus.repeat(2), GLYPH.minus, GLYPH.natural, GLYPH.plus, GLYPH.plus.repeat(2), GLYPH.plus.repeat(3)] },
-    { key: 'seven', left: '&nbsp;7/', right: '/7&nbsp;', kind: 'bravura',
-      glyphs: [GLYPH.el.repeat(3), GLYPH.el.repeat(2), GLYPH.el, GLYPH.natural, GLYPH.seven, GLYPH.seven.repeat(2), GLYPH.seven.repeat(3)] },
+    { key: 'seven', left: '7/&nbsp;', right: '&nbsp;/7', kind: 'bravura',
+      glyphs: [GLYPH.seven.repeat(3), GLYPH.seven.repeat(2), GLYPH.seven, GLYPH.natural, GLYPH.el, GLYPH.el.repeat(2), GLYPH.el.repeat(3)] },
     { key: 'eleven', left: '/11', right: '11/', kind: 'bravura',
       glyphs: [GLYPH.down.repeat(3), GLYPH.down.repeat(2), GLYPH.down, GLYPH.natural, GLYPH.up, GLYPH.up.repeat(2), GLYPH.up.repeat(3)] },
     { key: 'thirteen', left: '13/', right: '/13', kind: 'numeral', numeral: '13' },
