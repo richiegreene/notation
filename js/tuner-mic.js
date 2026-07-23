@@ -5,8 +5,10 @@
 // toggle) — nothing here runs, and no permission prompt appears, until then.
 // stop() fully releases the mic (stops the track and closes the context).
 //
-// Pitch is estimated with normalized autocorrelation (an ACF/MPM-style peak
-// pick), which is robust for sustained musical tones from voice or instrument.
+// Pitch is estimated with the McLeod Pitch Method (MPM): the Normalized Square
+// Difference Function (NSDF) is normalized by the *local* signal energy, so it
+// peaks near 1.0 at the true period even for rich, harmonic instrument/voice
+// tones (not just pure sine whistles) and holds up well in the low register.
 
 let audioCtx = null;
 let analyser = null;
@@ -14,14 +16,23 @@ let mediaStream = null;
 let sourceNode = null;
 let rafId = null;
 let buffer = null;
+let nsdf = null;        // reused NSDF scratch buffer
 let running = false;
-let onPitch = null; // callback(frequency|null, clarity)
+let onPitch = null;     // callback(frequency|null, clarity)
 
-const FFT_SIZE = 2048;           // ~46ms window at 44.1kHz
-const MIN_FREQ = 50;             // Hz — lowest pitch we bother tracking
-const MAX_FREQ = 1600;           // Hz — highest pitch we bother tracking
-const CLARITY_THRESHOLD = 0.90;  // normalized ACF peak height to accept
-const RMS_GATE = 0.008;          // ignore near-silence
+// A larger window resolves low frequencies (more periods per frame); detection
+// is throttled below rAF so the extra cost stays cheap on phones.
+const FFT_SIZE = 4096;             // ~85–93ms window (44.1–48kHz)
+const MIN_FREQ = 45;               // Hz — lowest pitch we track (~F#1)
+const MAX_FREQ = 1600;             // Hz — highest pitch we track (~G6)
+const K_CLARITY = 0.85;            // accept the first peak >= K * strongest peak
+const MIN_CLARITY = 0.45;          // absolute NSDF floor to accept (rejects noise)
+const RMS_GATE = 0.004;            // ignore near-silence (low, for weak mics)
+const DETECT_INTERVAL_MS = 25;     // ~40 detections/sec (rendering still runs at rAF)
+
+let lastDetectAt = 0;
+let lastFreq = null;
+let lastClarity = 0;
 
 /**
  * Start listening. Requests mic permission on first call.
@@ -32,11 +43,15 @@ export async function start(callback) {
     if (running) return;
     onPitch = callback;
 
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('getUserMedia unavailable (needs https / a supported browser)');
+    }
+
     mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: {
-            echoCancellation: false,
-            noiseSuppression: false,
-            autoGainControl: false,
+            echoCancellation: false, // keep the raw tone (these processors distort
+            noiseSuppression: false, // sustained pitches and their harmonics)
+            autoGainControl: true,   // but do boost a weak mic signal
         },
     });
 
@@ -49,6 +64,10 @@ export async function start(callback) {
     sourceNode.connect(analyser);
 
     buffer = new Float32Array(analyser.fftSize);
+    nsdf = new Float32Array(Math.ceil(audioCtx.sampleRate / MIN_FREQ) + 4);
+    lastDetectAt = 0;
+    lastFreq = null;
+    lastClarity = 0;
     running = true;
     tick();
 }
@@ -65,6 +84,7 @@ export function stop() {
     }
     if (audioCtx) { audioCtx.close().catch(() => {}); audioCtx = null; }
     buffer = null;
+    nsdf = null;
     onPitch = null;
 }
 
@@ -74,14 +94,23 @@ export function isRunning() {
 
 function tick() {
     if (!running || !analyser) return;
-    analyser.getFloatTimeDomainData(buffer);
-    const { frequency, clarity } = detectPitch(buffer, audioCtx.sampleRate);
-    if (onPitch) onPitch(frequency, clarity);
     rafId = requestAnimationFrame(tick);
+
+    // Detection is the expensive part, so run it a few times less often than the
+    // display; the strobe keeps scrolling smoothly from the last detected pitch.
+    const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    if (now - lastDetectAt >= DETECT_INTERVAL_MS) {
+        lastDetectAt = now;
+        analyser.getFloatTimeDomainData(buffer);
+        const result = detectPitch(buffer, audioCtx.sampleRate);
+        lastFreq = result.frequency;
+        lastClarity = result.clarity;
+    }
+    if (onPitch) onPitch(lastFreq, lastClarity);
 }
 
 /**
- * Normalized autocorrelation pitch detector.
+ * McLeod Pitch Method.
  * @returns {{frequency:number|null, clarity:number}}
  */
 function detectPitch(buf, sampleRate) {
@@ -96,60 +125,72 @@ function detectPitch(buf, sampleRate) {
     const maxLag = Math.min(Math.floor(sampleRate / MIN_FREQ), n - 1);
     const minLag = Math.max(Math.floor(sampleRate / MAX_FREQ), 2);
 
-    // Autocorrelation, normalized so the zero-lag energy is 1.
-    let bestLag = -1;
-    let bestVal = 0;
-    let prev = 0;      // correlation at lag-1, to detect a rising->falling peak
-    let rising = false;
-
-    // Energy normalizer (zero-lag autocorrelation).
-    let energy = 0;
-    for (let i = 0; i < n; i++) energy += buf[i] * buf[i];
-    if (energy === 0) return { frequency: null, clarity: 0 };
-
-    for (let lag = minLag; lag <= maxLag; lag++) {
-        let sum = 0;
-        for (let i = 0; i < n - lag; i++) sum += buf[i] * buf[i + lag];
-        const norm = sum / energy;
-
-        // Track the first strong local maximum (avoids octave errors from
-        // picking the global max at very short lags).
-        if (norm > prev) {
-            rising = true;
-        } else if (rising && norm < prev && prev > CLARITY_THRESHOLD) {
-            bestLag = lag - 1;
-            bestVal = prev;
-            break;
+    // NSDF(tau) = 2 * Σ x[i]x[i+tau] / Σ (x[i]^2 + x[i+tau]^2), in [-1, 1].
+    // Computed from a short lag up so the initial descent (from the lag-0 peak)
+    // is captured and can be skipped before we hunt for the fundamental.
+    const searchMin = 2;
+    for (let tau = searchMin; tau <= maxLag; tau++) {
+        let acf = 0;
+        let energy = 0;
+        const lim = n - tau;
+        for (let i = 0; i < lim; i++) {
+            const a = buf[i];
+            const b = buf[i + tau];
+            acf += a * b;
+            energy += a * a + b * b;
         }
-        if (norm > bestVal) { bestVal = norm; bestLag = lag; }
-        prev = norm;
+        nsdf[tau] = energy > 0 ? (2 * acf) / energy : 0;
     }
 
-    if (bestLag <= 0 || bestVal < CLARITY_THRESHOLD) {
-        return { frequency: null, clarity: bestVal };
+    // Skip the initial positive region (the descent from the lag-0 correlation).
+    let tau = searchMin;
+    while (tau <= maxLag && nsdf[tau] > 0) tau++;
+
+    // Key maxima: the highest NSDF within each subsequent positive region.
+    let globalMax = 0;
+    const peaks = []; // [lag, value]
+    while (tau <= maxLag) {
+        while (tau <= maxLag && nsdf[tau] <= 0) tau++;
+        let localMax = -Infinity;
+        let localLag = -1;
+        while (tau <= maxLag && nsdf[tau] > 0) {
+            if (nsdf[tau] > localMax) { localMax = nsdf[tau]; localLag = tau; }
+            tau++;
+        }
+        if (localLag >= 0) {
+            peaks.push(localLag, localMax);
+            if (localMax > globalMax) globalMax = localMax;
+        }
     }
 
-    // Parabolic interpolation around bestLag for sub-sample accuracy.
-    const lag = parabolicPeak(buf, bestLag, n, energy);
+    if (!peaks.length || globalMax < MIN_CLARITY) {
+        return { frequency: null, clarity: globalMax };
+    }
+
+    // The fundamental is the first key maximum at/above K * the strongest peak
+    // (choosing the earliest such peak avoids octave-down errors).
+    const threshold = K_CLARITY * globalMax;
+    let chosenLag = peaks[0];
+    let chosenVal = peaks[1];
+    for (let i = 0; i < peaks.length; i += 2) {
+        if (peaks[i + 1] >= threshold) { chosenLag = peaks[i]; chosenVal = peaks[i + 1]; break; }
+    }
+
+    const lag = parabolicLag(chosenLag, minLag, maxLag);
     const frequency = sampleRate / lag;
     if (frequency < MIN_FREQ || frequency > MAX_FREQ) {
-        return { frequency: null, clarity: bestVal };
+        return { frequency: null, clarity: chosenVal };
     }
-    return { frequency, clarity: bestVal };
+    return { frequency, clarity: chosenVal };
 }
 
-/** Refine an autocorrelation peak with a 3-point parabola. */
-function parabolicPeak(buf, lag, n, energy) {
-    const acf = (l) => {
-        let sum = 0;
-        for (let i = 0; i < n - l; i++) sum += buf[i] * buf[i + l];
-        return sum / energy;
-    };
-    const y0 = acf(lag - 1);
-    const y1 = acf(lag);
-    const y2 = acf(lag + 1);
-    const denom = (y0 - 2 * y1 + y2);
+/** Refine a peak lag with 3-point parabolic interpolation over the NSDF. */
+function parabolicLag(lag, minLag, maxLag) {
+    if (lag <= minLag || lag >= maxLag) return lag;
+    const y0 = nsdf[lag - 1];
+    const y1 = nsdf[lag];
+    const y2 = nsdf[lag + 1];
+    const denom = y0 - 2 * y1 + y2;
     if (denom === 0) return lag;
-    const shift = 0.5 * (y0 - y2) / denom;
-    return lag + shift;
+    return lag + 0.5 * (y0 - y2) / denom;
 }
