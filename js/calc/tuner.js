@@ -179,7 +179,7 @@ function nameMarkHtml(deg) {
 }
 
 function ratioText(deg) {
-    return isJiMode ? `${deg.num}/${deg.den}` : `${deg.step}\\${deg.edo}`;
+    return isJiMode ? `${deg.num}/${deg.den}` : `${deg.step}`;
 }
 
 /** Create one name + ratio mark per degree (positions set every frame). */
@@ -229,13 +229,11 @@ function buildRuler() {
     const h = svg.clientHeight || 14;
     const cy = (h / 2).toFixed(1);
 
-    // One dot per cent, spanning a little over one octave on each side so the
-    // ruler stays covered at any scroll offset (pitchFolded is in [0, 1200)).
+    // One uniform dot per cent, spanning a little over one octave on each side
+    // so the ruler stays covered at any scroll offset (pitchFolded in [0, 1200)).
     let dots = '';
     for (let c = -300; c < 1500; c++) {
-        const oct = U.mod(c, 1200) === 0;
-        dots += `<circle cx="${(c * pxPerCent).toFixed(2)}" cy="${cy}" `
-            + `r="${oct ? 1.6 : 0.5}"${oct ? ' class="oct"' : ''}/>`;
+        dots += `<circle cx="${(c * pxPerCent).toFixed(2)}" cy="${cy}" r="0.55"/>`;
     }
     svg.setAttribute('width', width);
     svg.setAttribute('height', h);

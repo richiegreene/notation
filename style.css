@@ -1352,7 +1352,7 @@ html[data-theme="light"] #tunerCustomScale {
 .tuner-lane-names  { height: 4.6rem; }
 .tuner-lane-ratios { height: 2.2rem; }
 
-/* Dotted cent ruler: one dot per cent (1/1..2/1), octave dots emphasized. It
+/* Dotted cent ruler: one uniform dot per cent (1/1..2/1). It
    scrolls with the pitch (JS transform), a moving frame of reference. */
 .tuner-ruler {
     flex: 0 0 auto;
@@ -1363,7 +1363,6 @@ html[data-theme="light"] #tunerCustomScale {
     display: block;
 }
 .tuner-ruler circle { fill: var(--color-text); opacity: 0.3; }
-.tuner-ruler circle.oct { opacity: 0.65; }
 
 /* A degree mark, absolutely placed; JS sets `left` and `font-size` each frame.
    Child glyphs size in em, so a single font-size on the mark scales the whole
@@ -1392,6 +1391,14 @@ html[data-theme="light"] #tunerCustomScale {
 .tuner-readout .johnston-letter { font-size: 1em; }
 .tuner-readout .johnston-notation-display { height: auto; }
 .tuner-readout .johnston-symbols { font-size: 1em; }
+/* Johnston accidentals/numerals in em so they scale with the mark (and thus
+   with complexity sizing) at Johnston Output's proportions: the SMuFL
+   accidental is 4rem*4/3 and the raised numeral 1.6rem against the 4rem letter,
+   i.e. 1.333em and 0.4em here. Without this they keep a fixed rem size and the
+   letter scales away from the accidental. */
+.tuner-readout .johnston-accidental { font-size: 1.333em; }
+.tuner-readout .johnston-numeral { font-size: 0.4em; }
+.tuner-readout .johnston-numerals-inline { margin-top: 0.1em; }
 .tuner-readout .sagittal-letter { font-size: 1em; font-family: "Inter", sans-serif; }
 .tuner-readout .sagittal-symbol-unicode,
 .tuner-readout .sagittal-symbol-ascii { font-size: 1.333em; }
