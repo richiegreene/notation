@@ -101,9 +101,13 @@ window.clearChordRatio = function(index) {
 }
 
 window.clearAllIntervals = function() {
+    // Blank any entered ratios so this "clear" fully resets. (The size/stacking
+    // fields otherwise preserve their values across the count changes below.)
+    $("#dynamic-ratio-fields-container input.ratioIn, #chord-ratio-fields-container input.ratioIn").val(1);
+
     // Reset Interval Entry fields
     $("#stacking-input").val(1);
-    $("#stacking-input").trigger("change"); 
+    $("#stacking-input").trigger("change");
 
     // Reset Chord Entry fields
     $("#chord-size-input").val(1);

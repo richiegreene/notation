@@ -175,11 +175,29 @@ export function getInputDen(){
 	return $(".inputDen").attr("value");
 }
 
+// Read the numerator/denominator values currently in a ratio-field container,
+// in field order, so they can be restored when the field count changes.
+function captureRatioFields(container) {
+    const nums = [];
+    const dens = [];
+    container.find("input.ratioIn").each(function () {
+        if (this.id.indexOf("Num_") !== -1) nums.push(this.value);
+        else if (this.id.indexOf("Den_") !== -1) dens.push(this.value);
+    });
+    return { nums, dens };
+}
+
 export function generateStackingRatioFields(numFields) {
     let container = $("#dynamic-ratio-fields-container");
+    // Preserve any ratios already entered so that changing the Stacking amount
+    // keeps existing tones in position (new slots default to 1/1; removed slots
+    // are forgotten, so reducing then increasing re-shows 1/1).
+    const prev = captureRatioFields(container);
     container.empty(); // Clear existing dynamic fields
 
     for (let i = 1; i <= numFields; i++) {
+        const prevNum = prev.nums[i - 1] || 1;
+        const prevDen = prev.dens[i - 1] || 1;
         let ratioHtml = ``;
         if (i > 1) { // Only add "×" for subsequent fields
             ratioHtml += `<br><br><div class="times-symbol">×</div>`;
@@ -187,8 +205,8 @@ export function generateStackingRatioFields(numFields) {
         ratioHtml += `
             <div class="interval-column">
                 <br><br>
-				<input type="number" class="ratioIn" id="inputNum_${i}" minlength="1" required value="1"></input>
-                <input type="number" class="ratioIn" id="inputDen_${i}"  minlength="1" required value="1"></input>
+				<input type="number" class="ratioIn" id="inputNum_${i}" minlength="1" required value="${prevNum}"></input>
+                <input type="number" class="ratioIn" id="inputDen_${i}"  minlength="1" required value="${prevDen}"></input>
                 <div class="interval-button-group">
                     <button id="loadCurrentPitch_${i}" class="getCurrentPitch interval-button" onclick="loadCurrentPitch(${i})">load</button>
                     <button id="clearRatio_${i}" class="clearInputRatio interval-button" onclick="clearRatio(${i})">clear</button>
@@ -990,17 +1008,23 @@ export function parseMidiNoteOutput(midiNoteString) {
 
 export function generateChordRatioFields(numFields) {
     let container = $("#chord-ratio-fields-container");
+    // Preserve any ratios already entered so that changing the chord Size keeps
+    // existing tones in position (new slots default to 1/1; removed slots are
+    // forgotten, so reducing then increasing re-shows 1/1).
+    const prev = captureRatioFields(container);
     container.empty();
 
     for (let i = 1; i <= numFields; i++) {
+        const prevNum = prev.nums[i - 1] || 1;
+        const prevDen = prev.dens[i - 1] || 1;
         let ratioHtml = ``;
         if (i > 1) {
             ratioHtml += `<div class="times-symbol">,</div>`;
         }
         ratioHtml += `
             <div class="interval-column">
-                <input type="number" class="ratioIn chord-ratio-in" id="chordInputNum_${i}" value="1"></input>
-                <input type="number" class="ratioIn chord-ratio-in" id="chordInputDen_${i}" value="1"></input>
+                <input type="number" class="ratioIn chord-ratio-in" id="chordInputNum_${i}" value="${prevNum}"></input>
+                <input type="number" class="ratioIn chord-ratio-in" id="chordInputDen_${i}" value="${prevDen}"></input>
                 <div class="interval-button-group">
                     <button class="getCurrentPitch interval-button" onclick="loadCurrentPitchToChord(${i})">load</button>
                     <button class="clearInputRatio interval-button" onclick="clearChordRatio(${i})">clear</button>
