@@ -1255,6 +1255,20 @@ html[data-theme="dark"] .info-link {
     align-items: center;
 }
 
+/* "enh equivalent": enharmonic spellings stacked vertically (no comma), the
+   group centred where a single spelling sits - matching the Tuner readout. */
+.edo-enh-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.edo-enh-spelling {
+    font-family: "EdoAccidentals", sans-serif;
+    white-space: nowrap;
+}
+
 .output-spacer {
     height: 0.5rem; /* Height of the blank row */
     margin-bottom: 0.5rem; /* Space below the blank row */

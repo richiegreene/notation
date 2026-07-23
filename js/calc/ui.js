@@ -1430,13 +1430,18 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
     const ref12acc = state.ref12acc;
     const edoNotation = calculateEdoNotation(edoStep, edoQuantisation, refpc, ref12acc, getShowEnharmonics(), hejiBaseNote, getExcludeHalves());
 
-    // Get the base note name from the EDO notation string
-    // Assuming the notation string will be like "C#", "D", "Ebb" etc.
-    let baseNoteName = edoNotation.split(/[\^vb#x,\\/]/)[0].trim();
-    let accidentalSymbols = edoNotation.substring(baseNoteName.length).trim();
-    if (accidentalSymbols.startsWith(',')) { // Handle cases like "C, Db"
-        baseNoteName = edoNotation; // Display full string if comma separated
-        accidentalSymbols = "";
+    // "enh equivalent" can yield comma-separated enharmonic spellings (e.g.
+    // "C, Db"). Split them; a single spelling keeps the note-name/accidental
+    // split, multiple spellings stack vertically (no comma), like the Tuner.
+    const edoSpellings = edoNotation.split(',').map((s) => s.trim()).filter(Boolean);
+    const edoStacked = edoSpellings.length > 1;
+    const edoStackFontRem = edoSpellings.length >= 3 ? 2.2 : 3; // fit the 7rem row
+    let baseNoteName = '';
+    let accidentalSymbols = '';
+    if (!edoStacked) {
+        const single = edoSpellings[0] || edoNotation;
+        baseNoteName = single.split(/[\^vb#x\\/]/)[0].trim();
+        accidentalSymbols = single.substring(baseNoteName.length).trim();
     }
     
     // Format cent deviation
@@ -1449,9 +1454,17 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
         centsText = centDeviation.toFixed(state.precision);
     }
 
-    $(`#edoNoteName_${columnIndex}`).text(baseNoteName);
-    $(`#edoNotationOutput_${columnIndex}`).text(accidentalSymbols);
-    
+    if (edoStacked) {
+        const stackHtml = `<div class="edo-enh-stack">`
+            + edoSpellings.map((sp) => `<div class="edo-enh-spelling">${sp}</div>`).join('')
+            + `</div>`;
+        $(`#edoNoteName_${columnIndex}`).html(stackHtml);
+        $(`#edoNotationOutput_${columnIndex}`).text('');
+    } else {
+        $(`#edoNoteName_${columnIndex}`).text(baseNoteName);
+        $(`#edoNotationOutput_${columnIndex}`).text(accidentalSymbols);
+    }
+
     // Populate EDO Step Distance
     $(`#edoStepDistance_${columnIndex}`).text(edoStep);
     $(`#edoStepDistance_${columnIndex}`).css({
@@ -1465,7 +1478,7 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
     // Apply monospace font and specified sizes to EDO output
     $(`#edoNoteName_${columnIndex}`).css({
         'font-family': '"EdoAccidentals"', // Re-add font-family override, now with EdoAccidentals
-        'font-size': '4rem' // Matching main output font size
+        'font-size': (edoStacked ? edoStackFontRem : 4) + 'rem' // stacked spellings shrink to fit
     });
     $(`#edoNotationOutput_${columnIndex}`).css({
         'font-family': '"EdoAccidentals"', // Re-add font-family override, now with EdoAccidentals
