@@ -2,13 +2,25 @@
 
 ### [notation.richiegreene.com](https://notation.richiegreene.com)
 
-A browser-based resource for microtonal music notation. Enter pitches as just-intonation ratios, chords, or visually by selecting given accidentals and read them back in several different microtonal notation systems side by side, along with the nearest 12edo cent deviation, frequency, and audio playback.
-
-This project seeks to provide a Rosetta Stone for microtonal languages, to aid musicians and composers, ultimately aspiring to function as a phone-friendly musical tuner and performance resource.
+A browser-based tuner and resource for microtonal and xenharmonic notation systems. Enter pitches as just-intonation ratios, chords, or visually by selecting given accidentals and read them back in several different microtonal notation systems side by side, along with the nearest 12edo cent deviation, frequency, and audio playback.
 
 ---
 
 ## Features
+
+### Tuner
+Match a live sound against a scale by ear and eye:
+
+- **Live pitch detection** from the microphone (McLeod / NSDF), plotting the
+  incoming pitch against a scrolling cent ruler with the received pitch fixed at
+  the centre line.
+- Label the scale degrees in any notation language — **HEJI, Sagittal,
+  Johnston, or Ups and Downs** — drawn from a just-intonation set (integer-,
+  odd-, or prime-limit, or a custom scale) or an EDO.
+- Names, ratios, and ruler dots turn **blue in tune** (within 4c), fading
+  through three 2c gradient steps as the pitch approaches.
+- Optional complexity (Tenney) sizing, 89-limit extensions, and enharmonic
+  equivalents; adjustable **cents window** (zoom) via the Settings card.
 
 ### Pitch entry
 Choose whichever way of describing a pitch is most natural:
