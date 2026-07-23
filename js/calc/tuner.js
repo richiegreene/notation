@@ -36,6 +36,9 @@ const MARK_GUTTER_PX = 5;     // min pixel gap kept between adjacent marks
 // is lowered so complex ratios can shrink enough to let simple ones grow.
 const COMPLEXITY_SLOPE = 0.1;
 const COMPLEXITY_FLOOR = 0.05;
+// Ups and Downs renders at one fixed size for every mark - never scaled by
+// density, name length, complexity, enh equivalent, or exclude halves.
+const EDO_SCALE = 0.55;
 
 let marks = [];           // [{deg, nameEl, rEl, complexity, fullWidth}]
 let currentDegrees = [];
@@ -195,8 +198,14 @@ function nameOptions(lang) {
 
 function nameMarkHtml(deg) {
     if (!isJiMode) {
-        return `<span class="tuner-edo-note">${deg.name.base}</span>`
-            + `<span class="tuner-edo-acc">${deg.name.acc}</span>`;
+        const sp = deg.name && deg.name.spellings;
+        if (!sp || !sp.length) return `<span class="tuner-edo-note">n/a</span>`;
+        // enh equivalent: stack the spellings vertically (no comma), centred so
+        // the pair's centre sits where a single spelling's centre would.
+        if (sp.length === 1) return edoSpellingHtml(sp[0]);
+        return `<span class="tuner-edo-stack">`
+            + sp.map((s) => `<span class="tuner-edo-spelling">${edoSpellingHtml(s)}</span>`).join('')
+            + `</span>`;
     }
     if (language() === 'sagittal') {
         const sp = deg.name && deg.name.spellings;
@@ -216,6 +225,11 @@ function nameMarkHtml(deg) {
 function sagittalSpellingHtml(s) {
     return `<span class="tuner-note-letter">${s.letter}</span>`
         + `<span class="tuner-sag-symbol${s.unicode ? '' : ' ascii'}">${s.symbol}</span>`;
+}
+
+function edoSpellingHtml(s) {
+    return `<span class="tuner-edo-note">${s.base}</span>`
+        + `<span class="tuner-edo-acc">${s.acc}</span>`;
 }
 
 function ratioText(deg) {
@@ -367,12 +381,17 @@ function renderFrame() {
         setMarkVisible(m, visible);
         if (!visible) continue;
 
-        // Density scale keeps marks from colliding (uniform across all marks);
-        // JI additionally scales per-mark by complexity, Ups and Downs never does
-        // (complexityOn is false for EDO), so every EDO mark is the same size.
-        const s = baseScale * (complexityOn ? m.complexity : 1);
-        m.nameEl.style.fontSize = (LANE_BASE_REM.names * s) + 'rem';
-        m.rEl.style.fontSize = (LANE_BASE_REM.ratios * s) + 'rem';
+        // Ups and Downs: one fixed size for every mark (uniform regardless of
+        // density, name length, enh, exclude halves). JI scales per-mark by the
+        // density (anti-collision) scale times the complexity (Tenney) scale.
+        if (isJiMode) {
+            const s = baseScale * (complexityOn ? m.complexity : 1);
+            m.nameEl.style.fontSize = (LANE_BASE_REM.names * s) + 'rem';
+            m.rEl.style.fontSize = (LANE_BASE_REM.ratios * s) + 'rem';
+        } else {
+            m.nameEl.style.fontSize = (LANE_BASE_REM.names * EDO_SCALE) + 'rem';
+            m.rEl.style.fontSize = (LANE_BASE_REM.ratios * EDO_SCALE) + 'rem';
+        }
 
         const leftPx = width / 2 + delta * pxPerCent;
         m.nameEl.style.left = leftPx + 'px';

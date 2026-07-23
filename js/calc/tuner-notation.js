@@ -294,14 +294,26 @@ export function sagittalSpellings(num, den, opts = {}) {
     }));
 }
 
-/** Ups-and-downs name for a step of m-EDO (1/1 = C, step 0 = C). */
+/**
+ * Ups-and-downs name for a step of m-EDO (1/1 = C, step 0 = C).
+ * @returns {{spellings:{base:string, acc:string}[]}}  one entry, or several when
+ *          showEnh yields comma-separated enharmonic equivalents.
+ */
 export function edoName(step, m, opts = {}) {
     const { showEnh = true, excludeHalves = false } = opts;
     const notation = calculateEdoNotation(U.mod(step, m), m, 1, 0, showEnh, '', excludeHalves);
-    if (notation === 'n/a') return { base: 'n/a', acc: '' };
-    let base = notation.split(/[\^vb#x,\\/]/)[0].trim();
-    let acc = notation.substring(base.length).trim();
-    if (acc.startsWith(',')) { base = notation; acc = ''; }
+    if (notation === 'n/a') return { spellings: [{ base: 'n/a', acc: '' }] };
+    const spellings = notation.split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .map(splitEdoSpelling);
+    return { spellings: spellings.length ? spellings : [{ base: notation, acc: '' }] };
+}
+
+/** Split one ups-and-downs spelling into nominal + accidental (no comma). */
+function splitEdoSpelling(part) {
+    const base = part.split(/[\^vb#x\\/]/)[0].trim();
+    const acc = part.substring(base.length).trim();
     return { base, acc };
 }
 
