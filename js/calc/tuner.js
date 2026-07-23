@@ -15,19 +15,22 @@ import * as Mic from '../tuner-mic.js';
  * (state.freq1to1). The mic is only opened when the user presses the toggle.
  */
 
-const CENTS_WINDOW = 300; // total cents spanned across the strip (±150)
+const CENTS_WINDOW = 100; // total cents spanned across the strip (±150)
 const IN_TUNE = 4;        // cents within which a note name turns blue
 
 // Full-size (scale 1) font per lane, in rem, matching the Output windows: note
-// letters 4rem, ratios 2rem, Hz/cents ~ the small value readouts. JS multiplies
-// these down by the density and complexity scale factors.
-const LANE_BASE_REM = { names: 4, ratios: 2, hz: 0.95, cents: 0.95 };
-const MIN_SCALE = 0.28;       // floor for the density (anti-collision) scale
+// letters 4rem, ratios 2rem. JS multiplies these down by the density and
+// complexity scale factors.
+const LANE_BASE_REM = { names: 4, ratios: 2 };
+const MIN_SCALE = 0.05;       // floor for the density (anti-collision) scale
 const MARK_GUTTER_PX = 5;     // min pixel gap kept between adjacent marks
-const COMPLEXITY_SLOPE = 0.05; // Tenney-height (log2(n*d)) size falloff per unit
-const COMPLEXITY_FLOOR = 0.4;  // smallest complexity factor
+// Tenney-height (log2(n*d)) size falloff: simpler ratios render larger. Slope is
+// 3x the original 0.05 to exaggerate the simple-vs-complex contrast; the floor
+// is lowered so complex ratios can shrink enough to let simple ones grow.
+const COMPLEXITY_SLOPE = 0.1;
+const COMPLEXITY_FLOOR = 0.05;
 
-let marks = [];           // [{deg, nameEl, rEl, hEl, cEl, complexity, fullWidth}]
+let marks = [];           // [{deg, nameEl, rEl, complexity, fullWidth}]
 let currentDegrees = [];
 let isJiMode = true;
 let latestFreq = null;    // smoothed frequency, or null before first detection
@@ -179,14 +182,9 @@ function ratioText(deg) {
     return isJiMode ? `${deg.num}/${deg.den}` : `${deg.step}\\${deg.edo}`;
 }
 
-/** Create one mark per degree in each lane (positions set every frame). */
+/** Create one name + ratio mark per degree (positions set every frame). */
 function buildMarks() {
-    const lanes = {
-        names: el('tunerLaneNames'),
-        ratios: el('tunerLaneRatios'),
-        hz: el('tunerLaneHz'),
-        cents: el('tunerLaneCents'),
-    };
+    const lanes = { names: el('tunerLaneNames'), ratios: el('tunerLaneRatios') };
     Object.values(lanes).forEach((l) => { l.innerHTML = ''; });
 
     marks = currentDegrees.map((deg) => {
@@ -200,15 +198,7 @@ function buildMarks() {
         rEl.textContent = ratioText(deg);
         lanes.ratios.appendChild(rEl);
 
-        const hEl = document.createElement('div');
-        hEl.className = 'tuner-mark';
-        lanes.hz.appendChild(hEl);
-
-        const cEl = document.createElement('div');
-        cEl.className = 'tuner-mark';
-        lanes.cents.appendChild(cEl);
-
-        const mark = { deg, nameEl, rEl, hEl, cEl, complexity: complexityFactor(deg), fullWidth: 8 };
+        const mark = { deg, nameEl, rEl, complexity: complexityFactor(deg), fullWidth: 8 };
         setMarkVisible(mark, false); // hidden until positioned by a live pitch
         return mark;
     });
@@ -220,8 +210,36 @@ function setMarkVisible(m, visible) {
     const disp = visible ? '' : 'none';
     m.nameEl.style.display = disp;
     m.rEl.style.display = disp;
-    m.hEl.style.display = disp;
-    m.cEl.style.display = disp;
+}
+
+/**
+ * Build the dotted cent ruler: one dot per cent across the octave (the "1200
+ * dots from 1/1 to 2/1"), rendered across three octaves so it covers the strip
+ * at any scroll offset. Octave-boundary dots (1/1, 2/1) are emphasized. Dots use
+ * the same cents->px mapping as the marks, so each degree's notation sits over
+ * its cent on the ruler; renderFrame scrolls the whole group with the pitch.
+ */
+function buildRuler() {
+    const svg = el('tunerRuler');
+    const readout = el('tunerReadout');
+    if (!svg || !readout) return;
+    const width = readout.clientWidth;
+    if (!width) return;
+    const pxPerCent = width / CENTS_WINDOW;
+    const h = svg.clientHeight || 14;
+    const cy = (h / 2).toFixed(1);
+
+    // One dot per cent, spanning a little over one octave on each side so the
+    // ruler stays covered at any scroll offset (pitchFolded is in [0, 1200)).
+    let dots = '';
+    for (let c = -300; c < 1500; c++) {
+        const oct = U.mod(c, 1200) === 0;
+        dots += `<circle cx="${(c * pxPerCent).toFixed(2)}" cy="${cy}" `
+            + `r="${oct ? 1.6 : 0.5}"${oct ? ' class="oct"' : ''}/>`;
+    }
+    svg.setAttribute('width', width);
+    svg.setAttribute('height', h);
+    svg.innerHTML = `<g id="tunerRulerScroll">${dots}</g>`;
 }
 
 /** Tenney height (harmonic distance) size factor: simpler ratios -> larger.
@@ -276,6 +294,8 @@ function computeBaseScale() {
         if (need > 0) scale = Math.min(scale, (gapCents * pxPerCent) / need);
     }
     baseScale = Math.max(MIN_SCALE, Math.min(1, scale));
+
+    buildRuler(); // depends on the same width / pxPerCent
 }
 
 /** Fold a cents difference into [-600, 600). */
@@ -296,9 +316,12 @@ function renderFrame() {
     const half = CENTS_WINDOW / 2;
     const refFreq = parseFloat(state.freq1to1) || 261.6256;
 
-    const pitchCentsAbs = 1200 * Math.log2(latestFreq / refFreq);
-    const pitchFolded = U.mod(pitchCentsAbs, 1200);
+    const pitchFolded = U.mod(1200 * Math.log2(latestFreq / refFreq), 1200);
     const complexityOn = isJiMode && el('tunerComplexitySizing').checked;
+
+    // Scroll the dotted cent ruler so the incoming pitch sits at the centre line.
+    const scroll = el('tunerRulerScroll');
+    if (scroll) scroll.setAttribute('transform', `translate(${(width / 2 - pitchFolded * pxPerCent).toFixed(2)},0)`);
 
     for (const m of marks) {
         const delta = wrapCents(m.deg.cents - pitchFolded);
@@ -310,17 +333,10 @@ function renderFrame() {
         const s = baseScale * (complexityOn ? m.complexity : 1);
         m.nameEl.style.fontSize = (LANE_BASE_REM.names * s) + 'rem';
         m.rEl.style.fontSize = (LANE_BASE_REM.ratios * s) + 'rem';
-        m.hEl.style.fontSize = (LANE_BASE_REM.hz * s) + 'rem';
-        m.cEl.style.fontSize = (LANE_BASE_REM.cents * s) + 'rem';
 
         const leftPx = width / 2 + delta * pxPerCent;
-        for (const e of [m.nameEl, m.rEl, m.hEl, m.cEl]) e.style.left = leftPx + 'px';
-
-        // The degree in the incoming pitch's octave: cents above 1/1, and Hz.
-        const absCents = pitchCentsAbs + delta;
-        const degFreq = refFreq * Math.pow(2, absCents / 1200);
-        m.hEl.textContent = degFreq.toFixed(1);
-        m.cEl.textContent = (absCents > 0 ? '+' : '') + absCents.toFixed(0);
+        m.nameEl.style.left = leftPx + 'px';
+        m.rEl.style.left = leftPx + 'px';
 
         // In tune (within 4c): name and ratio/step both turn blue.
         const inTune = Math.abs(delta) <= IN_TUNE;

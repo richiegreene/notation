@@ -1332,6 +1332,7 @@ html[data-theme="light"] #tunerCustomScale {
     position: relative;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     flex: 1 1 auto;
     min-height: 5rem;
     overflow: hidden;
@@ -1340,15 +1341,29 @@ html[data-theme="light"] #tunerCustomScale {
     border-radius: 4px;
 }
 
+/* Note names and ratios sit close together with the dotted cent ruler between,
+   the cluster vertically centred in the readout. */
 .tuner-lane {
     position: relative;
     width: 100%;
     overflow: visible;
+    flex: 0 0 auto;
 }
-.tuner-lane-names  { flex: 5 1 0; }
-.tuner-lane-ratios { flex: 2 1 0; }
-.tuner-lane-hz     { flex: 1 1 0; }
-.tuner-lane-cents  { flex: 1 1 0; }
+.tuner-lane-names  { height: 4.6rem; }
+.tuner-lane-ratios { height: 2.2rem; }
+
+/* Dotted cent ruler: one dot per cent (1/1..2/1), octave dots emphasized. It
+   scrolls with the pitch (JS transform), a moving frame of reference. */
+.tuner-ruler {
+    flex: 0 0 auto;
+    width: 100%;
+    height: 14px;
+    margin: 0.05rem 0;
+    overflow: hidden;
+    display: block;
+}
+.tuner-ruler circle { fill: var(--color-text); opacity: 0.3; }
+.tuner-ruler circle.oct { opacity: 0.65; }
 
 /* A degree mark, absolutely placed; JS sets `left` and `font-size` each frame.
    Child glyphs size in em, so a single font-size on the mark scales the whole
@@ -1369,8 +1384,6 @@ html[data-theme="light"] #tunerCustomScale {
     align-items: center;
     justify-content: center;
 }
-.tuner-lane-hz .tuner-mark,
-.tuner-lane-cents .tuner-mark { opacity: 0.8; }
 
 /* Glyphs are em-relative to the mark's JS-set font-size (1em = Output letter). */
 .tuner-note-letter { font-family: "Inter", sans-serif; font-size: 1em; }
