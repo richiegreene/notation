@@ -272,6 +272,7 @@ function setMarkVisible(m, visible) {
     const disp = visible ? '' : 'none';
     m.nameEl.style.display = disp;
     m.rEl.style.display = disp;
+    if (m.dotEl) m.dotEl.style.display = disp;
 }
 
 /**
@@ -297,9 +298,22 @@ function buildRuler() {
     for (let c = -300; c < 1500; c++) {
         dots += `<circle cx="${(c * pxPerCent).toFixed(2)}" cy="${cy}" r="0.55"/>`;
     }
+
+    // One larger dot per scale degree, positioned per-frame in renderFrame to sit
+    // under its note (and turn blue in tune). Painted after the small dots so they
+    // sit on top.
+    let degreeDots = '';
+    for (let i = 0; i < marks.length; i++) {
+        degreeDots += `<circle class="tuner-degree-dot" cx="-100" cy="${cy}" r="2.2"/>`;
+    }
+
     svg.setAttribute('width', width);
     svg.setAttribute('height', h);
-    svg.innerHTML = `<g id="tunerRulerScroll">${dots}</g>`;
+    svg.innerHTML = `<g id="tunerRulerScroll">${dots}</g>`
+        + `<g id="tunerRulerDegrees">${degreeDots}</g>`;
+
+    const degEls = svg.querySelectorAll('#tunerRulerDegrees .tuner-degree-dot');
+    marks.forEach((m, i) => { m.dotEl = degEls[i] || null; });
 }
 
 /** Tenney height (harmonic distance) size factor: simpler ratios -> larger.
@@ -405,10 +419,14 @@ function renderFrame() {
         m.nameEl.style.left = leftPx + 'px';
         m.rEl.style.left = leftPx + 'px';
 
-        // In tune (within 4c): name and ratio/step both turn blue.
+        // In tune (within 4c): name, ratio/step and the ruler degree dot turn blue.
         const inTune = Math.abs(delta) <= IN_TUNE;
         m.nameEl.classList.toggle('in-tune', inTune);
         m.rEl.classList.toggle('in-tune', inTune);
+        if (m.dotEl) {
+            m.dotEl.setAttribute('cx', leftPx.toFixed(2));
+            m.dotEl.classList.toggle('in-tune', inTune);
+        }
     }
 }
 

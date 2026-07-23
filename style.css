@@ -1380,6 +1380,10 @@ html[data-theme="light"] #tunerCustomScale {
     display: block;
 }
 .tuner-ruler circle { fill: var(--color-text); opacity: 0.3; }
+/* Larger dot marking each scale degree's cent; blue when in tune. Higher
+   specificity than the small-dot rule above so its opacity/fill win. */
+.tuner-ruler .tuner-degree-dot { fill: var(--color-text); opacity: 0.9; }
+.tuner-ruler .tuner-degree-dot.in-tune { fill: #007bff; opacity: 1; }
 
 /* A degree mark, absolutely placed; JS sets `left` and `font-size` each frame.
    Child glyphs size in em, so a single font-size on the mark scales the whole
