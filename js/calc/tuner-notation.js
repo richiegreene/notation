@@ -306,7 +306,8 @@ export function edoName(step, m, opts = {}) {
     const spellings = notation.split(',')
         .map((s) => s.trim())
         .filter(Boolean)
-        .map(splitEdoSpelling);
+        .map(splitEdoSpelling)
+        .reverse(); // spelling that was on top is now on the bottom
     return { spellings: spellings.length ? spellings : [{ base: notation, acc: '' }] };
 }
 

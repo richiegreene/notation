@@ -1262,7 +1262,7 @@ html[data-theme="dark"] .info-link {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    line-height: 1;
+    line-height: 0.8; /* tightened so the enlarged spellings still sum to ~4rem */
 }
 .edo-enh-spelling {
     font-family: "EdoAccidentals", sans-serif;
@@ -1438,11 +1438,14 @@ html[data-theme="light"] #tunerCustomScale {
     align-items: center;
     justify-content: center;
     line-height: 1;
+    font-size: inherit; /* beat the app-wide `* { font-size }` so the em chain
+                           resolves against the mark's size, not 11.2px */
 }
 .tuner-edo-spelling {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: inherit;
 }
 
 /* Sagittal enharmonic spellings stack vertically and shrink so several fit. */
@@ -1451,11 +1454,13 @@ html[data-theme="light"] #tunerCustomScale {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    font-size: inherit; /* beat `* { font-size }` so the em chain resolves */
 }
 .tuner-sagittal-spelling {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: inherit;
 }
 .tuner-sagittal-stack.multi .tuner-note-letter { font-size: 0.62em; }
 .tuner-sagittal-stack.multi .tuner-sag-symbol { font-size: 0.82em; }

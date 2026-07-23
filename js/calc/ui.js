@@ -1433,9 +1433,13 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
     // "enh equivalent" can yield comma-separated enharmonic spellings (e.g.
     // "C, Db"). Split them; a single spelling keeps the note-name/accidental
     // split, multiple spellings stack vertically (no comma), like the Tuner.
-    const edoSpellings = edoNotation.split(',').map((s) => s.trim()).filter(Boolean);
+    // Reversed so the spelling that was on top is now on the bottom.
+    const edoSpellings = edoNotation.split(',').map((s) => s.trim()).filter(Boolean).reverse();
     const edoStacked = edoSpellings.length > 1;
-    const edoStackFontRem = edoSpellings.length >= 3 ? 2.2 : 3; // fit the 7rem row
+    // With the stack's tightened line-height (0.8), font-size = 4rem/(0.8*count)
+    // keeps the stacked line-boxes summing to 4rem (a single note's height) while
+    // the glyphs themselves grow to fill that height.
+    const edoStackFontRem = 4 / (0.8 * Math.max(1, edoSpellings.length));
     let baseNoteName = '';
     let accidentalSymbols = '';
     if (!edoStacked) {
@@ -1455,8 +1459,11 @@ export function updateEdoNotationDisplay(columnIndex, jiCents, edoQuantisation, 
     }
 
     if (edoStacked) {
+        // Inline font-size so it beats the app-wide `* { font-size: 11.2px }`
+        // rule (which otherwise clobbers these child divs' inherited size).
         const stackHtml = `<div class="edo-enh-stack">`
-            + edoSpellings.map((sp) => `<div class="edo-enh-spelling">${sp}</div>`).join('')
+            + edoSpellings.map((sp) =>
+                `<div class="edo-enh-spelling" style="font-size:${edoStackFontRem}rem">${sp}</div>`).join('')
             + `</div>`;
         $(`#edoNoteName_${columnIndex}`).html(stackHtml);
         $(`#edoNotationOutput_${columnIndex}`).text('');

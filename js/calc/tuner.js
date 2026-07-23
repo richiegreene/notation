@@ -100,11 +100,19 @@ function matchSettingsHeight() {
     const output = document.querySelector('#johnston-output-item')
         || document.querySelector('#output-item');
     const collapsed = document.querySelector('.settings-menu-item.collapsed-item');
-    if (!settings || !output) return;
+    const content = document.querySelector('#ref-pitch-item .settings-content');
+    const headerEl = document.querySelector('#ref-pitch-item .toggle-header-placement')
+        || document.querySelector('#ref-pitch-item .settings-header');
+    if (!settings || !output || !content) return;
+    if (settings.style.minHeight) settings.style.minHeight = ''; // clear any card-level min-height
+    const outH = output.offsetHeight;
+    if (outH <= 0) return;
     const gap = 2.5; // .calc-container grid gap ("padding" between cards)
     const collapsedH = collapsed ? collapsed.offsetHeight : 45;
-    const target = output.offsetHeight + gap + collapsedH;
-    if (output.offsetHeight > 0) settings.style.minHeight = target + 'px';
+    const headerH = headerEl ? headerEl.offsetHeight : 40;
+    // Height goes on the settings-content (not the card) so collapsing - which
+    // hides the content - lets the card shrink to just its header.
+    content.style.minHeight = Math.max(0, outH + gap + collapsedH - headerH) + 'px';
 }
 
 /** Match the tuner card's content height to an Output card's, for a uniform
