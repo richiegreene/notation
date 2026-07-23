@@ -268,8 +268,8 @@ export function johnstonName(monzo) {
 /**
  * Sagittal spellings for num/den (1/1 = C).
  * @param {object} opts { precision, useEvo, useUnicode, showEnh }
- * @returns {{letter:string, symbolHtml:string}[]}  one spelling, or the
- *          enharmonic set when showEnh is true (like Sagittal Output).
+ * @returns {{letter:string, symbol:string, unicode:boolean}[]}  one spelling, or
+ *          the enharmonic set when showEnh is true (like Sagittal Output).
  */
 export function sagittalSpellings(num, den, opts = {}) {
     const { precision = 'medium', useEvo = false, useUnicode = true, showEnh = false } = opts;
@@ -287,10 +287,10 @@ export function sagittalSpellings(num, den, opts = {}) {
         })];
     }
     const field = (useEvo ? 'evo' : 'revo') + '_' + (useUnicode ? 'unicode' : 'ascii');
-    const cls = useUnicode ? 'sagittal-symbol-unicode' : 'sagittal-symbol-ascii';
     return variants.map((v) => ({
         letter: v.nominalLetter,
-        symbolHtml: `<span class="${cls}">${v[field] || ''}</span>`,
+        symbol: v[field] || '',
+        unicode: useUnicode,
     }));
 }
 

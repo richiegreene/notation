@@ -1305,6 +1305,9 @@ input.tuner-num-grow { flex: 1 1 auto; width: auto; min-width: 0; }
 /* Ups-and-downs EDO entry: full-width, like #edoApproximationInput. */
 input.tuner-edo-input { width: 100%; box-sizing: border-box; }
 
+/* Tuner Cents Window (the zoom control, in the Settings card): full-width row. */
+input.tuner-cents-window-input { width: 100%; box-sizing: border-box; }
+
 /* Tuner checkbox groups are compact (no fixed min-height like Output cards). */
 .tuner-checkboxes { min-height: 0; margin: 0.15rem 0; }
 
@@ -1399,9 +1402,16 @@ html[data-theme="light"] #tunerCustomScale {
 .tuner-readout .johnston-accidental { font-size: 1.333em; }
 .tuner-readout .johnston-numeral { font-size: 0.4em; }
 .tuner-readout .johnston-numerals-inline { margin-top: 0.1em; }
-.tuner-readout .sagittal-letter { font-size: 1em; font-family: "Inter", sans-serif; }
-.tuner-readout .sagittal-symbol-unicode,
-.tuner-readout .sagittal-symbol-ascii { font-size: 1.333em; }
+/* Sagittal symbol renders like the note letter + an em glyph, mirroring HEJI so
+   it scales with the mark (and complexity). 1.333em == Sagittal Output's
+   5.333rem symbol against the 4rem letter. */
+.tuner-sag-symbol {
+    font-family: "Bravura", serif;
+    font-size: 1.333em;
+    display: inline-flex;
+    align-items: center;
+}
+.tuner-sag-symbol.ascii { font-family: inherit; }
 .tuner-edo-note { font-family: "EdoAccidentals", sans-serif; font-size: 1em; }
 .tuner-edo-acc  { font-family: "EdoAccidentals", sans-serif; font-size: 1.5em; }
 
@@ -1417,9 +1427,8 @@ html[data-theme="light"] #tunerCustomScale {
     align-items: center;
     justify-content: center;
 }
-.tuner-sagittal-stack.multi .sagittal-letter { font-size: 0.62em; }
-.tuner-sagittal-stack.multi .sagittal-symbol-unicode,
-.tuner-sagittal-stack.multi .sagittal-symbol-ascii { font-size: 0.82em; }
+.tuner-sagittal-stack.multi .tuner-note-letter { font-size: 0.62em; }
+.tuner-sagittal-stack.multi .tuner-sag-symbol { font-size: 0.82em; }
 
 /* In-tune (within 4c): note name, ratio/step and their glyphs turn blue. */
 .tuner-readout .tuner-mark.in-tune,

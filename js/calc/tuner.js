@@ -15,8 +15,15 @@ import * as Mic from '../tuner-mic.js';
  * (state.freq1to1). The mic is only opened when the user presses the toggle.
  */
 
-const CENTS_WINDOW = 100; // total cents spanned across the strip (±150)
+const DEFAULT_CENTS_WINDOW = 100; // total cents spanned across the strip
 const IN_TUNE = 4;        // cents within which a note name turns blue
+
+/** Total cents spanned across the strip (the tuner "zoom"), from the Settings
+ *  card's Tuner Cents Window field. Smaller = more zoomed in. */
+function centsWindow() {
+    const v = parseFloat(el('tunerCentsWindow') && el('tunerCentsWindow').value);
+    return (v && v > 0) ? v : DEFAULT_CENTS_WINDOW;
+}
 
 // Full-size (scale 1) font per lane, in rem, matching the Output windows: note
 // letters 4rem, ratios 2rem. JS multiplies these down by the density and
@@ -54,6 +61,10 @@ export function initTuner() {
 
     // Complexity sizing only changes text scale, not the scale itself.
     el('tunerComplexitySizing').addEventListener('change', computeBaseScale);
+
+    // Cents window (the "zoom") lives in the Settings card; re-fit on change.
+    const cw = el('tunerCentsWindow');
+    if (cw) cw.addEventListener('input', computeBaseScale);
 
     // Sagittal revo/evo: a mutually-exclusive toggle-button pair (revo default),
     // matching Sagittal Output's behavior.
@@ -171,7 +182,9 @@ function nameMarkHtml(deg) {
         if (!sp || !sp.length) return `<span class="tuner-note-letter">n/a</span>`;
         return `<span class="tuner-sagittal-stack${sp.length > 1 ? ' multi' : ''}">`
             + sp.map((s) => `<span class="tuner-sagittal-spelling">`
-                + `<span class="sagittal-letter">${s.letter}</span>${s.symbolHtml}</span>`).join('')
+                + `<span class="tuner-note-letter">${s.letter}</span>`
+                + `<span class="tuner-sag-symbol${s.unicode ? '' : ' ascii'}">${s.symbol}</span>`
+                + `</span>`).join('')
             + `</span>`;
     }
     if (!deg.name) return `<span class="tuner-note-letter">n/a</span>`;
@@ -225,7 +238,7 @@ function buildRuler() {
     if (!svg || !readout) return;
     const width = readout.clientWidth;
     if (!width) return;
-    const pxPerCent = width / CENTS_WINDOW;
+    const pxPerCent = width / centsWindow();
     const h = svg.clientHeight || 14;
     const cy = (h / 2).toFixed(1);
 
@@ -264,7 +277,7 @@ function computeBaseScale() {
     if (!readout || !marks.length) return;
     const width = readout.clientWidth;
     if (!width) return; // collapsed/hidden - recomputed when shown
-    const pxPerCent = width / CENTS_WINDOW;
+    const pxPerCent = width / centsWindow();
     const complexityOn = isJiMode && el('tunerComplexitySizing').checked;
 
     // Measure full-size (scale 1) content widths in one reflow.
@@ -310,8 +323,8 @@ function renderFrame() {
     el('tunerIdle').style.display = 'none';
 
     const width = readout.clientWidth || 240;
-    const pxPerCent = width / CENTS_WINDOW;
-    const half = CENTS_WINDOW / 2;
+    const pxPerCent = width / centsWindow();
+    const half = centsWindow() / 2;
     const refFreq = parseFloat(state.freq1to1) || 261.6256;
 
     const pitchFolded = U.mod(1200 * Math.log2(latestFreq / refFreq), 1200);
@@ -327,8 +340,9 @@ function renderFrame() {
         setMarkVisible(m, visible);
         if (!visible) continue;
 
-        // Density scale, then per-mark complexity (Tenney height) scale.
-        const s = baseScale * (complexityOn ? m.complexity : 1);
+        // Ups and Downs is always full, uniform size - never affected by note
+        // length (density) or complexity. JI uses density x complexity scaling.
+        const s = isJiMode ? baseScale * (complexityOn ? m.complexity : 1) : 1;
         m.nameEl.style.fontSize = (LANE_BASE_REM.names * s) + 'rem';
         m.rEl.style.fontSize = (LANE_BASE_REM.ratios * s) + 'rem';
 
