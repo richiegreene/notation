@@ -10,6 +10,47 @@ import { initTuner } from './calc/tuner.js'; // Import Tuner window controller
 
 let slideDuration = 0.25; // Default slide duration, can be made configurable
 
+// --- Masonry layout for the reorderable cards -------------------------------
+// The .calc-container grid uses 1px row tracks (see style.css). Each card's
+// grid-row span is set to its real pixel height plus a uniform vertical gap, so
+// cards stack tightly and consistently beneath one another no matter how the
+// user reorders, collapses, or resizes them.
+const MASONRY_VGAP = 8; // px of vertical space left below each card
+
+function layoutMasonry() {
+    const container = document.querySelector('.calc-container');
+    if (!container) return;
+    container.querySelectorAll('.settings-menu-item').forEach(item => {
+        // With align-items:start the card keeps its natural content height
+        // regardless of how many row tracks it spans, so this is the true height.
+        const height = item.getBoundingClientRect().height;
+        const span = Math.max(1, Math.ceil(height) + MASONRY_VGAP);
+        item.style.gridRowEnd = 'span ' + span;
+    });
+}
+
+let masonryFrame = null;
+function scheduleMasonry() {
+    if (masonryFrame) return;
+    masonryFrame = requestAnimationFrame(() => {
+        masonryFrame = null;
+        layoutMasonry();
+    });
+}
+
+function initMasonry(container) {
+    layoutMasonry();
+    // A card changing size (content update, collapse/expand, media-query width
+    // change) triggers a coalesced relayout.
+    if (typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(scheduleMasonry);
+        container.querySelectorAll('.settings-menu-item').forEach(item => ro.observe(item));
+    }
+    window.addEventListener('resize', scheduleMasonry);
+    // Re-run once fonts/images settle after initial paint.
+    window.addEventListener('load', scheduleMasonry);
+}
+
 // Functions that need to be globally accessible from HTML
 window.loadCurrentPitch = function(index) {
     if (index === undefined) { // This is for the static "saved" ratio's load button
@@ -88,7 +129,7 @@ window.clearAllIntervals = function() {
 window.clearEdoOutput = function() {
     // Iterate through all existing EDO output columns and clear their dynamic content
     // The number of columns is determined by the current chord size input
-    const numColumns = parseInt($("#chord-size-input").val()) || 1; 
+    const numColumns = effectiveColumnCount();
     for (let i = 1; i <= numColumns; i++) {
         $(`#edoNoteName_${i}`).text("");
         $(`#edoNotationOutput_${i}`).text("");
@@ -180,6 +221,37 @@ function stopAllPlayback(fadeTime) {
 function performCalculationsAndStopPlayback() {
     Calc.doCalc(); // Perform the original calculation
     stopAllPlayback(0.1);
+}
+
+// The number of output columns the current (active) entry area produces: the
+// multi-note chord layout while Chord Entry is active, otherwise a single
+// column. Everything that iterates output columns (doCalc, the output-column
+// generators, and every playback/save loop) uses this so an inactive entry
+// area never affects what the output windows show or play.
+function effectiveColumnCount() {
+    return $("#chordInput").prop("checked") ? (parseInt($("#chord-size-input").val()) || 1) : 1;
+}
+
+// Regenerate the output windows (HEJI, Ups-and-Downs, Sagittal, Johnston) to the
+// active area's column count and recalculate. Deliberately does NOT touch Chord
+// Entry's own ratio fields, so activating an area preserves whatever was typed.
+function refreshOutputColumns() {
+    const numColumns = effectiveColumnCount();
+    UI.generateOutputColumns(numColumns);
+    UI.generateEdoOutputColumns(numColumns);
+    UI.generateSagittalOutputColumns(numColumns);
+    generateJohnstonOutputColumns(numColumns);
+    performCalculationsAndStopPlayback();
+}
+
+// Pull the Interval Entry ratio (field 1) from the DOM into state. Called when
+// Interval Entry is activated so a ratio typed while it was inactive is shown.
+function syncIntervalStateFromInputs() {
+    const num = parseInt($("#inputNum_1").val());
+    const den = parseInt($("#inputDen_1").val());
+    if (!isNaN(num) && num > 0) state.savedNum = num;
+    if (!isNaN(den) && den > 0) state.savedDen = den;
+    Calc.getSavedInputSum();
 }
 
 // Function to generate and download CSV for HEJI Output
@@ -576,41 +648,38 @@ $(document).ready(function(){
 	});
 
     // Input type radio buttons
+	// Activating an entry area shows a single output column and reflects that
+	// area's current input. Chord Entry's size/fields are left untouched so they
+	// reappear intact if Chord Entry is reactivated.
 	$("#paletteInput").click(function(c){
-		// When switching to Palette Input, ensure only one output column is displayed
-		$("#chord-size-input").val(1);
-		$("#chord-size-input").trigger("change");
-		performCalculationsAndStopPlayback();
+		refreshOutputColumns();
 		UI.getPC();
 	});
 	$("#intervalInput").click(function(c){
-		// When switching to Interval Input, ensure only one output column is displayed
-		$("#chord-size-input").val(1);
-		$("#chord-size-input").trigger("change");
-		performCalculationsAndStopPlayback();
+		// Pick up any ratio typed while this area was inactive, then display it.
+		syncIntervalStateFromInputs();
+		refreshOutputColumns();
 		UI.getPC();
 	});
 	$("#sagittalEntryInput").click(function(c){
-		// When switching to Sagittal Entry, ensure only one output column is displayed
-		$("#chord-size-input").val(1);
-		$("#chord-size-input").trigger("change");
-		performCalculationsAndStopPlayback();
+		refreshOutputColumns();
 		UI.getPC();
 	});
 	$("#johnstonInput").click(function(c){
-		// When switching to Johnston Entry, ensure only one output column is displayed
-		$("#chord-size-input").val(1);
-		$("#chord-size-input").trigger("change");
-		performCalculationsAndStopPlayback();
+		refreshOutputColumns();
 		UI.getPC();
 	});
     $("#chordInput").click(function(c){
+        // Reapply the current Chord Entry input so activating it shows the chord.
+        if ($("#chord-entry-type-select").val() === 'enumerated-chord') {
+            // Recompute size + ratio fields from the enumerated text (now active).
+            $("#enumerated-chord-input").trigger('input');
+        } else {
+            // Note-by-note: expand output to the chord size, keeping typed fields.
+            refreshOutputColumns();
+        }
         performCalculationsAndStopPlayback();
         UI.getPC();
-        // If enumerated chord entry is selected, re-trigger its input to update output
-        if ($("#chord-entry-type-select").val() === 'enumerated-chord') {
-            $("#enumerated-chord-input").trigger('input');
-        }
     });
 
 
@@ -751,8 +820,14 @@ $(document).ready(function(){
     var sortable = Sortable.create(el, {
         animation: 150,
         handle: '.settings-header, .toggle-header-placement',
-        ghostClass: 'sortable-ghost'
+        ghostClass: 'sortable-ghost',
+        onEnd: layoutMasonry
     });
+
+    // Recompute the masonry layout after every drag, whenever a card's content
+    // resizes (collapse/expand, chord-size change, mode switch, etc.), and on
+    // window resize (which changes the column count via the media queries).
+    initMasonry(el);
 
     // Prevent clicks on radio buttons and their labels from collapsing/expanding the section
     $('.toggle-header-placement input[type="radio"]').on('click', function(event) {
@@ -764,19 +839,21 @@ $(document).ready(function(){
     });
 
     $("#chord-size-input").change(function() {
-        let numFields = $(this).val();
-        UI.generateOutputColumns(numFields);
-        UI.generateEdoOutputColumns(numFields); // Generate EDO output columns
-        UI.generateSagittalOutputColumns(numFields);
-        generateJohnstonOutputColumns(numFields);
+        let numFields = parseInt($(this).val()) || 1;
+        // Chord Entry's own note-by-note fields always mirror the requested size.
         UI.generateChordRatioFields(numFields);
-        performCalculationsAndStopPlayback();
+        // Output columns follow the active area (1 unless Chord Entry is active),
+        // so editing Size while Chord Entry is inactive never alters the output.
+        refreshOutputColumns();
     });
 
     $("#stacking-input").change(function() {
         let numStackingFields = $(this).val();
         UI.generateStackingRatioFields(numStackingFields);
-        performCalculationsAndStopPlayback();
+        // Only recalculate when Interval Entry is the active area.
+        if ($("#intervalInput").prop("checked")) {
+            performCalculationsAndStopPlayback();
+        }
     });
 
     // Initial setup
@@ -879,6 +956,9 @@ $(document).ready(function(){
     }
 
     function calculateEnumeratedChord() {
+        // Chord Entry only drives the output while it is the active area. When
+        // inactive, the typed text is left in the field and applied on activation.
+        if (!$("#chordInput").prop("checked")) return;
         const input = $("#enumerated-chord-input").val();
         const { parts, denominator } = parseEnumeratedSequence(input);
 
@@ -934,8 +1014,14 @@ $(document).ready(function(){
         calculateEnumeratedChord(); // Recalculate
     });
 
-    // Event listener for dynamically generated ratio input fields
+    // Event listener for dynamically generated ratio input fields.
+    // Only the active entry area drives the output: an edit inside an inactive
+    // area updates its own field but leaves the current output untouched.
     $("#dynamic-ratio-fields-container, #chord-ratio-fields-container").on("change", "input.ratioIn", function() {
+        const inChord = $(this).closest("#chord-ratio-fields-container").length > 0;
+        const inInterval = $(this).closest("#dynamic-ratio-fields-container").length > 0;
+        if (inChord && !$("#chordInput").prop("checked")) return;
+        if (inInterval && !$("#intervalInput").prop("checked")) return;
         performCalculationsAndStopPlayback();
     });
 
@@ -949,7 +1035,7 @@ $(document).ready(function(){
         const wasPlaying = isPlaying;
         stopAllPlayback(0.2); // Fade out over 0.2 seconds; also stops the other windows
         if (!wasPlaying) {
-            const chordSize = parseInt($("#chord-size-input").val());
+            const chordSize = effectiveColumnCount();
             const frequencies = [];
             for (let i = 1; i <= chordSize; i++) {
                 const freqValue = state.outputFrequencies[i]; // Get unrounded frequency directly from state
@@ -972,7 +1058,7 @@ $(document).ready(function(){
         const wasPlaying = isPlayingEdo;
         stopAllPlayback(0.2); // Also stops the other windows
         if (!wasPlaying) {
-            const chordSize = parseInt($("#chord-size-input").val());
+            const chordSize = effectiveColumnCount();
             const frequencies = [];
             for (let i = 1; i <= chordSize; i++) {
                 const freqValue = state.edoOutputFrequencies[i]; // EDO frequencies
@@ -1000,7 +1086,7 @@ $(document).ready(function(){
         const wasPlaying = isPlayingSagittal;
         stopAllPlayback(0.2); // Also stops the other windows
         if (!wasPlaying) {
-            const chordSize = parseInt($("#chord-size-input").val());
+            const chordSize = effectiveColumnCount();
             const frequencies = [];
             for (let i = 1; i <= chordSize; i++) {
                 const freqValue = state.sagittalOutputFrequencies[i];
@@ -1028,7 +1114,7 @@ $(document).ready(function(){
         const wasPlaying = isPlayingJohnston;
         stopAllPlayback(0.2); // Also stops the other windows
         if (!wasPlaying) {
-            const chordSize = parseInt($("#chord-size-input").val());
+            const chordSize = effectiveColumnCount();
             const frequencies = [];
             for (let i = 1; i <= chordSize; i++) {
                 const freqValue = state.johnstonOutputFrequencies[i];

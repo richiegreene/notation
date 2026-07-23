@@ -116,6 +116,197 @@
                                                          </div>
                                                      </div>        </div>
 
+        <div class="settings-menu-item" id="tuner-item">
+            <div class="settings-header">
+                <span>Tuner</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="tunerbox">
+                    <div class="tuner-top">
+                        <div class="tuner-controls-row">
+                            <select id="tunerLanguage">
+                                <option value="heji" selected>HEJI</option>
+                                <option value="sagittal">Sagittal</option>
+                                <option value="johnston">Johnston</option>
+                                <option value="updown">Ups and Downs</option>
+                            </select>
+                        </div>
+
+                        <div class="tuner-controls-row" id="tunerSagittalType" style="display: none;">
+                            <select id="tunerSagittalTypeDropdown">
+                                <option value="medium" selected>Athenian</option>
+                                <option value="high">Promethean</option>
+                                <option value="ultra">Herculean</option>
+                                <option value="extreme">Olympian</option>
+                            </select>
+                        </div>
+
+                        <div class="tuner-controls-row" id="tunerJiSettings">
+                            <select id="tunerLimitType">
+                                <option value="integer">Integer-Limit</option>
+                                <option value="odd" selected>Odd-Limit</option>
+                                <option value="prime">Prime-Limit</option>
+                                <option value="custom">Custom Scale</option>
+                            </select>
+                            <span class="tuner-field" id="tunerLimitField">
+                                <input type="number" id="tunerLimitValue" class="tuner-num" value="11" min="1">
+                            </span>
+                            <span class="tuner-field tuner-field-grow" id="tunerMaxExpField" style="display: none;">
+                                <label for="tunerMaxExp">maximum exponent</label>
+                                <input type="number" id="tunerMaxExp" class="tuner-num tuner-num-grow" value="2" min="1">
+                            </span>
+                        </div>
+
+                        <div class="tuner-controls-row" id="tunerCustomRow" style="display: none;">
+                            <textarea id="tunerCustomScale" rows="3" spellcheck="false"
+                                placeholder="e.g.1/1 9/8 5/4 4/3 3/2 5/3 15/8"></textarea>
+                        </div>
+
+                        <div class="tuner-controls-row" id="tunerEdoSettings" style="display: none;">
+                            <input type="number" id="tunerEdo" class="edo tuner-edo-input" value="41" min="1">
+                        </div>
+                    </div>
+
+                    <div class="tuner-readout" id="tunerReadout">
+                        <div class="tuner-lane tuner-lane-names" id="tunerLaneNames"></div>
+                        <svg class="tuner-ruler" id="tunerRuler" preserveAspectRatio="none"></svg>
+                        <div class="tuner-lane tuner-lane-ratios" id="tunerLaneRatios"></div>
+                        <div class="tuner-centerline"></div>
+                        <div class="tuner-idle" id="tunerIdle">press <b>on</b> to start listening</div>
+                    </div>
+
+                    <div class="tuner-bottom">
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerEdoChecks" style="display: none;">
+                            <label><input type="checkbox" id="tunerShowEnharmonics"> enh equivalent</label>
+                            <label><input type="checkbox" id="tunerExcludeHalves" checked> exclude halves</label>
+                        </div>
+
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerHejiChecks">
+                            <label><input type="checkbox" id="tunerUnofficialExtensions" checked> unofficial extensions</label>
+                        </div>
+
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalEnhCheck" style="display: none;">
+                            <label><input type="checkbox" id="tunerSagittalShowEnharmonics"> enh equivalent</label>
+                        </div>
+
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerComplexityChecks">
+                            <label><input type="checkbox" id="tunerComplexitySizing" checked> complexity sizing</label>
+                        </div>
+
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalRevoRow" style="display: none;">
+                            <div class="sagittal-toggle-row">
+                                <button type="button" id="tunerSagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
+                                <button type="button" id="tunerSagittalEvoToggle" class="sagittal-toggle-button">evo</button>
+                            </div>
+                        </div>
+
+                        <button id="tunerToggleButton" class="clear">on</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-menu-item" id="output-item">
+            <div class="settings-header">
+                <span>HEJI Output</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="outputbox">
+                    <div class="output-controls"></div>
+                    <div class="output-container">
+                    </div>
+                    <div class="output-checkboxes">
+                        <label><input type="checkbox" name="inputType" id="normalize"> octave reduce</label>
+                        <label><input type="checkbox" id="unofficialExtensionsOutput" checked> unofficial extensions</label>
+                    </div>
+                    <button id="clearOutputButton" class="clear" onclick="clearAllIntervals()">clear</button>
+                    <button id="playOutputButton" class="clear">play</button>
+                    <button id="saveHejiOutputButton" class="clear save-csv-button">save</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-menu-item" id="edo-output-item">
+            <div class="settings-header">
+                <span>Ups and Downs Output</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="outputbox">
+                    <div class="output-controls">
+                        <input type="number" id="edoApproximationInput" class="edo" value="41" min="1">
+                    </div>
+					<div class="edo-output-container">
+                    </div>
+                    <div class="output-checkboxes">
+                        <label><input type="checkbox" name="inputType" id="edoNormalize"> octave reduce</label>
+                        <label><input type="checkbox" id="showEnharmonics"> enh equivalent</label>
+                        <label><input type="checkbox" id="excludeHalvesCheckbox" checked> exclude halves</label>
+                    </div>
+                    <button id="clearEdoOutputButton" class="clear">clear</button>
+                    <button id="playEdoOutputButton" class="clear">play</button>
+                    <button id="saveEdoOutputButton" class="clear save-csv-button">save</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-menu-item" id="sagittal-output-item">
+            <div class="settings-header">
+                <span>Sagittal Output</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="outputbox">
+                    <div class="output-controls">
+                        <div class="sagittal-type-row">
+                            <select id="sagittalTypeDropdown">
+                                <option value="medium" selected>Athenian</option>
+                                <option value="high">Promethean</option>
+                                <option value="ultra">Herculean</option>
+                                <option value="extreme">Olympian</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="sagittal-output-container"></div>
+                    <div class="output-checkboxes">
+                        <label><input type="checkbox" id="sagittalNormalize"> octave reduce</label>
+                        <label><input type="checkbox" id="sagittalShowEnharmonics"> enh equivalent</label>
+                        <div class="sagittal-toggle-row">
+                            <button type="button" id="sagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
+                            <button type="button" id="sagittalEvoToggle" class="sagittal-toggle-button">evo</button>
+                        </div>
+                        <div class="sagittal-toggle-row">
+                            <button type="button" id="sagittalUnicodeToggle" class="sagittal-toggle-button selected">unicode</button>
+                            <button type="button" id="sagittalAsciiToggle" class="sagittal-toggle-button">ascii</button>
+                        </div>
+                    </div>
+                    <button id="clearSagittalOutputButton" class="clear">clear</button>
+                    <button id="playSagittalOutputButton" class="clear">play</button>
+                    <button id="saveSagittalOutputButton" class="clear save-csv-button">save</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-menu-item" id="johnston-output-item">
+            <div class="settings-header">
+                <span>Johnston Output</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="outputbox">
+                    <div class="output-controls"></div>
+                    <div class="johnston-output-container"></div>
+                    <div class="output-checkboxes">
+                        <label><input type="checkbox" id="johnstonNormalize"> octave reduce</label>
+                    </div>
+                    <button id="clearJohnstonOutputButton" class="clear">clear</button>
+                    <button id="playJohnstonOutputButton" class="clear">play</button>
+                    <button id="saveJohnstonOutputButton" class="clear save-csv-button">save</button>
+                </div>
+            </div>
+        </div>
         <div class="settings-menu-item collapsed-item" id="chord-entry-item">
             <div class="toggle-header-placement">
                 <input type="radio" name="inputType" id="chordInput" checked> <label for="chordInput">Chord Entry</label>
@@ -499,6 +690,46 @@
             </div>
         </div>
 
+		<div class="settings-menu-item collapsed-item" id="johnston-entry-item">
+            <div class="toggle-header-placement">
+                <input type="radio" name="inputType" id="johnstonInput"> <label for="johnstonInput">Johnston Entry</label>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="palettebox">
+                    <div class="palette">
+                        <div class="heji-dropdowns-centered">
+                            <select id="johnstonDiatonicNoteDropdown">
+                                <option value="0">F</option>
+                                <option value="1" selected>C</option>
+                                <option value="2">G</option>
+                                <option value="3">D</option>
+                                <option value="4">A</option>
+                                <option value="5">E</option>
+                                <option value="6">B</option>
+                            </select>
+                            <select id="johnstonOctaveDropdown">
+                                <option value="1">-4</option>
+                                <option value="2">-3</option>
+                                <option value="3">-2</option>
+                                <option value="4">-1</option>
+                                <option value="5">0</option>
+                                <option value="6">1</option>
+                                <option value="7">2</option>
+                                <option value="8">3</option>
+                                <option value="9" selected>4</option>
+                                <option value="10">5</option>
+                                <option value="11">6</option>
+                                <option value="12">7</option>
+                            </select>
+                        </div>
+                        <!-- Rows are generated by generateJohnstonPalette() in js/calc/johnston.js -->
+                        <div id="johnstonPalette"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 		<div class="settings-menu-item collapsed-item" id="sagittal-entry-item">
             <div class="toggle-header-placement">
                 <input type="radio" name="inputType" id="sagittalEntryInput"> <label for="sagittalEntryInput">Sagittal Entry</label>
@@ -549,237 +780,6 @@
             </div>
         </div>
 
-		<div class="settings-menu-item collapsed-item" id="johnston-entry-item">
-            <div class="toggle-header-placement">
-                <input type="radio" name="inputType" id="johnstonInput"> <label for="johnstonInput">Johnston Entry</label>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="palettebox">
-                    <div class="palette">
-                        <div class="heji-dropdowns-centered">
-                            <select id="johnstonDiatonicNoteDropdown">
-                                <option value="0">F</option>
-                                <option value="1" selected>C</option>
-                                <option value="2">G</option>
-                                <option value="3">D</option>
-                                <option value="4">A</option>
-                                <option value="5">E</option>
-                                <option value="6">B</option>
-                            </select>
-                            <select id="johnstonOctaveDropdown">
-                                <option value="1">-4</option>
-                                <option value="2">-3</option>
-                                <option value="3">-2</option>
-                                <option value="4">-1</option>
-                                <option value="5">0</option>
-                                <option value="6">1</option>
-                                <option value="7">2</option>
-                                <option value="8">3</option>
-                                <option value="9" selected>4</option>
-                                <option value="10">5</option>
-                                <option value="11">6</option>
-                                <option value="12">7</option>
-                            </select>
-                        </div>
-                        <!-- Rows are generated by generateJohnstonPalette() in js/calc/johnston.js -->
-                        <div id="johnstonPalette"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="tuner-item">
-            <div class="settings-header">
-                <span>Tuner</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="tunerbox">
-                    <div class="tuner-top">
-                        <div class="tuner-controls-row">
-                            <select id="tunerLanguage">
-                                <option value="heji" selected>HEJI</option>
-                                <option value="sagittal">Sagittal</option>
-                                <option value="johnston">Johnston</option>
-                                <option value="updown">Ups and Downs</option>
-                            </select>
-                        </div>
-
-                        <div class="tuner-controls-row" id="tunerSagittalType" style="display: none;">
-                            <select id="tunerSagittalTypeDropdown">
-                                <option value="medium" selected>Athenian</option>
-                                <option value="high">Promethean</option>
-                                <option value="ultra">Herculean</option>
-                                <option value="extreme">Olympian</option>
-                            </select>
-                        </div>
-
-                        <div class="tuner-controls-row" id="tunerJiSettings">
-                            <select id="tunerLimitType">
-                                <option value="integer">Integer-Limit</option>
-                                <option value="odd" selected>Odd-Limit</option>
-                                <option value="prime">Prime-Limit</option>
-                                <option value="custom">Custom Scale</option>
-                            </select>
-                            <span class="tuner-field" id="tunerLimitField">
-                                <input type="number" id="tunerLimitValue" class="tuner-num" value="11" min="1">
-                            </span>
-                            <span class="tuner-field tuner-field-grow" id="tunerMaxExpField" style="display: none;">
-                                <label for="tunerMaxExp">maximum exponent</label>
-                                <input type="number" id="tunerMaxExp" class="tuner-num tuner-num-grow" value="2" min="1">
-                            </span>
-                        </div>
-
-                        <div class="tuner-controls-row" id="tunerCustomRow" style="display: none;">
-                            <textarea id="tunerCustomScale" rows="3" spellcheck="false"
-                                placeholder="e.g.1/1 9/8 5/4 4/3 3/2 5/3 15/8"></textarea>
-                        </div>
-
-                        <div class="tuner-controls-row" id="tunerEdoSettings" style="display: none;">
-                            <input type="number" id="tunerEdo" class="edo tuner-edo-input" value="41" min="1">
-                        </div>
-                    </div>
-
-                    <div class="tuner-readout" id="tunerReadout">
-                        <div class="tuner-lane tuner-lane-names" id="tunerLaneNames"></div>
-                        <svg class="tuner-ruler" id="tunerRuler" preserveAspectRatio="none"></svg>
-                        <div class="tuner-lane tuner-lane-ratios" id="tunerLaneRatios"></div>
-                        <div class="tuner-centerline"></div>
-                        <div class="tuner-idle" id="tunerIdle">press <b>on</b> to start listening</div>
-                    </div>
-
-                    <div class="tuner-bottom">
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerEdoChecks" style="display: none;">
-                            <label><input type="checkbox" id="tunerShowEnharmonics"> enh equivalent</label>
-                            <label><input type="checkbox" id="tunerExcludeHalves" checked> exclude halves</label>
-                        </div>
-
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerHejiChecks">
-                            <label><input type="checkbox" id="tunerUnofficialExtensions" checked> unofficial extensions</label>
-                        </div>
-
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalEnhCheck" style="display: none;">
-                            <label><input type="checkbox" id="tunerSagittalShowEnharmonics"> enh equivalent</label>
-                        </div>
-
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerComplexityChecks">
-                            <label><input type="checkbox" id="tunerComplexitySizing" checked> complexity sizing</label>
-                        </div>
-
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalRevoRow" style="display: none;">
-                            <div class="sagittal-toggle-row">
-                                <button type="button" id="tunerSagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
-                                <button type="button" id="tunerSagittalEvoToggle" class="sagittal-toggle-button">evo</button>
-                            </div>
-                        </div>
-
-                        <button id="tunerToggleButton" class="clear">on</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="output-item">
-            <div class="settings-header">
-                <span>HEJI Output</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="outputbox">
-                    <div class="output-controls"></div>
-                    <div class="output-container">
-                    </div>
-                    <div class="output-checkboxes">
-                        <label><input type="checkbox" name="inputType" id="normalize"> octave reduce</label>
-                        <label><input type="checkbox" id="unofficialExtensionsOutput" checked> unofficial extensions</label>
-                    </div>
-                    <button id="clearOutputButton" class="clear" onclick="clearAllIntervals()">clear</button>
-                    <button id="playOutputButton" class="clear">play</button>
-                    <button id="saveHejiOutputButton" class="clear save-csv-button">save</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="edo-output-item">
-            <div class="settings-header">
-                <span>Ups and Downs Output</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="outputbox">
-                    <div class="output-controls">
-                        <input type="number" id="edoApproximationInput" class="edo" value="41" min="1">
-                    </div>
-					<div class="edo-output-container">
-                    </div>
-                    <div class="output-checkboxes">
-                        <label><input type="checkbox" name="inputType" id="edoNormalize"> octave reduce</label>
-                        <label><input type="checkbox" id="showEnharmonics"> enh equivalent</label>
-                        <label><input type="checkbox" id="excludeHalvesCheckbox" checked> exclude halves</label>
-                    </div>
-                    <button id="clearEdoOutputButton" class="clear">clear</button>
-                    <button id="playEdoOutputButton" class="clear">play</button>
-                    <button id="saveEdoOutputButton" class="clear save-csv-button">save</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="sagittal-output-item">
-            <div class="settings-header">
-                <span>Sagittal Output</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="outputbox">
-                    <div class="output-controls">
-                        <div class="sagittal-type-row">
-                            <select id="sagittalTypeDropdown">
-                                <option value="medium" selected>Athenian</option>
-                                <option value="high">Promethean</option>
-                                <option value="ultra">Herculean</option>
-                                <option value="extreme">Olympian</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="sagittal-output-container"></div>
-                    <div class="output-checkboxes">
-                        <label><input type="checkbox" id="sagittalNormalize"> octave reduce</label>
-                        <label><input type="checkbox" id="sagittalShowEnharmonics"> enh equivalent</label>
-                        <div class="sagittal-toggle-row">
-                            <button type="button" id="sagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
-                            <button type="button" id="sagittalEvoToggle" class="sagittal-toggle-button">evo</button>
-                        </div>
-                        <div class="sagittal-toggle-row">
-                            <button type="button" id="sagittalUnicodeToggle" class="sagittal-toggle-button selected">unicode</button>
-                            <button type="button" id="sagittalAsciiToggle" class="sagittal-toggle-button">ascii</button>
-                        </div>
-                    </div>
-                    <button id="clearSagittalOutputButton" class="clear">clear</button>
-                    <button id="playSagittalOutputButton" class="clear">play</button>
-                    <button id="saveSagittalOutputButton" class="clear save-csv-button">save</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="settings-menu-item" id="johnston-output-item">
-            <div class="settings-header">
-                <span>Johnston Output</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content">
-                <div class="outputbox">
-                    <div class="output-controls"></div>
-                    <div class="johnston-output-container"></div>
-                    <div class="output-checkboxes">
-                        <label><input type="checkbox" id="johnstonNormalize"> octave reduce</label>
-                    </div>
-                    <button id="clearJohnstonOutputButton" class="clear">clear</button>
-                    <button id="playJohnstonOutputButton" class="clear">play</button>
-                    <button id="saveJohnstonOutputButton" class="clear save-csv-button">save</button>
-                </div>
-            </div>
-        </div>
 
     </div>
 

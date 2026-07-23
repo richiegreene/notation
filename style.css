@@ -82,7 +82,7 @@ body {
     border-radius: 8px;
     color: var(--color-text);
     font-family: "Inter", sans-serif;
-    margin: 2.5px; /* Space around each item */
+    margin: 0; /* Spacing is handled by the container gap / computed row span */
     min-width: auto; /* Allow content to define min-width */
 }
 
@@ -207,10 +207,17 @@ div.version {
 .calc-container {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 2.5px;
+    /* Fine-grained row tracks (1px) drive a JS masonry layout: each card's
+       grid-row span is computed from its real pixel height (see layoutMasonry
+       in main.js), so cards pack tightly with a uniform vertical gap regardless
+       of neighbouring card heights. column-gap sets the horizontal gap; the
+       vertical gap is baked into the computed span, so row-gap stays 0. */
+    grid-auto-rows: 1px;
+    column-gap: 8px;
+    row-gap: 0;
+    grid-auto-flow: row;
     padding: 10px;
     margin: 0 auto;
-    grid-auto-flow: dense; /* Added to allow items to fill in holes */
     align-items: start; /* Don't stretch cards to match the tallest card in their row */
 }
 
@@ -969,43 +976,8 @@ input.ratioIn {
     width: 80px; /* Reduced width */
     box-sizing: border-box; /* Include padding and border in width calculation */
 }
-/* Specific grid-row spans for each settings-menu-item */
-
-#ref-pitch-item { /* Settings */
-    grid-row: span 6;
-}
-
-#heji-entry-item {
-    grid-row: span 7;
-}
-
-#interval-entry-item {
-    grid-row: span 2;
-}
-
-#chord-entry-item {
-    grid-row: span 3;
-}
-
-#sagittal-entry-item {
-    grid-row: span 3;
-}
-
-#output-item {
-    grid-row: span 4;
-}
-
-#edo-output-item {
-    grid-row: span 5; /* Adjust grid-row for EDO output */
-}
-
-#sagittal-output-item {
-    grid-row: span 5; /* Match EDO output: controls + notation + buttons */
-}
-
-.settings-menu-item.collapsed-item {
-    grid-row: span 1 !important;
-}
+/* Card grid-row spans are computed at runtime by layoutMasonry() in main.js
+   from each card's real pixel height, so no hard-coded spans live here. */
 
 #timbre-row {
     grid-column: 1 / -1;
@@ -1286,9 +1258,7 @@ html[data-theme="dark"] .info-link {
 /* ---------------------------------------------------------------------------
    Tuner window
    --------------------------------------------------------------------------- */
-#tuner-item {
-    grid-row: span 5;
-}
+/* #tuner-item's grid-row span is computed by layoutMasonry() like every other card. */
 
 /* The tuner content is a fixed-height column (JS matches its height to an
    Output card, so every language reads at the same card height): top settings,

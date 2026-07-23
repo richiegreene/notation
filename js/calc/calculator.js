@@ -12,8 +12,11 @@ import { readJohnstonEntry, updateJohnstonOutputDisplays } from './johnston.js';
  */
 export function doCalc() {
     UI.updateCurrentReferenceMonzo(); // Ensure currentReferenceMonzo is up-to-date
-    const chordSize = $("#chord-size-input").val();
     const isChordMode = $("#chordInput").prop("checked");
+    // Only Chord Entry drives the multi-column layout. Every other active entry
+    // area renders a single output column, so an inactive Chord Entry's size can
+    // never add extra columns to the current output.
+    const chordSize = isChordMode ? (parseInt($("#chord-size-input").val()) || 1) : 1;
 
     if (isChordMode) {
         // In Chord Mode, calculate each column independently

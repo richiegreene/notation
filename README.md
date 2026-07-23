@@ -47,7 +47,7 @@ cents from 1/1.
   per-note pitch bend.
 
 ### Export
-- **Save / Export CSV:** `⇧⌘S`
+- **Save / Export CSV:** `⇧⌘S` 
 
 ### Display
 - Light and dark themes.
