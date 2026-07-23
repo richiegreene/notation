@@ -16,7 +16,24 @@ import * as Mic from '../tuner-mic.js';
  */
 
 const DEFAULT_CENTS_WINDOW = 100; // total cents spanned across the strip
-const IN_TUNE = 4;        // cents within which a note name turns blue
+const IN_TUNE = 4;        // cents within which a note name turns fully blue
+const TUNE_STEP = 2;      // cents per gradient step outside the in-tune band
+// All tune-state classes, and a helper that returns the class for a given
+// absolute cent deviation: full blue inside 4c, then three 2c gradient steps
+// (tune-1 nearest, tune-3 farthest) up to 10c, and nothing beyond.
+const TUNE_CLASSES = ['in-tune', 'tune-1', 'tune-2', 'tune-3'];
+function tuneClassFor(absDelta) {
+    if (absDelta <= IN_TUNE) return 'in-tune';
+    if (absDelta <= IN_TUNE + TUNE_STEP) return 'tune-1';
+    if (absDelta <= IN_TUNE + 2 * TUNE_STEP) return 'tune-2';
+    if (absDelta <= IN_TUNE + 3 * TUNE_STEP) return 'tune-3';
+    return '';
+}
+function applyTuneClass(elm, cls) {
+    if (!elm) return;
+    elm.classList.remove(...TUNE_CLASSES);
+    if (cls) elm.classList.add(cls);
+}
 
 /** Total cents spanned across the strip (the tuner "zoom"), from the Settings
  *  card's Tuner Cents Window field. Smaller = more zoomed in. */
@@ -419,13 +436,14 @@ function renderFrame() {
         m.nameEl.style.left = leftPx + 'px';
         m.rEl.style.left = leftPx + 'px';
 
-        // In tune (within 4c): name, ratio/step and the ruler degree dot turn blue.
-        const inTune = Math.abs(delta) <= IN_TUNE;
-        m.nameEl.classList.toggle('in-tune', inTune);
-        m.rEl.classList.toggle('in-tune', inTune);
+        // In tune (within 4c): name, ratio/step and the ruler degree dot turn
+        // fully blue; the three 2c steps either side ramp toward blue.
+        const cls = tuneClassFor(Math.abs(delta));
+        applyTuneClass(m.nameEl, cls);
+        applyTuneClass(m.rEl, cls);
         if (m.dotEl) {
             m.dotEl.setAttribute('cx', leftPx.toFixed(2));
-            m.dotEl.classList.toggle('in-tune', inTune);
+            applyTuneClass(m.dotEl, cls);
         }
     }
 }

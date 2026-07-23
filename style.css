@@ -1364,6 +1364,12 @@ html[data-theme="light"] #tunerCustomScale {
    specificity than the small-dot rule above so its opacity/fill win. */
 .tuner-ruler .tuner-degree-dot { fill: var(--color-text); opacity: 0.9; }
 .tuner-ruler .tuner-degree-dot.in-tune { fill: #007bff; opacity: 1; }
+/* Three 2c gradient steps either side of the in-tune band: the fill ramps from
+   the base text colour toward the in-tune blue as the note approaches 4c.
+   color-mix keeps it theme-aware (white→blue in dark, near-black→blue in light). */
+.tuner-ruler .tuner-degree-dot.tune-1 { fill: color-mix(in srgb, var(--color-text) 25%, #007bff 75%); opacity: 1; }
+.tuner-ruler .tuner-degree-dot.tune-2 { fill: color-mix(in srgb, var(--color-text) 50%, #007bff 50%); opacity: 1; }
+.tuner-ruler .tuner-degree-dot.tune-3 { fill: color-mix(in srgb, var(--color-text) 75%, #007bff 25%); opacity: 0.95; }
 
 /* A degree mark, absolutely placed; JS sets `left` and `font-size` each frame.
    Child glyphs size in em, so a single font-size on the mark scales the whole
@@ -1454,6 +1460,15 @@ html[data-theme="light"] #tunerCustomScale {
 .tuner-readout .tuner-mark.in-tune * {
     color: #007bff;
 }
+/* Three 2c gradient steps either side of the in-tune band (4-6c, 6-8c, 8-10c):
+   text ramps from the base colour toward the in-tune blue as it approaches 4c.
+   color-mix keeps it theme-aware (white→blue in dark, near-black→blue in light). */
+.tuner-readout .tuner-mark.tune-1,
+.tuner-readout .tuner-mark.tune-1 * { color: color-mix(in srgb, var(--color-text) 25%, #007bff 75%); }
+.tuner-readout .tuner-mark.tune-2,
+.tuner-readout .tuner-mark.tune-2 * { color: color-mix(in srgb, var(--color-text) 50%, #007bff 50%); }
+.tuner-readout .tuner-mark.tune-3,
+.tuner-readout .tuner-mark.tune-3 * { color: color-mix(in srgb, var(--color-text) 75%, #007bff 25%); }
 
 /* Fixed centre line = the received pitch. */
 .tuner-centerline {
