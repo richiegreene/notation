@@ -72,17 +72,36 @@ export function initTuner() {
 
     el('tunerToggleButton').addEventListener('click', toggleListening);
 
-    // Keep the card the same height as an Output card, and re-fit the readout
-    // scaling, on resize and whenever the card is expanded.
-    window.addEventListener('resize', () => { matchTunerHeight(); computeBaseScale(); });
+    // Keep the tuner card the same height as an Output card, size the Settings
+    // card, and re-fit the readout scaling on resize / when a card is expanded.
+    window.addEventListener('resize', () => { matchTunerHeight(); matchSettingsHeight(); computeBaseScale(); });
     const header = document.querySelector('#tuner-item .settings-header');
     if (header) header.addEventListener('click', () => setTimeout(() => {
         matchTunerHeight(); computeBaseScale();
     }, 0));
 
     updateVisibility();
-    matchTunerHeight();
     rebuildScale();
+    // Deferred so the collapsible-card setup (which runs later in the same ready
+    // handler) has collapsed the collapsed-item cards before we measure one.
+    setTimeout(() => { matchTunerHeight(); matchSettingsHeight(); }, 0);
+}
+
+/**
+ * Give the Settings card an initial height of an Output card + the inter-card
+ * gap + a single collapsed card, so the left column lines up with an output
+ * stacked above a collapsed card.
+ */
+function matchSettingsHeight() {
+    const settings = document.querySelector('#ref-pitch-item');
+    const output = document.querySelector('#johnston-output-item')
+        || document.querySelector('#output-item');
+    const collapsed = document.querySelector('.settings-menu-item.collapsed-item');
+    if (!settings || !output) return;
+    const gap = 2.5; // .calc-container grid gap ("padding" between cards)
+    const collapsedH = collapsed ? collapsed.offsetHeight : 45;
+    const target = output.offsetHeight + gap + collapsedH;
+    if (output.offsetHeight > 0) settings.style.minHeight = target + 'px';
 }
 
 /** Match the tuner card's content height to an Output card's, for a uniform
@@ -123,9 +142,11 @@ function updateVisibility() {
     el('tunerEdoSettings').style.display = updown ? '' : 'none';
     el('tunerEdoChecks').style.display = updown ? '' : 'none';
 
-    // Sagittal-only: precision dropdown (top) and enh + revo/evo (below readout).
+    // Sagittal-only: precision dropdown (top), and enh + revo/evo (below the
+    // readout, with complexity sizing sitting between them).
     el('tunerSagittalType').style.display = lang === 'sagittal' ? '' : 'none';
-    el('tunerSagittalChecks').style.display = lang === 'sagittal' ? '' : 'none';
+    el('tunerSagittalEnhCheck').style.display = lang === 'sagittal' ? '' : 'none';
+    el('tunerSagittalRevoRow').style.display = lang === 'sagittal' ? '' : 'none';
 
     // HEJI-only: unofficial extensions toggle (below readout).
     el('tunerHejiChecks').style.display = lang === 'heji' ? '' : 'none';
@@ -180,15 +201,21 @@ function nameMarkHtml(deg) {
     if (language() === 'sagittal') {
         const sp = deg.name && deg.name.spellings;
         if (!sp || !sp.length) return `<span class="tuner-note-letter">n/a</span>`;
-        return `<span class="tuner-sagittal-stack${sp.length > 1 ? ' multi' : ''}">`
-            + sp.map((s) => `<span class="tuner-sagittal-spelling">`
-                + `<span class="tuner-note-letter">${s.letter}</span>`
-                + `<span class="tuner-sag-symbol${s.unicode ? '' : ' ascii'}">${s.symbol}</span>`
-                + `</span>`).join('')
+        // Single spelling renders exactly like HEJI (letter + em symbol as direct
+        // children of the mark) so it scales identically; only the enharmonic
+        // set uses the vertical stack.
+        if (sp.length === 1) return sagittalSpellingHtml(sp[0]);
+        return `<span class="tuner-sagittal-stack multi">`
+            + sp.map((s) => `<span class="tuner-sagittal-spelling">${sagittalSpellingHtml(s)}</span>`).join('')
             + `</span>`;
     }
     if (!deg.name) return `<span class="tuner-note-letter">n/a</span>`;
     return `<span class="tuner-note-letter">${deg.name.letter}</span>${deg.name.html || ''}`;
+}
+
+function sagittalSpellingHtml(s) {
+    return `<span class="tuner-note-letter">${s.letter}</span>`
+        + `<span class="tuner-sag-symbol${s.unicode ? '' : ' ascii'}">${s.symbol}</span>`;
 }
 
 function ratioText(deg) {
@@ -340,9 +367,10 @@ function renderFrame() {
         setMarkVisible(m, visible);
         if (!visible) continue;
 
-        // Ups and Downs is always full, uniform size - never affected by note
-        // length (density) or complexity. JI uses density x complexity scaling.
-        const s = isJiMode ? baseScale * (complexityOn ? m.complexity : 1) : 1;
+        // Density scale keeps marks from colliding (uniform across all marks);
+        // JI additionally scales per-mark by complexity, Ups and Downs never does
+        // (complexityOn is false for EDO), so every EDO mark is the same size.
+        const s = baseScale * (complexityOn ? m.complexity : 1);
         m.nameEl.style.fontSize = (LANE_BASE_REM.names * s) + 'rem';
         m.rEl.style.fontSize = (LANE_BASE_REM.ratios * s) + 'rem';
 

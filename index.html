@@ -86,7 +86,6 @@
                         <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked> <label for="refFrequencyLinkedRadio">1/1&plusmn;0c</label>
                         <input type="radio" name="refInput" id="refFrequencyFreeRadio"> <label for="refFrequencyFreeRadio">A4 &plusmn;0c</label>
                     </div>
-                    <br>
                     <h3>Tuner Cents Window</h3>
                     <br>
                     <input type="number" id="tunerCentsWindow" class="tuner-cents-window-input" value="100" min="1">
@@ -97,7 +96,6 @@
                                                                  <input type="number" id="frequencyA4" value="440.0000"></input>
                                                              </div>
                                                  			<br> <!-- Add a line break for spacing -->
-                                                             <br>
                                                              <h3>Playback</h3>
                                                              <br>
                                                                                  <div class="settings-row">
@@ -762,16 +760,19 @@
                             <label><input type="checkbox" id="tunerUnofficialExtensions" checked> unofficial extensions</label>
                         </div>
 
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalChecks" style="display: none;">
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalEnhCheck" style="display: none;">
                             <label><input type="checkbox" id="tunerSagittalShowEnharmonics"> enh equivalent</label>
-                            <div class="sagittal-toggle-row">
-                                <button type="button" id="tunerSagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
-                                <button type="button" id="tunerSagittalEvoToggle" class="sagittal-toggle-button">evo</button>
-                            </div>
                         </div>
 
                         <div class="output-checkboxes tuner-checkboxes" id="tunerComplexityChecks">
                             <label><input type="checkbox" id="tunerComplexitySizing" checked> complexity sizing</label>
+                        </div>
+
+                        <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalRevoRow" style="display: none;">
+                            <div class="sagittal-toggle-row">
+                                <button type="button" id="tunerSagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
+                                <button type="button" id="tunerSagittalEvoToggle" class="sagittal-toggle-button">evo</button>
+                            </div>
                         </div>
 
                         <button id="tunerToggleButton" class="clear">on</button>
