@@ -871,6 +871,16 @@ table.enharmonic-table > tr, td, th {
     margin: 0; /* Remove any default margins on these items */
 }
 
+/* Unofficial (53-89 limit) extension rows get a slightly different button
+   background - in both themes - to denote they're beyond the official 47-limit
+   HEJI. Selected buttons keep the blue highlight (:not(.selected)). */
+.unofficial-extension-row button:not(.selected) {
+    background-color: rgb(74, 74, 74);
+}
+html[data-theme="light"] .unofficial-extension-row button:not(.selected) {
+    background-color: rgb(187, 187, 187);
+}
+
 .ref-pitch-controls-centered {
     display: flex; /* Use flexbox for centering */
     justify-content: center; /* Center horizontally */
