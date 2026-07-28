@@ -59,7 +59,8 @@ cents from 1/1.
   per-note pitch bend.
 
 ### Export
-- **Save / Export CSV:** `⇧⌘S` 
+- **Save / Export CSV:** `⇧⌘S`
+  - outputs simple/custom filetype for personal use
 
 ### Display
 - Light and dark themes.
@@ -77,7 +78,7 @@ Please refer to and support the original sources:
   devised by Marc Sabat and Wolfgang von Schweinitz.
 
 - **[Unofficial 89-limit HEJI Extensions](https://en.xen.wiki/w/Richie%27s_HEJI_extensions)**
-  — Richie Greene.
+  — Personal extensions, made predominantly with isoharmonic music in mind
 
 - **[Ups and Downs Notation](https://en.xen.wiki/w/Kite%27s_ups_and_downs_notation)**
   — Kite Giedraitis.
