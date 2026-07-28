@@ -11,6 +11,8 @@ A browser-based tuner and resource for microtonal and xenharmonic notation syste
 ### Tuner
 Match a live sound against a scale by ear and eye:
 
+<img width="486" height="838" alt="tuner-demo" src="https://github.com/user-attachments/assets/4b90705b-422c-4745-90f8-8141509433a0" />
+
 - **Live pitch detection** from the microphone (McLeod / NSDF), plotting the
   incoming pitch against a scrolling cent ruler with the received pitch fixed at
   the centre line.
@@ -24,6 +26,9 @@ Match a live sound against a scale by ear and eye:
 
 ### Pitch entry
 Choose whichever way of describing a pitch is most natural:
+
+<img width="1280" height="1021" alt="note entry demo" src="https://github.com/user-attachments/assets/20d644df-2a1d-4203-8116-3ed70cb2ad10" />
+
 
 - **Chord Entry** — enumerated chords (e.g. `4:5:6`, `4::8`) or note-by-note.
 - **HEJI Entry** — a palette of Helmholtz-Ellis accidentals spanning primes 3
