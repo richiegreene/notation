@@ -95,6 +95,7 @@ Please refer to and support the original sources:
   — Ben Johnston (implementation guided by John Fonville's *Ben Johnston's
   Extended Just Intonation: A Guide for Interpreters*).
 
+- **[Notes.oft](https://github.com/Sin-tel/tessera/blob/master/assets/font/notes.otf)** — Microtonal Font created by Sintel to accompany the neo-grotesque sans-serif typeface, [Inter.ttf](https://github.com/rsms/inter)
 ---
 
 ## License
