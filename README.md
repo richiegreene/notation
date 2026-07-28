@@ -83,7 +83,7 @@ Please refer to and support the original sources:
   devised by Marc Sabat and Wolfgang von Schweinitz.
 
 - **[Unofficial 89-limit HEJI Extensions](https://en.xen.wiki/w/Richie%27s_HEJI_extensions)**
-  — Personal extensions, made predominantly with isoharmonic music in mind
+  — Personal designs compatible with HEJI
 
 - **[Ups and Downs Notation](https://en.xen.wiki/w/Kite%27s_ups_and_downs_notation)**
   — Kite Giedraitis.
