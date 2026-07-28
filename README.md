@@ -2,7 +2,7 @@
 
 ### [notation.richiegreene.com](https://notation.richiegreene.com)
 
-A browser-based tuner and resource for microtonal and xenharmonic notation systems. Enter pitches as just-intonation ratios, chords, or visually by selecting given accidentals and read them back in several different microtonal notation systems side by side, along with the nearest 12edo cent deviation, frequency, and audio playback.
+A browser-based tuner and resource for microtonal and xenharmonic notation systems. Enter pitches as just-intonation ratios, chords, or visually by accidental to be shown results side by side across the differing systems. 
 
 ---
 
