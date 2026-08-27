@@ -7,6 +7,7 @@ import { generateJohnstonPalette, generateJohnstonOutputColumns } from './calc/j
 import { initAudio, updateWaveform, playFrequencies, stopAllFrequencies, currentPeriodicWave } from './audio-playback.js'; // Import audio functions
 import { initMidiOutput, setPlaybackMode, midiOutputSelect, midiDeviceSelectorDiv } from './mpe-playback.js'; // Import MPE functions
 import { initTuner } from './calc/tuner.js'; // Import Tuner window controller
+import { initHistory } from './calc/history.js'; // Import undo/redo history
 
 let slideDuration = 0.25; // Default slide duration, can be made configurable
 
@@ -256,6 +257,36 @@ function syncIntervalStateFromInputs() {
     if (!isNaN(num) && num > 0) state.savedNum = num;
     if (!isNaN(den) && den > 0) state.savedDen = den;
     Calc.getSavedInputSum();
+}
+
+// Push the whole entry area back through the calculation pipeline. Every
+// control normally reaches `state` through its own change handler; undo/redo
+// writes many fields at once without firing any of them, so this stands in for
+// all of them and then rebuilds the output windows.
+function applyAllFromInputs() {
+    state.precision = $("#precision").val();
+    state.edoQuantisation = parseInt($("#edoApproximationInput").val());
+    // Both frequency fields are restored as they were displayed, so neither is
+    // recomputed from the other here (which would be wrong in unlinked mode).
+    state.kammerTon = parseFloat($("#frequencyA4").val());
+    state.freq1to1 = parseFloat($("#1to1Frequency").val());
+
+    // Interval Entry's first ratio field is the saved ratio.
+    syncIntervalStateFromInputs();
+
+    // Show/hide rules that the controls' own handlers otherwise maintain.
+    $(".unofficial-extension-row").toggle($("#unofficialExtensionsEntry").prop("checked"));
+    if ($("#chord-entry-type-select").val() === 'enumerated-chord') {
+        $("#enumerated-chord-entry").show();
+        $("#note-by-note-entry").hide();
+    } else {
+        $("#enumerated-chord-entry").hide();
+        $("#note-by-note-entry").show();
+    }
+
+    refreshOutputColumns();
+    UI.getPC();
+    UI.getBend();
 }
 
 // Function to generate and download CSV for HEJI Output
@@ -1145,4 +1176,9 @@ $(document).ready(function(){
     // Clearing the field reverts to the placeholder ("e.g. 4:5:6, 4::8").
     $("#enumerated-chord-input").val("6:7:9");
     calculateEnumeratedChord();
+
+    // Undo/redo (Cmd/Ctrl+Z, Cmd+Shift+Z or Ctrl+Y). Started last so the
+    // fully initialised app - default chord included - is the first state in
+    // history, and nothing set up above is recorded as a user edit.
+    initHistory({ reapply: applyAllFromInputs });
 });
