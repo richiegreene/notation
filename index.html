@@ -56,14 +56,36 @@
         </svg>
       </button>
 
-      <!-- Tuner: a needle on a dial. Both a stage and a drawer — see above. -->
+      <!-- ---- Tuner: a tuning fork, sounding ----
+           Both a stage and a drawer — see above.
+
+           It was a needle on a dial, which named the PICTURE rather than the
+           work: the dial is one of two shapes the meter can be drawn in, and
+           an icon that means "the round one" is wrong half the time. A fork is
+           the instrument itself, it is what the whole app is about, and it
+           says nothing about how the reading is laid out.
+
+           The two pairs of arcs are the fork RINGING. Without them it is a
+           tuning fork lying in a case — the right object, but a still one, and
+           the button is for listening. They are the same idiom the app's own
+           Ups-and-Downs arrows and every sound icon use, so nobody has to be
+           told what they mean. -->
       <button class="rail-btn stage-btn" data-stage="tuner" data-drawer="tuner"
         aria-expanded="false" title="Tuner — listen, and read the pitch">
         <svg class="rail-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor"
           stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M3.6 18.5a10.5 10.5 0 1 1 18.8 0" />
-          <path d="M13 18.5L17.4 9.9" />
-          <circle cx="13" cy="18.5" r="1.5" fill="currentColor" stroke="none" />
+          <!-- Both tines and the U between them are ONE stroke, so the bend is
+               a real join rather than three pieces meeting at a seam. -->
+          <path d="M9 4.4v8.6a4 4 0 0 0 8 0V4.4" />
+          <path d="M13 17v4.6" />
+          <!-- The ring. Thinner than the fork, so the object stays the subject
+               and the sound stays an attribute of it. -->
+          <g stroke-width="1.3">
+            <path d="M6.7 6.8q-1.4 1.7 0 3.4" />
+            <path d="M4.2 4.8q-2.3 3.5 0 7" />
+            <path d="M19.3 6.8q1.4 1.7 0 3.4" />
+            <path d="M21.8 4.8q2.3 3.5 0 7" />
+          </g>
         </svg>
       </button>
 
@@ -189,33 +211,6 @@
             <input type="number" id="frequencyA4" value="440.0000">
           </fieldset>
 
-          <!-- Two settings the Tuner stage reads, kept here rather than in the
-               Tuner drawer because they are statements about the app's
-               reference pitch rather than about the meter: the first says
-               which pitch is called zero cents, and the second how much of the
-               octave the meter can see at once. -->
-          <fieldset>
-            <legend>Tuning Meter</legend>
-            <!-- Two alternatives, so a segmented switch rather than two
-                 radio dots: the strip says the choice is exclusive by being
-                 one control, which is what a segmented button is for. The
-                 inputs are still radios and still where every handler and the
-                 undo history read the answer — only the dot is gone. -->
-            <div class="seg ref-frequency-toggles">
-              <label class="seg-radio">
-                <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked>
-                <span>1/1&plusmn;0c</span>
-              </label>
-              <label class="seg-radio">
-                <input type="radio" name="refInput" id="refFrequencyFreeRadio">
-                <span>A4 &plusmn;0c</span>
-              </label>
-            </div>
-            <label for="tunerCentsWindow">Window width (cents)</label>
-            <input type="number" id="tunerCentsWindow" class="tuner-cents-window-input"
-              value="100" min="1"
-              title="How much of the octave the meter spans end to end. Smaller is more zoomed in.">
-          </fieldset>
         </div>
 
         <!-- ============ PLAY ============
@@ -283,20 +278,48 @@
         <div class="drawer hidden" data-drawer="tuner">
           <h1>notation <small>· tuner</small></h1>
 
-          <!-- Two ways of drawing the same reading. Straight is a strobe strip
-               — the scale slides past a fixed line, and cents are millimetres.
-               Round is the instrument every tuner and every speedometer already
-               taught: a needle at twelve o'clock, and the scale swung under it.
-               Neither is more accurate; they are read differently, and which
-               one reads better depends on the window width and the room. -->
+          <!-- ============ THE METER ITSELF ============
+               Everything about how the reading is PRESENTED, as against what is
+               being read — which is the three fieldsets below.
+
+               The two ways of drawing it: straight is a strobe strip, the scale
+               sliding past a fixed line with cents as millimetres; round is the
+               instrument every tuner and every speedometer already taught, a
+               needle at twelve o'clock with the scale swung under it. Neither
+               is more accurate. They are read differently, and which reads
+               better depends on the window width and on the room. -->
           <fieldset>
-            <legend>Shape</legend>
+            <legend>Meter</legend>
+
+            <label class="tune-h">Shape</label>
             <div class="seg" id="tuner-shape-seg">
               <button data-v="linear" class="on"
                 title="A strobe strip: the scale slides past a fixed centre line">Straight</button>
               <button data-v="dial"
                 title="A dial: a needle at the top, the scale swung beneath it">Round</button>
             </div>
+
+            <!-- Which pitch is called zero cents. Two alternatives, so a
+                 segmented switch rather than two radio dots: the strip says the
+                 choice is exclusive by being one control, which is what a
+                 segmented button is for. The inputs are still radios and still
+                 where every handler reads the answer — only the dot is gone. -->
+            <label class="tune-h">Reference</label>
+            <div class="seg ref-frequency-toggles">
+              <label class="seg-radio">
+                <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked>
+                <span>1/1&plusmn;0c</span>
+              </label>
+              <label class="seg-radio">
+                <input type="radio" name="refInput" id="refFrequencyFreeRadio">
+                <span>A4 &plusmn;0c</span>
+              </label>
+            </div>
+
+            <label for="tunerCentsWindow">Window width (cents)</label>
+            <input type="number" id="tunerCentsWindow" class="tuner-cents-window-input"
+              value="100" min="4" max="1200" step="0.1"
+              title="How much of the octave the meter spans end to end. Smaller is more zoomed in. Pinch or scroll on the meter itself to set it by hand.">
           </fieldset>
 
           <fieldset>
@@ -973,6 +996,12 @@
         <div class="tuner-lane tuner-lane-names" id="tunerLaneNames"></div>
         <div class="tuner-lane tuner-lane-ratios" id="tunerLaneRatios"></div>
         <div class="tuner-idle" id="tunerIdle">press <b>listen</b> to start</div>
+        <!-- What the pinch is doing, while it is doing it. The drawer's own
+             field says the same number, but the hand that is pinching is on a
+             phone, where the drawer is shut — and a zoom you cannot read is a
+             zoom you have to guess at. It fades out on its own a moment after
+             the fingers come up. -->
+        <div class="tuner-zoom" id="tunerZoom" aria-hidden="true"></div>
       </div>
 
       <!-- The two numbers the picture cannot say, and the switch. The readout

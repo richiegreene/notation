@@ -1592,6 +1592,36 @@ html[data-theme="light"] .palette .label {
     border: 1px solid var(--line);
     background-color: var(--scope-bg);
     border-radius: 8px;
+    /* The meter takes its own touches. Without this the browser reads a pinch
+       as "zoom the page" and a drag as "scroll", and the gesture never reaches
+       initZoomGestures at all. Nothing is given up: the stage does not scroll,
+       and the meter is the one thing on it. */
+    touch-action: none;
+}
+
+/* What the pinch is doing, while it is doing it. It sits at the top of the
+   meter rather than over the middle of it, because the middle is where the
+   note you are tuning is, and covering that to tell you how far you have
+   zoomed would be a poor trade. */
+.tuner-zoom {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translate(-50%, -6px);
+    padding: 5px 12px;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-text) 12%, transparent);
+    color: var(--color-text);
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .18s ease, transform .18s ease;
+}
+.tuner-zoom.on {
+    opacity: 0.9;
+    transform: translate(-50%, 0);
 }
 
 .tuner-lane {
@@ -1954,27 +1984,69 @@ html[data-theme="light"] .palette .label {
 
 /* ---------- the entry card that is active ----------
    Five cards carry a radio saying which entry area the output windows are
-   reading from. It was a dot beside the card's name, which is a small mark
-   for a large fact — the whole app is showing you the consequences of that
-   one choice. The dot is gone and the CARD'S OWN HEADER is the indicator: an
-   accent rule down its leading edge and the name at full weight, so which
-   card is live is legible from across the grid rather than at reading
-   distance.
+   reading from. That is the largest single fact on the screen — everything in
+   all four output windows is a consequence of it — so it is said twice, by a
+   control and by the card.
 
-   The header is still the collapse handle and still the drag handle; nothing
-   about the rule interferes with either, because it is a border rather than
-   anything that takes a press. */
+   THE DOT IS THE CONTROL. It is a designed one rather than the browser's own
+   radio: a ring that fills with the accent when its card is live, drawn on the
+   label so the click target is the whole name and the markup is untouched. It
+   went away for a while in favour of the card's header alone, which said the
+   state clearly enough but said nothing about being PRESSABLE — a lit header
+   reads as a status, and a status is not something anyone thinks to click. A
+   dot in a row of five dots is unmistakably a choice waiting to be made.
+
+   THE CARD IS THE READOUT. The accent rule down the header's leading edge and
+   the wash behind it carry the same fact to the other end of the grid, where a
+   13px dot cannot. Neither is redundant: one is read when you are choosing,
+   the other when you are looking for which card you chose.
+
+   The header is still the collapse handle and still the drag handle. The rule
+   and the wash cannot interfere — they take no press — and the dot inherits
+   the label's existing stopPropagation (see main.js), so selecting a card
+   never folds it shut. */
 .toggle-header-placement {
     position: relative;
     border-left: 3px solid transparent;
     border-radius: 8px 8px 0 0;
     transition: background-color .12s ease, border-color .12s ease;
 }
+/* Shut, the header IS the card, so the accent rule and the wash have to turn
+   the bottom corners too — square ones left a 3px blue tab hanging past the
+   card's own radius. */
+.collapsed-item > .toggle-header-placement { border-radius: 8px; }
 .toggle-header-placement label {
+    display: inline-flex;
+    align-items: center;
     cursor: pointer;
     color: var(--color-text);
     opacity: 0.72;
 }
+
+/* The ring, and — when checked — the core inside it. The core is a radial
+   gradient rather than an inset shadow so the gap around it is genuinely
+   transparent: the header's ground is a wash over the card's, which is itself
+   translucent over the page, and any solid colour picked to punch the hole
+   with would have been wrong on one of the three. */
+.toggle-header-placement label::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 13px;
+    height: 13px;
+    margin-right: 8px;
+    box-sizing: border-box;
+    border: 1.5px solid var(--border-button);
+    border-radius: 50%;
+    background: transparent;
+    transition: border-color .12s ease, background .12s ease;
+}
+.toggle-header-placement:hover label::before { border-color: var(--accent); }
+.toggle-header-placement:has(input:checked) label::before {
+    border-color: var(--accent);
+    background: radial-gradient(circle at 50% 50%,
+        var(--accent) 0 3.2px, transparent 3.4px);
+}
+
 .toggle-header-placement:has(input:checked) {
     border-left-color: var(--accent);
     background-color: color-mix(in srgb, var(--accent) 12%, transparent);

@@ -30,6 +30,13 @@ const FIELD_SELECTOR = 'input, select, textarea';
 const EXCLUDED_IDS = new Set(['playbackMode', 'midiOutputSelect', 's-family', 's-timbre']);
 const EXCLUDED_ANCESTORS = '[data-drawer="tuner"], #tuner-stage';
 
+// ...except these two. They sit in the Tuner drawer because that is where they
+// are used, but they are not settings of the meter: they decide whether 1/1 and
+// A4 move together, which changes what every output window reports and how the
+// pitch-bend readout is measured. Undoing a chord and finding the reference had
+// silently stayed put would be the surprise, not the other way round.
+const TRACKED_IDS = new Set(['refFrequencyLinkedRadio', 'refFrequencyFreeRadio']);
+
 let reapply = () => {};
 let undoStack = [];
 let redoStack = [];
@@ -41,6 +48,7 @@ let pending = null;
 
 function isTracked(el) {
     if (el.id && EXCLUDED_IDS.has(el.id)) return false;
+    if (el.id && TRACKED_IDS.has(el.id)) return true;
     if (el.closest(EXCLUDED_ANCESTORS)) return false;
     return true;
 }

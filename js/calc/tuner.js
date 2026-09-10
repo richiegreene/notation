@@ -49,6 +49,14 @@ function applyTuneClass(elm, cls) {
 
 const SHAPE_STORE = 'notation.tuner.shape.v1';
 
+/* How far the window may be zoomed, in cents end to end. Four is about as far
+   in as the reading means anything — the mic's own smoothing is wider than a
+   cent — and 1200 is the whole octave, past which the scale would start
+   repeating itself across the meter. */
+const WINDOW_MIN = 4;
+const WINDOW_MAX = 1200;
+const ZOOM_BADGE_MS = 1100;
+
 /* ---- the dial ----
  * 120 degrees of arc rather than a half-circle. A wider sweep buys nothing —
  * the window is the same number of cents either way — and costs legibility at
@@ -181,6 +189,8 @@ export function initTuner() {
 
     el('tunerToggleButton').addEventListener('click', toggleListening);
 
+    initZoomGestures();
+
     // Which shape the meter was left in, restored before anything is drawn.
     let stored = null;
     try { stored = localStorage.getItem(SHAPE_STORE); } catch (e) {}
@@ -224,6 +234,121 @@ export function refitTuner() {
     if (!marks.length) return;
     computeBaseScale();
     renderFrame();
+}
+
+/* =====================================================================
+ *  ZOOM — the window width, under the hand
+ * =====================================================================
+ *
+ * How many cents the meter spans is the one setting anybody changes WHILE
+ * playing. Coarse to find the note, then in to place it — and reaching into a
+ * drawer to type a number, on a phone, with an instrument in the other hand,
+ * is not a thing anyone will do twice. So the meter takes the gesture every
+ * phone already has for exactly this: pinch out to see less and finer, pinch
+ * in to see more.
+ *
+ * A trackpad's pinch arrives as a wheel event with ctrlKey set, and an
+ * ordinary wheel over the meter has no other job — nothing here scrolls — so
+ * both are taken as well, and the same reach works at a desk.
+ *
+ * It goes through the drawer's own field rather than round it. The input is
+ * still where the value lives; the gesture writes it and fires the input event
+ * the field already answers, so the drawer stays truthful about what the meter
+ * is doing and there is one path to a refit rather than two.
+ * ------------------------------------------------------------------ */
+
+/** Set the window, clamped, and let everything that reads the field know. */
+function setCentsWindow(value, { badge = false } = {}) {
+    const input = el('tunerCentsWindow');
+    if (!input) return;
+    const next = clamp(value, WINDOW_MIN, WINDOW_MAX);
+    // Whole cents where they are fine enough to be worth having, a decimal
+    // once the window is tight enough for one to be visible.
+    input.value = next >= 20 ? String(Math.round(next)) : (Math.round(next * 10) / 10).toFixed(1);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    if (badge) showZoom(input.value);
+}
+
+let zoomBadgeTimer = null;
+function showZoom(value) {
+    const badge = el('tunerZoom');
+    if (!badge) return;
+    badge.textContent = `${value} ¢`;
+    badge.classList.add('on');
+    clearTimeout(zoomBadgeTimer);
+    zoomBadgeTimer = setTimeout(() => badge.classList.remove('on'), ZOOM_BADGE_MS);
+}
+
+function initZoomGestures() {
+    const field = el('tunerReadout');
+    if (!field) return;
+
+    /* Live touches, by pointer id. Two is a pinch; one is nothing, and three
+       is somebody resting a hand on the screen — also nothing, rather than a
+       wild reading taken from whichever two the map happened to hold. */
+    const touches = new Map();
+    let startSpan = 0;
+    let startWindow = 0;
+
+    const span = () => {
+        const [a, b] = [...touches.values()];
+        return Math.hypot(a.x - b.x, a.y - b.y);
+    };
+
+    field.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse') return;
+        touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        /* Captured so a finger that wanders off the meter mid-pinch keeps
+           reporting to it. An element can hold several pointers at once, which
+           is the whole reason this is per-pointer rather than a flag. */
+        try { field.setPointerCapture(e.pointerId); } catch (err) {}
+        if (touches.size === 2) {
+            startSpan = span();
+            startWindow = centsWindow();
+        }
+    });
+
+    field.addEventListener('pointermove', (e) => {
+        if (!touches.has(e.pointerId)) return;
+        touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (touches.size !== 2 || !startSpan) return;
+        e.preventDefault();
+        /* Fingers apart means a smaller window: you are pulling the scale open,
+           so less of it fits. The ratio is taken against where the pinch
+           STARTED rather than accumulated frame by frame, so the window comes
+           back exactly where it was if you bring your fingers back. */
+        setCentsWindow(startWindow * (startSpan / Math.max(1, span())), { badge: true });
+    });
+
+    const lift = (e) => {
+        if (!touches.delete(e.pointerId)) return;
+        if (touches.size < 2) startSpan = 0;
+        // A third finger lifting can leave exactly two again: start afresh from
+        // wherever those two now are, rather than from a span they never had.
+        if (touches.size === 2) {
+            startSpan = span();
+            startWindow = centsWindow();
+        }
+    };
+    field.addEventListener('pointerup', lift);
+    field.addEventListener('pointercancel', lift);
+
+    /* A trackpad pinch arrives with ctrlKey set and in a stream of small
+       deltas; a wheel arrives in notches of about 120. So the two get their own
+       gearing — a notch is worth roughly a tenth, a pinch is worth what the
+       fingers say — and both feel like themselves rather than one being tuned
+       until the other is unusable.
+
+       deltaMode first, because the same physical notch is reported in pixels by
+       some browsers and in LINES (about 3, meaning 3 x 16px) by others. Without
+       normalising it, the gearing that suits one is imperceptible in the
+       other. */
+    field.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+        const rate = e.ctrlKey ? 0.010 : 0.0008;
+        setCentsWindow(centsWindow() * Math.exp(e.deltaY * unit * rate), { badge: true });
+    }, { passive: false });
 }
 
 function bindTogglePair(idA, idB) {

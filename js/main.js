@@ -463,6 +463,22 @@ function setupPanel() {
     if (window.matchMedia('(max-width: 900px), (max-height: 500px)').matches) {
         setDrawer(null);
     }
+
+    /* AND A HANDHELD STARTS ON THE TUNER.
+       The nine cards are a desk: they are for building a chord and reading it
+       four ways, with a keyboard to type ratios into. A phone is a music stand
+       — it is carried to the instrument, and the thing it is carried there FOR
+       is the meter. Opening on the cards makes every one of those visits begin
+       with two presses before a note can be heard.
+
+       Asked of the pointer as well as the width, because this is a claim about
+       how the device is HELD rather than about how much room it has: a narrow
+       desktop window is still a desk with a keyboard, and it keeps the cards.
+       Nothing is hidden either way — the rail is right there, and the choice is
+       one press. */
+    if (window.matchMedia('(pointer: coarse) and (max-width: 1100px)').matches) {
+        setStage('tuner');
+    }
 }
 
 
