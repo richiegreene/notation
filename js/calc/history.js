@@ -27,7 +27,7 @@ const FIELD_SELECTOR = 'input, select, textarea';
 // Controls that are not part of the notated material: live audio/MIDI routing,
 // and the Tuner, whose settings describe an ongoing mic analysis rather than
 // anything entered. Undoing into them would be surprising.
-const EXCLUDED_IDS = new Set(['playbackMode', 'midiOutputSelect', 's-family', 's-timbre']);
+const EXCLUDED_IDS = new Set(['playbackMode', 'midiOutputSelect', 's-family', 's-timbre', 'playDurationSeconds']);
 const EXCLUDED_ANCESTORS = '[data-drawer="tuner"], #tuner-stage';
 
 // ...except these two. They sit in the Tuner drawer because that is where they

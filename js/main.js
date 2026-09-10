@@ -4,7 +4,7 @@ import { state } from './calc/state.js';
 import * as Calc from './calc/calculator.js';
 import * as UI from './calc/ui.js';
 import { generateJohnstonPalette, generateJohnstonOutputColumns } from './calc/johnston.js';
-import { initAudio, playFrequencies, stopAllFrequencies, setTimbre, setAdsr,
+import { initAudio, playFrequencies, stopAllFrequencies, setTimbre, setAdsr, setPlayDuration,
          DEFAULT_TIMBRE, DEFAULT_ADSR } from './audio-playback.js'; // Import audio functions
 import { createTimbrePicker } from './synth/timbre.js'; // The Play drawer's wave picker
 import { attachAdsrEditor } from './synth/adsr.js';     // ...and its envelope editor
@@ -220,6 +220,13 @@ function stopAllPlayback(fadeTime) {
         stopAllFrequencies(fadeTime);
     }
     stopTunerNote(); // the tuner's goal note shares the engine
+    resetPlayButtons();
+}
+
+// Every output window's play button back to "play", without touching the
+// sound: for when the sound has already gone — stopped, taken over by the
+// tuner, or let go on its own at the end of a timed note.
+function resetPlayButtons() {
     isPlaying = false;
     isPlayingEdo = false;
     isPlayingSagittal = false;
@@ -532,6 +539,43 @@ function loadSynth() {
     } catch (e) {}
 }
 
+/* HOW LONG A PRESSED NOTE SOUNDS — the Play drawer's Duration switch.
+ *
+ * Indefinite is what every play button always did: sound until pressed
+ * again. Seconds hands the stopping to the engine (see setPlayDuration in
+ * js/audio-playback.js), which is what lets the envelope's release be heard
+ * at all without a second press, and what lets a note sounded from the tuner
+ * get out of the mic's way on its own. Remembered with the rest of the
+ * drawer, since it is a fact about how the app sounds. */
+const DURATION_STORE = 'notation.play.duration.v1';
+
+function setupDurationControl() {
+    const seg = document.getElementById('playDurationSeg');
+    const row = document.getElementById('playDurationSecondsRow');
+    const secs = document.getElementById('playDurationSeconds');
+    if (!seg || !row || !secs) return;
+
+    let mode = 'hold';
+    try {
+        const v = JSON.parse(localStorage.getItem(DURATION_STORE) || 'null');
+        if (v && (v.mode === 'hold' || v.mode === 'seconds')) mode = v.mode;
+        if (v && typeof v.seconds === 'number' && v.seconds > 0) secs.value = v.seconds;
+    } catch (e) {}
+
+    const apply = () => {
+        const s = parseFloat(secs.value);
+        const seconds = mode === 'seconds' && s > 0 ? s : 0;
+        setPlayDuration(seconds);
+        row.style.display = mode === 'seconds' ? '' : 'none';
+        for (const b of seg.querySelectorAll('button')) b.classList.toggle('on', b.dataset.v === mode);
+        try { localStorage.setItem(DURATION_STORE, JSON.stringify({ mode, seconds: s > 0 ? s : 2 })); } catch (e) {}
+    };
+
+    $(seg).find('button').on('click', function() { mode = this.dataset.v; apply(); });
+    $(secs).on('input change', apply);
+    apply();
+}
+
 function setupSynthDrawer() {
     const el = (id) => document.getElementById(id);
     if (!el('s-family')) return;
@@ -649,12 +693,12 @@ $(document).ready(function(){
     initTuner();
     // A note sounded from the tuner takes the engine from whichever output
     // window had it; the window's button goes back to "play" without a stop
-    // of its own, which would silence the tuner's note.
-    document.addEventListener('notation:tuner-play', () => {
-        isPlaying = isPlayingEdo = isPlayingSagittal = isPlayingJohnston = false;
-        $("#playOutputButton, #playEdoOutputButton, #playSagittalOutputButton, #playJohnstonOutputButton")
-            .text("play").removeClass("playing-active");
-    });
+    // of its own, which would silence the tuner's note. A timed note ending
+    // is the same story: the sound has already gone.
+    document.addEventListener('notation:tuner-play', resetPlayButtons);
+    document.addEventListener('notation:playback-ended', resetPlayButtons);
+
+    setupDurationControl();
 
     // Straight or round, from the Tuner drawer. A segmented pair rather than a
     // checkbox because these are two alternatives, not a thing that is on.

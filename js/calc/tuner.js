@@ -583,6 +583,13 @@ export function stopTunerNote() {
     stopAllFrequencies(0.2);
 }
 
+// A timed note lets go on its own (see setPlayDuration in audio-playback.js);
+// the sound has already gone, so only the underline is taken off.
+document.addEventListener('notation:playback-ended', () => {
+    setMarkSounding(soundingMark, false);
+    soundingMark = null;
+});
+
 function gridOn() {
     const g = el('tunerGrid');
     return !!(g && g.checked);

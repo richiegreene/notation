@@ -44,6 +44,35 @@ export const DEFAULT_ADSR = { a: 0.016, d: 0.120, s: 0.66, r: 0.544 };
 /** Ids of the browser voices currently sounding, so they can be released. */
 let sounding = [];
 
+/* HOW LONG A NOTE IS HELD.
+ *
+ * Zero is a held key: the chord sounds until something stops it, which is how
+ * every play button always worked. A positive number of seconds is a key
+ * pressed and let go — the release begins on its own when the time is up,
+ * and whoever pressed the key is told so through `notation:playback-ended`
+ * on the document, so a play button can go back to saying "play" and a
+ * tuner mark can lose its underline without either having to poll. Set from
+ * the Play drawer; kept here because this is the one place every route to
+ * sound already passes through. */
+let holdSeconds = 0;
+let holdTimer = null;
+
+/** Seconds a chord sounds before releasing itself; 0 (or less) holds it. */
+export function setPlayDuration(seconds) {
+    holdSeconds = seconds > 0 ? seconds : 0;
+}
+
+function armHoldTimer() {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+    if (!holdSeconds) return;
+    holdTimer = setTimeout(() => {
+        holdTimer = null;
+        stopAllFrequencies(0.1);
+        document.dispatchEvent(new CustomEvent('notation:playback-ended'));
+    }, holdSeconds * 1000);
+}
+
 /**
  * Build the audio graph before anybody plays it.
  *
@@ -75,6 +104,7 @@ export function setAdsr(envelope) {
  * @param {number} slideDuration MPE pitch-bend glide, in seconds
  */
 export function playFrequencies(frequencies, fadeDuration = 0.1, slideDuration = 0.1) {
+    armHoldTimer(); // a re-press starts the clock again
     if (playbackMode === 'browser' || playbackMode === 'both' || playbackMode === undefined) {
         // Anything left over from the previous chord goes into its release
         // before the new one is struck, so a re-press is not two chords deep.
@@ -124,6 +154,8 @@ export function playFrequencies(frequencies, fadeDuration = 0.1, slideDuration =
  * that means "stop quickly" is not silently reinterpreted.
  */
 export function stopAllFrequencies(fadeDuration = 0.1) {
+    clearTimeout(holdTimer);
+    holdTimer = null;
     releaseBrowserVoices();
     if (playbackMode === 'mpe-midi' || playbackMode === 'both') {
         releaseAllMpeNotes();
