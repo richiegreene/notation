@@ -506,15 +506,13 @@ let synthPicker = null;
 let synthAdsrEditor = null;
 let synthState = { timbre: DEFAULT_TIMBRE, adsr: { ...DEFAULT_ADSR } };
 
-/** The colours the two canvases are drawn in, read off the live theme. */
+/** The colours the two canvases are drawn in: Tetrads' and Xenachord
+ *  Designer's own, literal for literal, in both themes. The scopes are
+ *  instrument screens with their own ground (--scope-bg) rather than a
+ *  surface of the chrome, so the trace is the mint the other two draw it in
+ *  and not the chrome's blue, and it does not change with the theme. */
 function synthColours() {
-    const css = getComputedStyle(document.documentElement);
-    const light = document.documentElement.getAttribute('data-theme') === 'light';
-    return {
-        line: (css.getPropertyValue('--accent') || '#007bff').trim(),
-        axis: (css.getPropertyValue('--line') || '#555').trim(),
-        grid: light ? '#e2e2e2' : '#2e2e2e',
-    };
+    return { line: '#7ee0c0', axis: '#222a34', grid: '#1b222b' };
 }
 
 /** Redraw both canvases — after a theme change, or once they have a size. */

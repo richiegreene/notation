@@ -87,7 +87,7 @@ html {
     --line: #555;            /* every hairline in the chrome */
     --dim: #9a9aa4;          /* labels, legends, anything that reports */
     --accent: #007bff;       /* the app's one blue */
-    --scope-bg: #2a2a2a;     /* the wave and envelope canvases */
+    --scope-bg: #12161c;     /* the wave and envelope canvases: Tetrads' own screen ground */
 
     /* ---- a latch that is down ----
        Tetrads' `button.latched`, token for token. Distinct from the lit
@@ -1483,14 +1483,20 @@ html[data-theme="light"] {
 
     /* When the VIEW is drawn on paper the rail goes light with it. A dark
        panel against a white window is a bezel with a lamp behind it: the eye
-       adapts to the larger surface, and the panel then reads as a hole. */
-    --panel: #e6e6e6;
-    --panel2: #f6f6f6;
-    --panel-bright: #d6d6d6;
-    --line: #bbb;
+       adapts to the larger surface, and the panel then reads as a hole.
+
+       Day mode is Tetrads' and Xenachord Designer's bright chrome, token for
+       token, the way night mode there is this app's: the three apps sit side
+       by side, and a panel that is tinted in one and not the others reads as
+       a different panel. Note --panel2 is DARKER than --panel here, so a
+       control sits into its card rather than lifting off it. */
+    --panel: #f2f2f4;
+    --panel2: #e4e5e9;
+    --panel-bright: #d8d9de;
+    --line: #c9cad0;
     --dim: #5c5d66;
-    --accent: #007bff;
-    --scope-bg: #fff;
+    --accent: #1f6feb;
+    --scope-bg: #dcdde2;
 
     /* The lit fills that carried a latch on black would read as ink blots on
        paper, so day mode gets the pale-blue pair instead of the navy one. */
