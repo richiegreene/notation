@@ -2,6 +2,7 @@ import { state } from './state.js';
 import * as U from './utils.js';
 import { buildJiScale, nameJiDegrees, buildEdoDegrees } from './tuner-notation.js';
 import * as Mic from '../tuner-mic.js';
+import { playFrequencies, stopAllFrequencies } from '../audio-playback.js';
 
 /**
  * The Tuner stage.
@@ -48,6 +49,24 @@ function applyTuneClass(elm, cls) {
 }
 
 const SHAPE_STORE = 'notation.tuner.shape.v1';
+const GRID_STORE = 'notation.tuner.grid.v1';
+
+/* ---- the grid ----
+ * Lines through the field from every cent of the ruler and from every degree
+ * of the scale, in either shape. The dots already say where each mark IS; the
+ * lines say which way it is GOING. A dot sliding under a needle is a small
+ * thing to watch, and a whole field of lines sliding with it is not — the
+ * motion reads at the edge of the eye, and how far the nearest degree line
+ * still has to travel is the distance left to the goal.
+ *
+ * The cent lines are kept a little sparser than the dots: a line every four
+ * pixels is a grey wash, not a grid. */
+const GRID_MIN_PX = 12;
+/* On the dial the lines are spokes, and how far in and out they run is a
+   fraction of the radius: from a little inside the ratios ring to a little
+   past the names, the band the reading lives in. */
+const GRID_IN = 0.60;
+const GRID_OUT = 1.06;
 
 /* How far the window may be zoomed, in cents end to end. Four is about as far
    in as the reading means anything — the mic's own smoothing is wider than a
@@ -102,18 +121,15 @@ const DIAL_PAD_Y = 22;
  * a narrow band the pairing survives the bend, and the empty middle simply
  * becomes the space a dial has in the middle. */
 const RING = { names: 0.95, ruler: 0.82, ratios: 0.70 };
-/* THE NEEDLE DOES NOT REACH THE HUB.
+/* THE NEEDLE IS A FULL SPOKE: from the hub, capped, to the top of the field.
  *
- * A speedometer's does, and it looked like one, and that was the trouble: the
- * three rings occupy the outer half of the circle and the inner half is empty,
- * so a needle drawn to the centre spent most of its length crossing a void it
- * was the only thing in. The eye reads that spoke as the subject, and the
- * subject is the scale. So it runs from a little inside the ratios ring to
- * just past the names — the band the reading actually lives in — with a cap at
- * its inner end where the pivot would have been. Nothing is lost: it still
- * points at twelve o'clock and it still never moves. */
+ * It ran for a while from just inside the ratios ring to just past the names,
+ * with an arrowhead — the band the reading lives in and no more. But that
+ * made it a pointer, and a pointer is read as the subject; drawn edge to hub
+ * it is the strip's centre line bent round, a fixed axis the scale swings
+ * under, which is what it is. NEEDLE_OUT is kept as the top of the band the
+ * dial's geometry is fitted to; the line itself now runs past it to the edge. */
 const NEEDLE_OUT = 1.06;
-const NEEDLE_IN = 0.62;
 
 /* ---- the strip ---- */
 const STRIP_GAP = 24;  // px between the names row, the ruler and the ratios
@@ -142,13 +158,15 @@ const NAME_PX_FLOOR = 26;
 const NAME_PX_CEIL = 190;
 const RATIO_OF_NAME = 0.5;   // 2rem against 4rem, as the Output windows have it
 
-let marks = [];           // [{deg, nameEl, rEl, dotEl, complexity, fullWidth}]
+let marks = [];           // [{deg, nameEl, rEl, dotEl, lineEl, complexity, fullWidth}]
 let currentDegrees = [];
 let isJiMode = true;
 let latestFreq = null;    // smoothed frequency, or null before first detection
 let baseScale = 1;        // density scale so adjacent marks don't collide
 let rulerShape = null;    // what buildRuler last drew, so it is not redrawn per frame
 let dialDash = null;      // {period, radius, half, dot} for the dial's cent ruler
+let gridStep = 1;         // cents between the grid's lines, as buildRuler last drew it
+let soundingMark = null;  // the mark whose pitch is being played, if one is
 
 const el = (id) => document.getElementById(id);
 const stage = () => el('tuner-stage');
@@ -171,9 +189,11 @@ export function initTuner() {
     ['tunerLimitValue', 'tunerMaxExp', 'tunerEdo'].forEach((id) =>
         el(id).addEventListener('input', rebuildScale));
 
-    // Option toggles that re-name the current scale when changed.
-    ['tunerSagittalTypeDropdown', 'tunerShowEnharmonics', 'tunerExcludeHalves',
-        'tunerUnofficialExtensions', 'tunerSagittalShowEnharmonics'].forEach((id) =>
+    // Option toggles that re-name the current scale when changed. The last
+    // three are the Settings drawer's Reading latches, shared with the output
+    // windows; the meter reads them rather than keeping its own.
+    ['tunerSagittalTypeDropdown', 'showEnharmonics', 'excludeHalves',
+        'unofficialExtensions'].forEach((id) =>
         el(id).addEventListener('change', rebuildScale));
 
     // Complexity sizing only changes text scale, not the scale itself.
@@ -195,6 +215,20 @@ export function initTuner() {
     let stored = null;
     try { stored = localStorage.getItem(SHAPE_STORE); } catch (e) {}
     if (stored === 'dial' || stored === 'linear') applyShape(stored);
+
+    // ...and whether the grid was up. The latch is the source of truth once
+    // restored; the store only remembers it across visits.
+    const grid = el('tunerGrid');
+    if (grid) {
+        let g = null;
+        try { g = localStorage.getItem(GRID_STORE); } catch (e) {}
+        if (g === '1' || g === '0') grid.checked = g === '1';
+        grid.addEventListener('change', () => {
+            try { localStorage.setItem(GRID_STORE, grid.checked ? '1' : '0'); } catch (e) {}
+            rulerShape = null; // the ruler is drawn with or without the grid
+            refitTuner();
+        });
+    }
 
     /* The field is what everything is measured against, and it changes size for
        reasons this module cannot see: the drawer opening, the stage switching,
@@ -372,17 +406,12 @@ function updateVisibility() {
     el('tunerLimitField').style.display = (!updown && lt !== 'custom') ? '' : 'none';
     el('tunerCustomRow').style.display = (!updown && lt === 'custom') ? '' : 'none';
 
-    // Ups and Downs: full-width EDO field + its enh/exclude-halves checks.
+    // Ups and Downs: full-width EDO field.
     el('tunerEdoSettings').style.display = updown ? '' : 'none';
-    el('tunerEdoChecks').style.display = updown ? '' : 'none';
 
-    // Sagittal-only: precision dropdown, enh, and revo/evo.
+    // Sagittal-only: precision dropdown and revo/evo.
     el('tunerSagittalType').style.display = lang === 'sagittal' ? '' : 'none';
-    el('tunerSagittalEnhCheck').style.display = lang === 'sagittal' ? '' : 'none';
     el('tunerSagittalRevoRow').style.display = lang === 'sagittal' ? '' : 'none';
-
-    // HEJI-only: unofficial extensions toggle.
-    el('tunerHejiChecks').style.display = lang === 'heji' ? '' : 'none';
 
     // Complexity sizing applies to the three JI languages only.
     el('tunerComplexityChecks').style.display = updown ? 'none' : '';
@@ -395,8 +424,8 @@ function rebuildScale() {
         isJiMode = false;
         const m = parseInt(el('tunerEdo').value, 10) || 41;
         currentDegrees = buildEdoDegrees(m, {
-            showEnh: el('tunerShowEnharmonics').checked,
-            excludeHalves: el('tunerExcludeHalves').checked,
+            showEnh: el('showEnharmonics').checked,
+            excludeHalves: el('excludeHalves').checked,
         });
     } else {
         isJiMode = true;
@@ -413,14 +442,14 @@ function rebuildScale() {
 /** Naming options for the current JI language, read from the control state. */
 function nameOptions(lang) {
     if (lang === 'heji') {
-        return { unofficialExtensions: el('tunerUnofficialExtensions').checked };
+        return { unofficialExtensions: el('unofficialExtensions').checked };
     }
     if (lang === 'sagittal') {
         return {
             precision: el('tunerSagittalTypeDropdown').value,
             useEvo: el('tunerSagittalEvoToggle').classList.contains('selected'),
             useUnicode: true,
-            showEnh: el('tunerSagittalShowEnharmonics').checked,
+            showEnh: el('showEnharmonics').checked,
         };
     }
     return {};
@@ -470,6 +499,7 @@ function ratioText(deg) {
 function buildMarks() {
     const lanes = { names: el('tunerLaneNames'), ratios: el('tunerLaneRatios') };
     if (!lanes.names || !lanes.ratios) return;
+    stopTunerNote(); // the mark it belonged to is about to be thrown away
     Object.values(lanes).forEach((l) => { l.innerHTML = ''; });
 
     marks = currentDegrees.map((deg) => {
@@ -483,8 +513,13 @@ function buildMarks() {
         rEl.textContent = ratioText(deg);
         lanes.ratios.appendChild(rEl);
 
-        const mark = { deg, nameEl, rEl, dotEl: null, complexity: complexityFactor(deg), fullWidth: 8 };
+        const mark = { deg, nameEl, rEl, dotEl: null, lineEl: null,
+                       complexity: complexityFactor(deg), fullWidth: 8 };
         setMarkVisible(mark, false); // hidden until positioned by a live pitch
+
+        // A name or its ratio, pressed, sounds the note it stands for.
+        nameEl.addEventListener('click', () => toggleMarkSound(mark));
+        rEl.addEventListener('click', () => toggleMarkSound(mark));
         return mark;
     });
 
@@ -498,6 +533,59 @@ function setMarkVisible(m, visible) {
     m.nameEl.style.display = disp;
     m.rEl.style.display = disp;
     if (m.dotEl) m.dotEl.style.display = disp;
+    if (m.lineEl) m.lineEl.style.display = disp;
+}
+
+/* =====================================================================
+ *  HEARING THE GOAL
+ *
+ *  Any name or ratio on the meter, pressed, sounds the pitch it stands for
+ *  through the Play drawer's engine, and keeps sounding until it is pressed
+ *  again, another is pressed, or the scale changes under it. The meter only
+ *  ever shows where a pitch sits among the degrees; this is what one of those
+ *  degrees actually sounds like, to aim at by ear as well as by eye.
+ *
+ *  It is sounded in the octave nearest the pitch coming in, so a cello hears
+ *  its goal where a cello plays and a flute where a flute does, rather than
+ *  everyone hearing it in 1/1's own octave.
+ * ===================================================================== */
+
+function targetFrequency(deg) {
+    const ref = parseFloat(state.freq1to1) || 261.6256;
+    let f = ref * Math.pow(2, deg.cents / 1200);
+    if (latestFreq > 0) f *= Math.pow(2, Math.round(Math.log2(latestFreq / f)));
+    return f;
+}
+
+function setMarkSounding(m, on) {
+    if (!m) return;
+    m.nameEl.classList.toggle('sounding', on);
+    m.rEl.classList.toggle('sounding', on);
+}
+
+function toggleMarkSound(m) {
+    if (soundingMark === m) { stopTunerNote(); return; }
+    setMarkSounding(soundingMark, false);
+    soundingMark = m;
+    setMarkSounding(m, true);
+    playFrequencies([targetFrequency(m.deg)], 0.2, 0.1);
+    // The output windows' play buttons share the engine; let them know their
+    // chord has been taken over, so none is left saying "stop".
+    document.dispatchEvent(new CustomEvent('notation:tuner-play'));
+}
+
+/** Silence the note a mark is sounding, if one is. Also called by the output
+ *  windows' own stop, since the engine is shared. */
+export function stopTunerNote() {
+    if (!soundingMark) return;
+    setMarkSounding(soundingMark, false);
+    soundingMark = null;
+    stopAllFrequencies(0.2);
+}
+
+function gridOn() {
+    const g = el('tunerGrid');
+    return !!(g && g.checked);
 }
 
 /* =====================================================================
@@ -606,6 +694,13 @@ function dotStep(pxPerCent) {
     return 100;
 }
 
+/** How many cents apart the grid's lines are: the same ladder as the dots,
+ *  climbed further, so every line still lands on a dot. */
+function lineStep(pxPerCent) {
+    for (const s of [1, 2, 5, 10, 25, 50, 100]) if (pxPerCent * s >= GRID_MIN_PX) return s;
+    return 100;
+}
+
 /** Tenney height (harmonic distance) size factor: simpler ratios -> larger.
  *  log2(n*d) == 0 for 1/1 (factor 1); complex ratios shrink toward the floor.
  *  EDO steps are all equal complexity (factor 1). */
@@ -678,7 +773,8 @@ function computeBaseScale() {
 function buildRuler(g) {
     const svg = el('tunerRuler');
     if (!svg) return;
-    const key = `${g.kind}|${g.w}|${g.h}|${centsWindow()}|${marks.length}|${baseScale.toFixed(4)}`;
+    const grid = gridOn();
+    const key = `${g.kind}|${g.w}|${g.h}|${centsWindow()}|${marks.length}|${baseScale.toFixed(4)}|${grid}`;
     if (rulerShape === key) return;
     rulerShape = key;
 
@@ -686,9 +782,42 @@ function buildRuler(g) {
     svg.setAttribute('width', g.w);
     svg.setAttribute('height', g.h);
 
+    const f = (n) => n.toFixed(2);
+    let defs = '';
+    let gridLines = '';   // the cent lines, drawn behind everything else
     let body = '';
     if (g.kind === 'dial') {
         const step = dotStep(g.rRuler * g.radPerCent);
+
+        /* THE DIAL'S GRID IS DRAWN RELATIVE TO THE NEEDLE, not to the scale.
+         *
+         * The strip can lay its lines at absolute cents and slide the lot,
+         * because a strip has room off both ends. Round, the arc is only a
+         * fraction of the circle and the window is a fraction of the octave,
+         * so absolute cents wrap: at a hundred cents across a hundred and
+         * twenty degrees, the cent three hundred away lands on the same spoke
+         * as this one. So the spokes are laid at whole steps either side of
+         * twelve o'clock, as if the pitch sat exactly on one, and each frame
+         * the group is turned back by the fraction of a step the pitch is
+         * past — see scrollRuler. Clipped to the arc's own wedge, so nothing
+         * is drawn round the rest of the circle. */
+        if (grid) {
+            gridStep = lineStep(g.rRuler * g.radPerCent);
+            const rIn = g.R * GRID_IN, rOut = g.R * GRID_OUT;
+            const n = Math.ceil((centsWindow() / 2) / gridStep) + 1;
+            for (let k = -n; k <= n; k++) {
+                const th = k * gridStep * g.radPerCent;
+                const a = polar(g, rIn, th), b = polar(g, rOut, th);
+                gridLines += `<line x1="${f(a.x)}" y1="${f(a.y)}" x2="${f(b.x)}" y2="${f(b.y)}"/>`;
+            }
+            const wi = polar(g, rIn, -g.half), wo = polar(g, rOut, -g.half);
+            const ei = polar(g, rIn, g.half), eo = polar(g, rOut, g.half);
+            defs += `<defs><clipPath id="tunerGridClip"><path d="M${f(wi.x)} ${f(wi.y)}`
+                  + ` L${f(wo.x)} ${f(wo.y)} A ${f(rOut)} ${f(rOut)} 0 0 1 ${f(eo.x)} ${f(eo.y)}`
+                  + ` L${f(ei.x)} ${f(ei.y)} A ${f(rIn)} ${f(rIn)} 0 0 0 ${f(wi.x)} ${f(wi.y)} Z"/>`
+                  + `</clipPath></defs>`;
+            gridLines = `<g id="tunerGridScroll" class="tuner-grid" clip-path="url(#tunerGridClip)">${gridLines}</g>`;
+        }
         const period = g.rRuler * g.radPerCent * step;
         const a = polar(g, g.rRuler, -g.half);
         const b = polar(g, g.rRuler, g.half);
@@ -701,16 +830,17 @@ function buildRuler(g) {
              + ` ${b.x.toFixed(2)} ${b.y.toFixed(2)}"`
              + ` stroke-width="1.8" stroke-dasharray="${dot} ${(period - dot).toFixed(3)}"/>`;
 
-        const tip = polar(g, g.R * NEEDLE_OUT, 0);
-        const foot = polar(g, g.R * NEEDLE_IN, 0);
-        body += `<line class="tuner-needle" x1="${g.cx.toFixed(2)}" y1="${foot.y.toFixed(2)}"`
-             + ` x2="${tip.x.toFixed(2)}" y2="${(tip.y + 7).toFixed(2)}"/>`
-             + `<circle class="tuner-needle-head" cx="${g.cx.toFixed(2)}"`
-             + ` cy="${foot.y.toFixed(2)}" r="4.5"/>`
-             + `<polygon class="tuner-needle-head" points="`
-             + `${g.cx.toFixed(2)},${tip.y.toFixed(2)} `
-             + `${(g.cx - 6).toFixed(2)},${(tip.y + 13).toFixed(2)} `
-             + `${(g.cx + 6).toFixed(2)},${(tip.y + 13).toFixed(2)}"/>`;
+        /* The needle is a spoke: from the hub, where its cap sits, straight up
+           through the rings to the top edge of the field — the strip's own
+           centre line, bent round. It used to stop short at both ends, with
+           an arrowhead at the names ring and its cap inside the ratios; the
+           line through everything says twelve o'clock plainly enough, and the
+           cap at the centre says what the arc is an arc of. In a wide, short
+           field the hub is below the bottom edge, and the cap goes with it. */
+        body += `<line class="tuner-needle" x1="${f(g.cx)}" y1="${f(g.cy)}"`
+             + ` x2="${f(g.cx)}" y2="0"/>`
+             + `<circle class="tuner-needle-head" cx="${f(g.cx)}"`
+             + ` cy="${f(g.cy)}" r="4.5"/>`;
     } else {
         dialDash = null;
         const step = dotStep(g.pxPerCent);
@@ -722,6 +852,16 @@ function buildRuler(g) {
         for (let c = -300 - (((-300) % step) + step) % step; c < 1500; c += step) {
             dots += `<circle cx="${(c * pxPerCent).toFixed(2)}" cy="${cy}" r="0.9"/>`;
         }
+        // The grid's lines lie at absolute cents like the dots and ride the
+        // same translation, so a line and its dot cannot come apart.
+        if (grid) {
+            gridStep = lineStep(pxPerCent);
+            for (let c = -300 - (((-300) % gridStep) + gridStep) % gridStep; c < 1500; c += gridStep) {
+                const x = f(c * pxPerCent);
+                gridLines += `<line x1="${x}" y1="0" x2="${x}" y2="${g.h}"/>`;
+            }
+            gridLines = `<g id="tunerGridScroll" class="tuner-grid">${gridLines}</g>`;
+        }
         body += `<g id="tunerRulerScroll">${dots}</g>`;
         body += `<line class="tuner-needle" x1="${(g.w / 2).toFixed(2)}" y1="0"`
              + ` x2="${(g.w / 2).toFixed(2)}" y2="${g.h}"/>`;
@@ -729,15 +869,26 @@ function buildRuler(g) {
 
     // One larger dot per scale degree, positioned per frame in renderFrame so
     // it sits under its own note (and turns blue in tune). Painted last so it
-    // sits on top of the ruler.
+    // sits on top of the ruler. With the grid up, a line per degree as well —
+    // through the whole field, under the dots and the needle, over the cent
+    // lines — placed and coloured with its dot.
     let degreeDots = '';
+    let degreeLines = '';
     for (let i = 0; i < marks.length; i++) {
         degreeDots += `<circle class="tuner-degree-dot" cx="-100" cy="-100" r="2.6"/>`;
+        if (grid) degreeLines += `<line class="tuner-degree-line" x1="-100" y1="-100" x2="-100" y2="-100"/>`;
     }
-    svg.innerHTML = body + `<g id="tunerRulerDegrees">${degreeDots}</g>`;
+    const clip = (grid && g.kind === 'dial') ? ' clip-path="url(#tunerGridClip)"' : '';
+    svg.innerHTML = defs + gridLines
+        + `<g id="tunerRulerDegreeLines"${clip}>${degreeLines}</g>`
+        + body + `<g id="tunerRulerDegrees">${degreeDots}</g>`;
 
     const degEls = svg.querySelectorAll('#tunerRulerDegrees .tuner-degree-dot');
-    marks.forEach((m, i) => { m.dotEl = degEls[i] || null; });
+    const lineEls = svg.querySelectorAll('#tunerRulerDegreeLines .tuner-degree-line');
+    marks.forEach((m, i) => {
+        m.dotEl = degEls[i] || null;
+        m.lineEl = lineEls[i] || null;
+    });
 }
 
 /** Fold a cents difference into [-600, 600). */
@@ -763,6 +914,13 @@ function place(m, g, delta) {
             m.dotEl.setAttribute('cx', d.x.toFixed(2));
             m.dotEl.setAttribute('cy', d.y.toFixed(2));
         }
+        if (m.lineEl) {
+            const a = polar(g, g.R * GRID_IN, theta), b = polar(g, g.R * GRID_OUT, theta);
+            m.lineEl.setAttribute('x1', a.x.toFixed(2));
+            m.lineEl.setAttribute('y1', a.y.toFixed(2));
+            m.lineEl.setAttribute('x2', b.x.toFixed(2));
+            m.lineEl.setAttribute('y2', b.y.toFixed(2));
+        }
         return;
     }
     const x = g.w / 2 + delta * g.pxPerCent;
@@ -771,6 +929,12 @@ function place(m, g, delta) {
     if (m.dotEl) {
         m.dotEl.setAttribute('cx', x.toFixed(2));
         m.dotEl.setAttribute('cy', g.yRuler.toFixed(2));
+    }
+    if (m.lineEl) {
+        m.lineEl.setAttribute('x1', x.toFixed(2));
+        m.lineEl.setAttribute('x2', x.toFixed(2));
+        m.lineEl.setAttribute('y1', '0');
+        m.lineEl.setAttribute('y2', g.h.toFixed(2));
     }
 }
 
@@ -794,13 +958,23 @@ function scrollRuler(g, pitchFolded) {
         let offset = dot / 2 + perCent * pitchFolded - radius * half;
         offset = ((offset % period) + period) % period;
         track.setAttribute('stroke-dashoffset', offset.toFixed(3));
+
+        // The grid's spokes sit at whole steps from twelve o'clock; turn them
+        // back by however far past a step the pitch is, so each lands on its
+        // absolute cent. Clockwise is positive both in polar() and in SVG.
+        const spokes = el('tunerGridScroll');
+        if (spokes) {
+            const frac = ((pitchFolded % gridStep) + gridStep) % gridStep;
+            const deg = -frac * g.radPerCent * 180 / Math.PI;
+            spokes.setAttribute('transform', `rotate(${deg.toFixed(3)} ${g.cx.toFixed(2)} ${g.cy.toFixed(2)})`);
+        }
         return;
     }
+    const shift = `translate(${(g.w / 2 - pitchFolded * g.pxPerCent).toFixed(2)},0)`;
     const scroll = el('tunerRulerScroll');
-    if (scroll) {
-        scroll.setAttribute('transform',
-            `translate(${(g.w / 2 - pitchFolded * g.pxPerCent).toFixed(2)},0)`);
-    }
+    if (scroll) scroll.setAttribute('transform', shift);
+    const lines = el('tunerGridScroll');
+    if (lines) lines.setAttribute('transform', shift);
 }
 
 /** Position every mark for the current incoming pitch. */
@@ -851,6 +1025,7 @@ function renderFrame() {
         applyTuneClass(m.nameEl, cls);
         applyTuneClass(m.rEl, cls);
         applyTuneClass(m.dotEl, cls);
+        applyTuneClass(m.lineEl, cls);
     }
 }
 
@@ -892,6 +1067,7 @@ async function toggleListening() {
     const idle = el('tunerIdle');
     if (Mic.isRunning()) {
         Mic.stop();
+        stopTunerNote(); // the marks are about to go, and the goal with them
         latestFreq = null;
         marks.forEach((m) => setMarkVisible(m, false));
         showHud(null);

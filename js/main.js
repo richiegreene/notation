@@ -9,7 +9,7 @@ import { initAudio, playFrequencies, stopAllFrequencies, setTimbre, setAdsr,
 import { createTimbrePicker } from './synth/timbre.js'; // The Play drawer's wave picker
 import { attachAdsrEditor } from './synth/adsr.js';     // ...and its envelope editor
 import { initMidiOutput, setPlaybackMode, midiOutputSelect, midiDeviceSelectorDiv } from './mpe-playback.js'; // Import MPE functions
-import { initTuner, setTunerShape, refitTuner } from './calc/tuner.js'; // Import Tuner stage controller
+import { initTuner, setTunerShape, refitTuner, stopTunerNote } from './calc/tuner.js'; // Import Tuner stage controller
 import { initHistory } from './calc/history.js'; // Import undo/redo history
 
 let slideDuration = 0.25; // Default slide duration, can be made configurable
@@ -127,8 +127,6 @@ window.clearAllIntervals = function() {
 
     // Reset EDO Approximation input
     $("#edoApproximationInput").val(41);
-    $("#edoNormalize").prop("checked", false); // Uncheck EDO octave reduce
-    $("#johnstonNormalize").prop("checked", false); // Uncheck Johnston octave reduce
 
     // Clear EDO output
     clearEdoOutput();
@@ -221,6 +219,7 @@ function stopAllPlayback(fadeTime) {
     if (isPlaying || isPlayingEdo || isPlayingSagittal || isPlayingJohnston) {
         stopAllFrequencies(fadeTime);
     }
+    stopTunerNote(); // the tuner's goal note shares the engine
     isPlaying = false;
     isPlayingEdo = false;
     isPlayingSagittal = false;
@@ -282,7 +281,7 @@ function applyAllFromInputs() {
     syncIntervalStateFromInputs();
 
     // Show/hide rules that the controls' own handlers otherwise maintain.
-    $(".unofficial-extension-row").toggle($("#unofficialExtensionsEntry").prop("checked"));
+    $(".unofficial-extension-row").toggle($("#unofficialExtensions").prop("checked"));
     if ($("#chord-entry-type-select").val() === 'enumerated-chord') {
         $("#enumerated-chord-entry").show();
         $("#note-by-note-entry").hide();
@@ -648,6 +647,14 @@ $(document).ready(function(){
 
     // Wire up the Tuner stage (mic stays closed until its toggle is pressed).
     initTuner();
+    // A note sounded from the tuner takes the engine from whichever output
+    // window had it; the window's button goes back to "play" without a stop
+    // of its own, which would silence the tuner's note.
+    document.addEventListener('notation:tuner-play', () => {
+        isPlaying = isPlayingEdo = isPlayingSagittal = isPlayingJohnston = false;
+        $("#playOutputButton, #playEdoOutputButton, #playSagittalOutputButton, #playJohnstonOutputButton")
+            .text("play").removeClass("playing-active");
+    });
 
     // Straight or round, from the Tuner drawer. A segmented pair rather than a
     // checkbox because these are two alternatives, not a thing that is on.
@@ -972,16 +979,16 @@ $(document).ready(function(){
     });
 
 
-	$("#normalize").click(function(c){
+	// The Reading latches in the Settings drawer. Each acts on every output
+	// window at once (the tuner listens to them itself, in tuner.js).
+	$("#octaveReduce, #showEnharmonics, #excludeHalves").on("change", function(c){
 		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
-	// Show/hide the unofficial-extension prime rows (53-89) in HEJI Entry
-	$("#unofficialExtensionsEntry").on("change", function() {
+	// Unofficial extensions: shows/hides the prime rows 53-89 in HEJI Entry,
+	// and limits HEJI Output to the official 47 limit when unchecked.
+	$("#unofficialExtensions").on("change", function() {
 		$(".unofficial-extension-row").toggle(this.checked);
-	});
-	// Limit HEJI Output to the official 47 limit when unchecked
-	$("#unofficialExtensionsOutput").on("change", function() {
 		performCalculationsAndStopPlayback();
 		UI.getPC();
 	});
@@ -1012,34 +1019,14 @@ $(document).ready(function(){
 		UI.getBend();
     });
 
-    // New EDO Approximation input and normalize checkbox listeners
+    // EDO Approximation input
     $("#edoApproximationInput").on("change", function() {
         state.edoQuantisation = parseInt($(this).val());
-        performCalculationsAndStopPlayback();
-    });
-    $("#edoNormalize").on("click", function() {
-        performCalculationsAndStopPlayback();
-    });
-
-    $("#showEnharmonics").on("click", function() {
-        performCalculationsAndStopPlayback();
-    });
-
-    $("#excludeHalvesCheckbox").on("click", function() {
         performCalculationsAndStopPlayback();
     });
 
     // Sagittal Output controls
     $("#sagittalTypeDropdown").on("change", function() {
-        performCalculationsAndStopPlayback();
-    });
-
-    $("#sagittalNormalize, #sagittalShowEnharmonics").on("click", function() {
-        performCalculationsAndStopPlayback();
-    });
-
-    // Johnston Output controls
-    $("#johnstonNormalize").on("click", function() {
         performCalculationsAndStopPlayback();
     });
 

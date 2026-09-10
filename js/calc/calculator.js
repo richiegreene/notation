@@ -57,7 +57,7 @@ function performCalculationsForColumn(columnIndex, inputMonzoAbsolute) {
     const ref12 = UI.getPC(columnIndex); // Capture ref12 here
     getOutputFrequency(columnIndex);
     getCentDeviation(columnIndex);
-    UI.updateEdoNotationDisplay(columnIndex, state.jiCents, state.edoQuantisation, $("#edoNormalize").prop("checked"), ref12, state.cents_toRef); // Pass ref12 and cents_toRef
+    UI.updateEdoNotationDisplay(columnIndex, state.jiCents, state.edoQuantisation, $("#octaveReduce").prop("checked"), ref12, state.cents_toRef); // Pass ref12 and cents_toRef
     // Pass the absolute monzo (reference + interval) so sagittal finds the correct absolute pitch
     // e.g. 5/4 above A shows C# (not just "E" for the interval 5/4)
     UI.updateSagittalOutputDisplays(columnIndex, state.jiCents, state.outputFrequencies[columnIndex], state.displayNumValue, state.displayDenValue, state.absoluteMonzoResult);
@@ -237,7 +237,7 @@ export function getDisplaySum(){
 	state.displaySum = state.inputSum;
 	state.cat = state.displaySum;
 	var hdValue = 0;
-	if ($("#normalize").prop("checked")){
+	if ($("#octaveReduce").prop("checked")){
 		hdValue = (Math.log2(3) * Math.abs(state.displaySum[1])) + (Math.log2(5) * Math.abs(state.displaySum[2])) + (Math.log2(7) * Math.abs(state.displaySum[3]))
 		+ (Math.log2(11) * Math.abs(state.displaySum[4])) + (Math.log2(13) * Math.abs(state.displaySum[5])) + (Math.log2(17) * Math.abs(state.displaySum[6]))
 		+ (Math.log2(19) * Math.abs(state.displaySum[7])) + (Math.log2(23) * Math.abs(state.displaySum[8])) + (Math.log2(29) * Math.abs(state.displaySum[9]))
@@ -255,7 +255,7 @@ export function getDisplayValues(columnIndex){
 	state.displayNumValue = state.numValue;
 	state.displayDenValue = state.denValue;
 	
-	if ($("#normalize").prop("checked")){
+	if ($("#octaveReduce").prop("checked")){
 		var normTest = Math.log2(Math.abs(state.displayNumValue / state.displayDenValue));
 		if (normTest < 0){
 			normTest = 1 + Math.floor(Math.abs(normTest));
@@ -397,7 +397,7 @@ export function getCentDeviation(columnIndex){
 	} else {
 		state.cents_toRef = 1200*Math.log2((state.centsNumValue) / (state.centsDenValue));
 	}
-	if ($("#normalize").prop("checked")){
+	if ($("#octaveReduce").prop("checked")){
 		state.cents_toRef = U.mod(state.cents_toRef,1200);
 	}
 

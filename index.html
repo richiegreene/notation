@@ -211,6 +211,20 @@
             <input type="number" id="frequencyA4" value="440.0000">
           </fieldset>
 
+          <!-- How a name is read. Each of these used to be a latch in every
+               window it applied to (and again in the tuner drawer); they are
+               one latch each here now, and act on every output window and on
+               the tuner's readout at once. -->
+          <fieldset>
+            <legend>Reading</legend>
+            <div class="output-checkboxes tuner-checkboxes">
+              <label title="Fold every interval into the octave above 1/1 before naming it."><input type="checkbox" id="octaveReduce"> octave reduce</label>
+              <label title="Ups and Downs and Sagittal: also show the enharmonically equivalent spelling."><input type="checkbox" id="showEnharmonics"> enh equivalent</label>
+              <label title="Ups and Downs: leave out the half-arrow spellings."><input type="checkbox" id="excludeHalves" checked> exclude halves</label>
+              <label title="HEJI: allow the unofficial extension primes 53–89, in entry and in output."><input type="checkbox" id="unofficialExtensions" checked> unofficial extensions</label>
+            </div>
+          </fieldset>
+
         </div>
 
         <!-- ============ PLAY ============
@@ -299,6 +313,13 @@
                 title="A dial: a needle at the top, the scale swung beneath it">Round</button>
             </div>
 
+            <!-- Lines through the field from every cent and every degree, in
+                 either shape. The dots say where a mark is; the lines say
+                 which way it is going, and how far the goal still is. -->
+            <div class="output-checkboxes tuner-checkboxes">
+              <label title="Draw a line through the field from every cent of the ruler and from every degree of the scale, so movement toward a note reads as the whole grid sliding."><input type="checkbox" id="tunerGrid"> grid</label>
+            </div>
+
             <!-- Which pitch is called zero cents. Two alternatives, so a
                  segmented switch rather than two radio dots: the strip says the
                  choice is exclusive by being one control, which is what a
@@ -376,18 +397,11 @@
             </div>
           </fieldset>
 
+          <!-- Octave reduce, enh equivalent, exclude halves and unofficial
+               extensions are the Settings drawer's Reading latches, shared
+               with the output windows; only the meter's own sizing is here. -->
           <fieldset>
             <legend>Reading</legend>
-            <div class="output-checkboxes tuner-checkboxes" id="tunerEdoChecks" style="display: none;">
-              <label><input type="checkbox" id="tunerShowEnharmonics"> enh equivalent</label>
-              <label><input type="checkbox" id="tunerExcludeHalves" checked> exclude halves</label>
-            </div>
-            <div class="output-checkboxes tuner-checkboxes" id="tunerHejiChecks">
-              <label><input type="checkbox" id="tunerUnofficialExtensions" checked> unofficial extensions</label>
-            </div>
-            <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalEnhCheck" style="display: none;">
-              <label><input type="checkbox" id="tunerSagittalShowEnharmonics"> enh equivalent</label>
-            </div>
             <div class="output-checkboxes tuner-checkboxes" id="tunerComplexityChecks">
               <label><input type="checkbox" id="tunerComplexitySizing" checked> complexity sizing</label>
             </div>
@@ -414,12 +428,11 @@
                     <div class="output-controls"></div>
                     <div class="output-container">
                     </div>
-                    <div class="output-checkboxes">
-                        <label><input type="checkbox" name="inputType" id="normalize"> octave reduce</label>
-                        <label><input type="checkbox" id="unofficialExtensionsOutput" checked> unofficial extensions</label>
+                    <div class="output-checkboxes"></div>
+                    <div class="sagittal-toggle-row output-actions">
+                        <button id="clearOutputButton" class="sagittal-toggle-button" onclick="clearAllIntervals()">clear</button>
+                        <button id="playOutputButton" class="sagittal-toggle-button">play</button>
                     </div>
-                    <button id="clearOutputButton" class="clear" onclick="clearAllIntervals()">clear</button>
-                    <button id="playOutputButton" class="clear">play</button>
                     <button id="saveHejiOutputButton" class="clear save-csv-button">save</button>
                 </div>
             </div>
@@ -437,13 +450,11 @@
                     </div>
 					<div class="edo-output-container">
                     </div>
-                    <div class="output-checkboxes">
-                        <label><input type="checkbox" name="inputType" id="edoNormalize"> octave reduce</label>
-                        <label><input type="checkbox" id="showEnharmonics"> enh equivalent</label>
-                        <label><input type="checkbox" id="excludeHalvesCheckbox" checked> exclude halves</label>
+                    <div class="output-checkboxes"></div>
+                    <div class="sagittal-toggle-row output-actions">
+                        <button id="clearEdoOutputButton" class="sagittal-toggle-button">clear</button>
+                        <button id="playEdoOutputButton" class="sagittal-toggle-button">play</button>
                     </div>
-                    <button id="clearEdoOutputButton" class="clear">clear</button>
-                    <button id="playEdoOutputButton" class="clear">play</button>
                     <button id="saveEdoOutputButton" class="clear save-csv-button">save</button>
                 </div>
             </div>
@@ -468,8 +479,6 @@
                     </div>
                     <div class="sagittal-output-container"></div>
                     <div class="output-checkboxes">
-                        <label><input type="checkbox" id="sagittalNormalize"> octave reduce</label>
-                        <label><input type="checkbox" id="sagittalShowEnharmonics"> enh equivalent</label>
                         <div class="sagittal-toggle-row">
                             <button type="button" id="sagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
                             <button type="button" id="sagittalEvoToggle" class="sagittal-toggle-button">evo</button>
@@ -479,8 +488,10 @@
                             <button type="button" id="sagittalAsciiToggle" class="sagittal-toggle-button">ascii</button>
                         </div>
                     </div>
-                    <button id="clearSagittalOutputButton" class="clear">clear</button>
-                    <button id="playSagittalOutputButton" class="clear">play</button>
+                    <div class="sagittal-toggle-row output-actions">
+                        <button id="clearSagittalOutputButton" class="sagittal-toggle-button">clear</button>
+                        <button id="playSagittalOutputButton" class="sagittal-toggle-button">play</button>
+                    </div>
                     <button id="saveSagittalOutputButton" class="clear save-csv-button">save</button>
                 </div>
             </div>
@@ -495,11 +506,11 @@
                 <div class="outputbox">
                     <div class="output-controls"></div>
                     <div class="johnston-output-container"></div>
-                    <div class="output-checkboxes">
-                        <label><input type="checkbox" id="johnstonNormalize"> octave reduce</label>
+                    <div class="output-checkboxes"></div>
+                    <div class="sagittal-toggle-row output-actions">
+                        <button id="clearJohnstonOutputButton" class="sagittal-toggle-button">clear</button>
+                        <button id="playJohnstonOutputButton" class="sagittal-toggle-button">play</button>
                     </div>
-                    <button id="clearJohnstonOutputButton" class="clear">clear</button>
-                    <button id="playJohnstonOutputButton" class="clear">play</button>
                     <button id="saveJohnstonOutputButton" class="clear save-csv-button">save</button>
                 </div>
             </div>
@@ -841,9 +852,6 @@
         				--><button class="eightyNine" value="5">88</button><!-- 
         				--><button class="eightyNine" value="6">888</button>
         				<span class="label">/89
-        				</div>
-        				<div class="heji-entry-checkboxes">
-        					<label><input type="checkbox" id="unofficialExtensionsEntry" checked> unofficial extensions</label>
         				</div>
                     </div>
         		</div>

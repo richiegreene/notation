@@ -508,7 +508,7 @@ export function generateJohnstonOutputColumns(numColumns) {
  * (unlike the Sagittal window).
  */
 export function updateJohnstonOutputDisplays(columnIndex, outputFrequency, ratioNum, ratioDen, absoluteMonzo) {
-    const octaveReduce = $('#johnstonNormalize').prop('checked');
+    const octaveReduce = $('#octaveReduce').prop('checked');
     const decomposition = state.hasPrimeGreaterThan89 ? null : decomposeJohnston(absoluteMonzo);
 
     if (decomposition) {

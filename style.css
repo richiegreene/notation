@@ -777,13 +777,6 @@ button.chromatic, .syntonic, .septimal, .undecimal, .tridecimal, .seventeen, .ni
     font-size: 1.1rem;
 }
 
-#clearOutputButton {
-    font-size: 11.2px;
-    margin: 10px 0; 
-    display: block;
-    width: 100%; 
-}
-
 
 select {
     border: 1px solid var(--border-button); 
@@ -833,15 +826,29 @@ select {
     border: 1px solid var(--border-button); 
 }
 
-.interval-button {
-    font-size: 0.75rem; 
-    padding: 2px 4px;
-}
-
+/* Load and clear under a ratio field: one strip, the same two-way control as
+   revo/evo in Sagittal Output, and exactly as wide as the field above it. The
+   two used to be separate presses in their own colours with a gap between. */
 .interval-button-group {
     display: flex;
-    gap: 5px; 
+    gap: 0;
+    width: 80px; /* = input.ratioIn */
+    box-sizing: border-box;
 }
+.interval-button {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.75rem;
+    padding: 4px 2px;
+    margin: 0;
+    text-align: center;
+    background-color: var(--bg-button);
+    border: 1px solid var(--border-button);
+    border-radius: 0;
+    border-left-width: 0;
+}
+.interval-button:first-child { border-radius: 4px 0 0 4px; border-left-width: 1px; }
+.interval-button:last-child { border-radius: 0 4px 4px 0; }
 
 
 .header-content {
@@ -980,11 +987,10 @@ table.enharmonic-table > tr, td, th {
 .output-checkboxes {
     margin: 0.5rem 0 0.25rem;
     text-align: left;
-    /* Sized to the tallest set (Sagittal's two latches and two strips) so the
-       clear/play/save buttons below start at the same offset in every window.
-       Taller than it was, because a latch is taller than the line of text it
-       replaced. */
-    min-height: 10rem;
+    /* Sized to the tallest set (Sagittal's two strips; the latches that used
+       to sit here are the Settings drawer's Reading latches now) so the
+       clear/play/save buttons below start at the same offset in every window. */
+    min-height: 4.4rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -1399,24 +1405,19 @@ input.ratioIn {
 /* Card grid-row spans are computed at runtime by layoutMasonry() in main.js
    from each card's real pixel height, so no hard-coded spans live here. */
 
-#playOutputButton.playing-active, #playEdoOutputButton.playing-active, #playSagittalOutputButton.playing-active, #playJohnstonOutputButton.playing-active {
-    background-color: var(--bg-button-selected);
-    border-color: var(--bg-button-selected);
+/* Clear and play sit side by side as one strip, the same two-way control as
+   revo/evo above them; play's pressed state is the strip's chosen state. */
+.output-actions {
+    margin: 10px 0 5px;
 }
-#playOutputButton {
-    display: block;
-    width: 100%;
-    font-size: 11.2px; /* Same as clearOutputButton */
-    margin: 10px 0; /* Same as clearOutputButton */
+.output-actions .sagittal-toggle-button {
+    font-size: 11.2px;
 }
-
-#clearEdoOutputButton, #playEdoOutputButton,
-#clearSagittalOutputButton, #playSagittalOutputButton,
-#clearJohnstonOutputButton, #playJohnstonOutputButton {
-    display: block;
-    width: 100%;
-    font-size: 11.2px; /* Same as clearOutputButton */
-    margin: 10px 0; /* Same as clearOutputButton */
+.output-actions .playing-active {
+    background-color: var(--panel-bright);
+    border-color: var(--line);
+    color: var(--color-text);
+    box-shadow: inset 0 -2px 0 var(--accent);
 }
 
 
@@ -1431,15 +1432,6 @@ input.ratioIn {
 .save-csv-button.show-save-button {
     display: block !important; /* Show when the class is added */
 }
-
-/* Original styles for play buttons for context, ensuring they remain block level */
-#playOutputButton, #playEdoOutputButton, #playSagittalOutputButton {
-    display: block;
-    width: 100%;
-    font-size: 11.2px;
-    margin: 10px 0;
-}
-
 
 .stacking-input-container, .chord-size-container {
     display: flex; /* Use flexbox */
@@ -1661,6 +1653,26 @@ html[data-theme="light"] .palette .label {
 .tuner-ruler .tuner-degree-dot.tune-2 { fill: color-mix(in srgb, var(--color-text) 50%, var(--accent) 50%); opacity: 1; }
 .tuner-ruler .tuner-degree-dot.tune-3 { fill: color-mix(in srgb, var(--color-text) 75%, var(--accent) 25%); opacity: 0.95; }
 
+/* THE GRID, when it is up: a faint line from every cent of the ruler and a
+   firmer one from every degree, through the whole field. The cent lines are
+   barely there — they are felt sliding rather than read — and the degree
+   lines carry the same in-tune colouring as their dots, so the line you are
+   closing on turns blue as you reach it. */
+.tuner-ruler .tuner-grid line {
+    stroke: var(--color-text);
+    stroke-width: 1;
+    opacity: 0.09;
+}
+.tuner-ruler .tuner-degree-line {
+    stroke: var(--color-text);
+    stroke-width: 1.2;
+    opacity: 0.32;
+}
+.tuner-ruler .tuner-degree-line.in-tune { stroke: var(--accent); opacity: 0.9; }
+.tuner-ruler .tuner-degree-line.tune-1 { stroke: color-mix(in srgb, var(--color-text) 25%, var(--accent) 75%); opacity: 0.8; }
+.tuner-ruler .tuner-degree-line.tune-2 { stroke: color-mix(in srgb, var(--color-text) 50%, var(--accent) 50%); opacity: 0.65; }
+.tuner-ruler .tuner-degree-line.tune-3 { stroke: color-mix(in srgb, var(--color-text) 75%, var(--accent) 25%); opacity: 0.5; }
+
 /* THE NEEDLE IS THE PITCH, and it never moves — the scale does. That is the
    frame of reference both shapes are drawn in, and it is why the reading is
    the same gesture in either: bring the name you want under the needle. */
@@ -1683,7 +1695,22 @@ html[data-theme="light"] .palette .label {
     text-align: center;
     color: var(--color-text);
     line-height: 1;
-    pointer-events: none;
+    /* A mark is a button: pressed, it sounds its note (see toggleMarkSound in
+       js/calc/tuner.js). The lanes themselves stay pointer-transparent so a
+       pinch between marks still reaches the field. */
+    pointer-events: auto;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.tuner-mark:hover { opacity: 0.75; }
+/* The one that is sounding: underlined in the accent, the way a chosen
+   segment is, so it reads as held down rather than as in tune. */
+.tuner-mark.sounding {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.18em;
 }
 .tuner-lane-names .tuner-mark {
     display: flex;

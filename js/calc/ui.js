@@ -40,7 +40,7 @@ export function getShowEnharmonics(){
 }
 
 export function getExcludeHalves(){
-    return $("#excludeHalvesCheckbox").prop("checked");
+    return $("#excludeHalves").prop("checked");
 }
 
 export function getFrequencyOctave(){
@@ -876,7 +876,7 @@ if (isAbsoluteEntry){
 	)) ||
 		// With "unofficial extensions" unchecked, primes 53-89 fall outside the (official 47) limit
 		// regardless of entry mode, including symbols selected directly in HEJI Entry
-		(!$("#unofficialExtensionsOutput").prop("checked") && state.displaySum.slice(15, 24).some(v => v !== 0))
+		(!$("#unofficialExtensions").prop("checked") && state.displaySum.slice(15, 24).some(v => v !== 0))
 	) {
 		notationString = "<span style='font-family: monospace;'>n/a</span>";
 		outputDiatonic = "";
@@ -1298,8 +1298,8 @@ export function updateSagittalOutputDisplays(columnIndex, centsValue, outputFreq
 
     // Read the unified Sagittal Output window controls
     const precision   = $("#sagittalTypeDropdown").val() || 'medium';
-    const showEnh     = $("#sagittalShowEnharmonics").prop("checked");
-    const octaveReduce = $("#sagittalNormalize").prop("checked");
+    const showEnh     = $("#showEnharmonics").prop("checked");
+    const octaveReduce = $("#octaveReduce").prop("checked");
     const useEvo      = $("#sagittalEvoToggle").hasClass("selected");
     const useUnicode  = $("#sagittalUnicodeToggle").hasClass("selected");
 
