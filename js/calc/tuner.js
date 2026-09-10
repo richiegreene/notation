@@ -4,18 +4,30 @@ import { buildJiScale, nameJiDegrees, buildEdoDegrees } from './tuner-notation.j
 import * as Mic from '../tuner-mic.js';
 
 /**
- * Tuner window controller.
+ * The Tuner stage.
  *
- * Wires the language / limit controls, drives mic pitch detection, and renders
- * the horizontal strobe strip: a fixed centre line is the incoming pitch, and
- * scale degrees glide past it positioned by their cents distance. Note name,
- * ratio (or EDO step), Hz and cents-from-1/1 each get a lane.
+ * Wires the language / limit controls in the Tuner drawer, drives mic pitch
+ * detection, and draws the meter across the whole window.
+ *
+ * TWO SHAPES, ONE SET OF MARKS. Straight is a strobe strip: a fixed needle at
+ * the centre is the pitch coming in, and the scale slides past it. Round is
+ * the instrument every clip-on tuner and every speedometer already taught —
+ * a needle at twelve o'clock and the same scale swung beneath it on an arc.
+ *
+ * Nothing about WHAT is drawn changes between them. The note names and the
+ * ratios are ordinary HTML built by the same notation engines the output
+ * windows use, so a HEJI accidental, a Sagittal flag and a Johnston numeral
+ * come out identical in either; only where each mark is put differs, and that
+ * is one function (place) reading one geometry (geometry). Everything else —
+ * how large a name may be before its neighbour collides, how far off pitch
+ * counts as in tune, which scale is being listened for — is shared, because
+ * none of it is a fact about the shape.
  *
  * 1/1 = C for spelling; Hz / cents use the app-wide 1/1 frequency
  * (state.freq1to1). The mic is only opened when the user presses the toggle.
  */
 
-const DEFAULT_CENTS_WINDOW = 100; // total cents spanned across the strip
+const DEFAULT_CENTS_WINDOW = 100; // total cents spanned across the meter
 const IN_TUNE = 4;        // cents within which a note name turns fully blue
 const TUNE_STEP = 2;      // cents per gradient step outside the in-tune band
 // All tune-state classes, and a helper that returns the class for a given
@@ -35,35 +47,112 @@ function applyTuneClass(elm, cls) {
     if (cls) elm.classList.add(cls);
 }
 
-/** Total cents spanned across the strip (the tuner "zoom"), from the Settings
- *  card's Tuner Cents Window field. Smaller = more zoomed in. */
-function centsWindow() {
-    const v = parseFloat(el('tunerCentsWindow') && el('tunerCentsWindow').value);
-    return (v && v > 0) ? v : DEFAULT_CENTS_WINDOW;
-}
+const SHAPE_STORE = 'notation.tuner.shape.v1';
 
-// Full-size (scale 1) font per lane, in rem, matching the Output windows: note
-// letters 4rem, ratios 2rem. JS multiplies these down by the density and
-// complexity scale factors.
-const LANE_BASE_REM = { names: 4, ratios: 2 };
+/* ---- the dial ----
+ * 120 degrees of arc rather than a half-circle. A wider sweep buys nothing —
+ * the window is the same number of cents either way — and costs legibility at
+ * the ends, where a note name would sit almost beside the needle's own axis
+ * with its neighbours stacked above and below it rather than beside it. At
+ * 120 the ends land at half-height, the arc spans the full width, and every
+ * name is still read left to right.
+ *
+ * The three rings are the same three rows the strip has, bent: names outside
+ * where there is the most arc to spend on them, the cent ruler under them,
+ * ratios inside. The needle runs from the hub out past the names and is drawn
+ * BEHIND them, the way the strip's centre line always was. */
+/* HOW MUCH OF THE CIRCLE THE ARC IS, IS DECIDED BY THE FIELD'S SHAPE.
+ *
+ * 120 degrees is the right sweep in a landscape window: shallow, wide, every
+ * name still read left to right. It is the wrong one on a phone held upright,
+ * where the arc is bounded by a narrow width and simply refuses the height
+ * underneath it — a small dial adrift in a tall grey field. A wider sweep
+ * wraps the ends down the sides, which is the only way an arc can spend
+ * height it has been given and width it has not. So the span is read off the
+ * field's aspect: the landscape sweep where there is width to use, and up to
+ * two-thirds of the circle where there is not. */
+const DIAL_SPAN_WIDE = 120;
+const DIAL_SPAN_TALL = 170;
+const DIAL_ASPECT_WIDE = 1.30;  // w/h at or above which the sweep is DIAL_SPAN_WIDE
+const DIAL_ASPECT_TALL = 0.45;  // ...and at or below which it is DIAL_SPAN_TALL
+
+/* Room at the sides for a name whose own width hangs past the ring, and a
+   little under the hub. The side pad is a fraction of the field rather than a
+   constant: 58px is a comfortable margin in a 1100px window and a fifth of a
+   phone's, where it was taking more from the dial than the dial had left. */
+const DIAL_PAD_X_FRAC = 0.052;
+const DIAL_PAD_X_MAX = 58;
+const DIAL_PAD_X_MIN = 12;
+const DIAL_PAD_Y = 22;
+/* THE THREE RINGS SIT CLOSE TOGETHER, high on the circle.
+ *
+ * They started spread over the outer half of it — names at 0.86, ratios at
+ * 0.50 — which put a note's own ratio nearly 250px in from it at this size. On
+ * a strip the two rows are a fixed distance apart and obviously one reading;
+ * bent round a hub, the same radial gap fans them out, so at the ends of the
+ * arc a ratio sat closer to its NEIGHBOUR's name than to its own. Packed into
+ * a narrow band the pairing survives the bend, and the empty middle simply
+ * becomes the space a dial has in the middle. */
+const RING = { names: 0.95, ruler: 0.82, ratios: 0.70 };
+/* THE NEEDLE DOES NOT REACH THE HUB.
+ *
+ * A speedometer's does, and it looked like one, and that was the trouble: the
+ * three rings occupy the outer half of the circle and the inner half is empty,
+ * so a needle drawn to the centre spent most of its length crossing a void it
+ * was the only thing in. The eye reads that spoke as the subject, and the
+ * subject is the scale. So it runs from a little inside the ratios ring to
+ * just past the names — the band the reading actually lives in — with a cap at
+ * its inner end where the pivot would have been. Nothing is lost: it still
+ * points at twelve o'clock and it still never moves. */
+const NEEDLE_OUT = 1.06;
+const NEEDLE_IN = 0.62;
+
+/* ---- the strip ---- */
+const STRIP_GAP = 24;  // px between the names row, the ruler and the ratios
+
 const MIN_SCALE = 0.05;       // floor for the density (anti-collision) scale
 const MARK_GUTTER_PX = 5;     // min pixel gap kept between adjacent marks
-// Tenney-height (log2(n*d)) size falloff: simpler ratios render larger. Slope is
-// 3x the original 0.05 to exaggerate the simple-vs-complex contrast; the floor
-// is lowered so complex ratios can shrink enough to let simple ones grow.
+// Tenney-height (log2(n*d)) size falloff: simpler ratios render larger. Slope
+// is 3x the original 0.05 to exaggerate the simple-vs-complex contrast; the
+// floor is lowered so complex ratios can shrink enough to let simple ones grow.
 const COMPLEXITY_SLOPE = 0.1;
 const COMPLEXITY_FLOOR = 0.05;
-// Ups and Downs renders at one fixed size for every mark - never scaled by
+// Ups and Downs renders at one fixed size for every mark — never scaled by
 // density, name length, complexity, enh equivalent, or exclude halves.
 const EDO_SCALE = 0.55;
 
-let marks = [];           // [{deg, nameEl, rEl, complexity, fullWidth}]
+/* HOW BIG A NAME IS AT SCALE 1, in px.
+ *
+ * This was a constant — 4rem, the Output windows' own letter size — because
+ * the meter lived in a card the size of an Output window. On the stage it is a
+ * fraction of the field instead: the whole point of giving the tuner the
+ * window was that a cent is worth more pixels here, and a name pinned at 51px
+ * in a 700px-tall field would have thrown most of that back. Bounded at both
+ * ends so a short window does not produce something unreadable and a very tall
+ * one does not produce a single letter three hundred pixels high. */
+const NAME_PX_FLOOR = 26;
+const NAME_PX_CEIL = 190;
+const RATIO_OF_NAME = 0.5;   // 2rem against 4rem, as the Output windows have it
+
+let marks = [];           // [{deg, nameEl, rEl, dotEl, complexity, fullWidth}]
 let currentDegrees = [];
 let isJiMode = true;
 let latestFreq = null;    // smoothed frequency, or null before first detection
 let baseScale = 1;        // density scale so adjacent marks don't collide
+let rulerShape = null;    // what buildRuler last drew, so it is not redrawn per frame
+let dialDash = null;      // {period, radius, half, dot} for the dial's cent ruler
 
 const el = (id) => document.getElementById(id);
+const stage = () => el('tuner-stage');
+const shape = () => (stage() ? stage().dataset.shape : 'linear');
+const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
+
+/** Total cents spanned across the meter (the tuner "zoom"), from the Settings
+ *  drawer's Tuner Window Width field. Smaller = more zoomed in. */
+function centsWindow() {
+    const v = parseFloat(el('tunerCentsWindow') && el('tunerCentsWindow').value);
+    return (v && v > 0) ? v : DEFAULT_CENTS_WINDOW;
+}
 
 export function initTuner() {
     if (!el('tunerLanguage')) return;
@@ -80,69 +169,61 @@ export function initTuner() {
         el(id).addEventListener('change', rebuildScale));
 
     // Complexity sizing only changes text scale, not the scale itself.
-    el('tunerComplexitySizing').addEventListener('change', computeBaseScale);
+    el('tunerComplexitySizing').addEventListener('change', refitTuner);
 
-    // Cents window (the "zoom") lives in the Settings card; re-fit on change.
+    // Window width (the "zoom") lives in the Settings drawer; re-fit on change.
     const cw = el('tunerCentsWindow');
-    if (cw) cw.addEventListener('input', computeBaseScale);
+    if (cw) cw.addEventListener('input', refitTuner);
 
-    // Sagittal revo/evo: a mutually-exclusive toggle-button pair (revo default),
-    // matching Sagittal Output's behavior.
+    // Sagittal revo/evo: a mutually-exclusive toggle-button pair (revo
+    // default), matching Sagittal Output's behavior.
     bindTogglePair('tunerSagittalRevoToggle', 'tunerSagittalEvoToggle');
 
     el('tunerToggleButton').addEventListener('click', toggleListening);
 
-    // Keep the tuner card the same height as an Output card, size the Settings
-    // card, and re-fit the readout scaling on resize / when a card is expanded.
-    window.addEventListener('resize', () => { matchTunerHeight(); matchSettingsHeight(); computeBaseScale(); });
-    const header = document.querySelector('#tuner-item .settings-header');
-    if (header) header.addEventListener('click', () => setTimeout(() => {
-        matchTunerHeight(); computeBaseScale();
-    }, 0));
+    // Which shape the meter was left in, restored before anything is drawn.
+    let stored = null;
+    try { stored = localStorage.getItem(SHAPE_STORE); } catch (e) {}
+    if (stored === 'dial' || stored === 'linear') applyShape(stored);
+
+    /* The field is what everything is measured against, and it changes size for
+       reasons this module cannot see: the drawer opening, the stage switching,
+       the window resizing, a phone turning over. Watching the box itself
+       catches all four, and catches them after the layout has settled rather
+       than during a width transition. */
+    const readout = el('tunerReadout');
+    if (readout && typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(refitTuner).observe(readout);
+    }
+    window.addEventListener('resize', refitTuner);
 
     updateVisibility();
     rebuildScale();
-    // Deferred so the collapsible-card setup (which runs later in the same ready
-    // handler) has collapsed the collapsed-item cards before we measure one.
-    setTimeout(() => { matchTunerHeight(); matchSettingsHeight(); }, 0);
 }
 
-/**
- * Give the Settings card an initial height of an Output card + the inter-card
- * gap + a single collapsed card, so the left column lines up with an output
- * stacked above a collapsed card.
- */
-function matchSettingsHeight() {
-    const settings = document.querySelector('#ref-pitch-item');
-    const output = document.querySelector('#johnston-output-item')
-        || document.querySelector('#output-item');
-    const collapsed = document.querySelector('.settings-menu-item.collapsed-item');
-    const content = document.querySelector('#ref-pitch-item .settings-content');
-    const headerEl = document.querySelector('#ref-pitch-item .toggle-header-placement')
-        || document.querySelector('#ref-pitch-item .settings-header');
-    if (!settings || !output || !content) return;
-    if (settings.style.minHeight) settings.style.minHeight = ''; // clear any card-level min-height
-    const outH = output.offsetHeight;
-    if (outH <= 0) return;
-    const gap = 2.5; // .calc-container grid gap ("padding" between cards)
-    const collapsedH = collapsed ? collapsed.offsetHeight : 45;
-    const headerH = headerEl ? headerEl.offsetHeight : 40;
-    // Height goes on the settings-content (not the card) so collapsing - which
-    // hides the content - lets the card shrink to just its header.
-    content.style.minHeight = Math.max(0, outH + gap + collapsedH - headerH) + 'px';
+/** Draw the meter in the given shape. Called by the Shape switch in the
+ *  drawer; the marks and the scale are untouched, only where they are put. */
+export function setTunerShape(next) {
+    if (next !== 'linear' && next !== 'dial') return;
+    applyShape(next);
+    try { localStorage.setItem(SHAPE_STORE, next); } catch (e) {}
+    refitTuner();
 }
 
-/** Match the tuner card's content height to an Output card's, for a uniform
- *  card height across every notation language. */
-function matchTunerHeight() {
-    const ref = document.querySelector('#johnston-output-item .settings-content')
-        || document.querySelector('#output-item .settings-content');
-    const box = document.querySelector('#tuner-item .tunerbox');
-    if (!ref || !box) return;
-    const h = ref.offsetHeight;
-    // Subtract the tuner settings-content's bottom padding (0 15px 15px) so the
-    // overall card height (header + content) equals the reference card's.
-    if (h > 0) box.style.height = Math.max(120, h - 15) + 'px';
+function applyShape(next) {
+    const st = stage();
+    if (st) st.dataset.shape = next;
+    for (const b of document.querySelectorAll('#tuner-shape-seg button')) {
+        b.classList.toggle('on', b.dataset.v === next);
+    }
+    rulerShape = null; // force a rebuild: the ruler is drawn per shape
+}
+
+/** Re-measure and redraw. Cheap enough to call on any layout change. */
+export function refitTuner() {
+    if (!marks.length) return;
+    computeBaseScale();
+    renderFrame();
 }
 
 function bindTogglePair(idA, idB) {
@@ -170,13 +251,12 @@ function updateVisibility() {
     el('tunerEdoSettings').style.display = updown ? '' : 'none';
     el('tunerEdoChecks').style.display = updown ? '' : 'none';
 
-    // Sagittal-only: precision dropdown (top), and enh + revo/evo (below the
-    // readout, with complexity sizing sitting between them).
+    // Sagittal-only: precision dropdown, enh, and revo/evo.
     el('tunerSagittalType').style.display = lang === 'sagittal' ? '' : 'none';
     el('tunerSagittalEnhCheck').style.display = lang === 'sagittal' ? '' : 'none';
     el('tunerSagittalRevoRow').style.display = lang === 'sagittal' ? '' : 'none';
 
-    // HEJI-only: unofficial extensions toggle (below readout).
+    // HEJI-only: unofficial extensions toggle.
     el('tunerHejiChecks').style.display = lang === 'heji' ? '' : 'none';
 
     // Complexity sizing applies to the three JI languages only.
@@ -235,9 +315,9 @@ function nameMarkHtml(deg) {
     if (language() === 'sagittal') {
         const sp = deg.name && deg.name.spellings;
         if (!sp || !sp.length) return `<span class="tuner-note-letter">n/a</span>`;
-        // Single spelling renders exactly like HEJI (letter + em symbol as direct
-        // children of the mark) so it scales identically; only the enharmonic
-        // set uses the vertical stack.
+        // Single spelling renders exactly like HEJI (letter + em symbol as
+        // direct children of the mark) so it scales identically; only the
+        // enharmonic set uses the vertical stack.
         if (sp.length === 1) return sagittalSpellingHtml(sp[0]);
         return `<span class="tuner-sagittal-stack multi">`
             + sp.map((s) => `<span class="tuner-sagittal-spelling">${sagittalSpellingHtml(s)}</span>`).join('')
@@ -264,6 +344,7 @@ function ratioText(deg) {
 /** Create one name + ratio mark per degree (positions set every frame). */
 function buildMarks() {
     const lanes = { names: el('tunerLaneNames'), ratios: el('tunerLaneRatios') };
+    if (!lanes.names || !lanes.ratios) return;
     Object.values(lanes).forEach((l) => { l.innerHTML = ''; });
 
     marks = currentDegrees.map((deg) => {
@@ -277,12 +358,14 @@ function buildMarks() {
         rEl.textContent = ratioText(deg);
         lanes.ratios.appendChild(rEl);
 
-        const mark = { deg, nameEl, rEl, complexity: complexityFactor(deg), fullWidth: 8 };
+        const mark = { deg, nameEl, rEl, dotEl: null, complexity: complexityFactor(deg), fullWidth: 8 };
         setMarkVisible(mark, false); // hidden until positioned by a live pitch
         return mark;
     });
 
+    rulerShape = null; // the degree-dot count changed, so the ruler is stale
     computeBaseScale();
+    renderFrame();
 }
 
 function setMarkVisible(m, visible) {
@@ -292,45 +375,110 @@ function setMarkVisible(m, visible) {
     if (m.dotEl) m.dotEl.style.display = disp;
 }
 
+/* =====================================================================
+ *  GEOMETRY — the one place the two shapes differ
+ * ===================================================================== */
+
 /**
- * Build the dotted cent ruler: one dot per cent across the octave (the "1200
- * dots from 1/1 to 2/1"), rendered across three octaves so it covers the strip
- * at any scroll offset. Octave-boundary dots (1/1, 2/1) are emphasized. Dots use
- * the same cents->px mapping as the marks, so each degree's notation sits over
- * its cent on the ruler; renderFrame scrolls the whole group with the pitch.
+ * Where everything goes, for the field as it currently measures.
+ *
+ * Both shapes report a `pxPerCent`, which is what the collision test below
+ * spends: on the strip it is a distance along the field, on the dial it is a
+ * distance along the names ring. That is the only number the sizing code
+ * needs, which is why the sizing code does not know which shape it is in.
+ *
+ * @returns {object|null} null while the field has no size (a shut drawer, the
+ *          other stage, the moment before first layout).
  */
-function buildRuler() {
-    const svg = el('tunerRuler');
+function geometry() {
     const readout = el('tunerReadout');
-    if (!svg || !readout) return;
-    const width = readout.clientWidth;
-    if (!width) return;
-    const pxPerCent = width / centsWindow();
-    const h = svg.clientHeight || 14;
-    const cy = (h / 2).toFixed(1);
+    if (!readout) return null;
+    const w = readout.clientWidth;
+    const h = readout.clientHeight;
+    if (!w || !h) return null;
+    const cw = centsWindow();
 
-    // One uniform dot per cent, spanning a little over one octave on each side
-    // so the ruler stays covered at any scroll offset (pitchFolded in [0, 1200)).
-    let dots = '';
-    for (let c = -300; c < 1500; c++) {
-        dots += `<circle cx="${(c * pxPerCent).toFixed(2)}" cy="${cy}" r="0.55"/>`;
+    if (shape() === 'dial') {
+        const t = clamp((DIAL_ASPECT_WIDE - w / h) / (DIAL_ASPECT_WIDE - DIAL_ASPECT_TALL), 0, 1);
+        const spanDeg = DIAL_SPAN_WIDE + t * (DIAL_SPAN_TALL - DIAL_SPAN_WIDE);
+        const half = (spanDeg / 2) * Math.PI / 180;
+        const padX = clamp(w * DIAL_PAD_X_FRAC, DIAL_PAD_X_MIN, DIAL_PAD_X_MAX);
+        const cx = w / 2;
+
+        /* THE RING THAT HAS TO FIT IS THE NAMES', not the circle it is a
+         * fraction of. Bounding the outer radius by the width instead left the
+         * arc a third narrower than the field it was drawn in — nothing is
+         * drawn at R except the needle's own tip, which points straight up and
+         * so is bounded by the height, not the width.
+         *
+         * The height bound is on the BAND rather than on the circle, for the
+         * same reason. What is drawn runs from the needle's tip at R down to
+         * the ratios ring where the arc ends, at `rRatios·cos(half)` above the
+         * hub — 0.75R of band for a circle of R — and the hub itself is below
+         * all of it and now draws nothing. So the hub is put wherever it has
+         * to be for that band to sit in the middle of the field, which is what
+         * `cy` solves for, and it is allowed off the bottom edge if the field
+         * is wide and short. */
+        const bandFraction = NEEDLE_OUT - RING.ratios * Math.cos(half);
+        const R = Math.max(60, Math.min(
+            (w / 2 - padX) / (RING.names * Math.sin(half)),
+            (h - 2 * DIAL_PAD_Y) / bandFraction));
+        const cy = (h + R * (NEEDLE_OUT + RING.ratios * Math.cos(half))) / 2;
+        const rNames = R * RING.names;
+        const radPerCent = (2 * half) / cw;
+        return {
+            kind: 'dial', w, h, cx, cy, R, half, radPerCent,
+            rNames, rRuler: R * RING.ruler, rRatios: R * RING.ratios,
+            pxPerCent: rNames * radPerCent,
+            // A name may take about a fifth of the radius: enough to fill the
+            // gap between the names ring and the ruler under it, and no more.
+            namePx: clamp(R * 0.17, NAME_PX_FLOOR, NAME_PX_CEIL),
+        };
     }
 
-    // One larger dot per scale degree, positioned per-frame in renderFrame to sit
-    // under its note (and turn blue in tune). Painted after the small dots so they
-    // sit on top.
-    let degreeDots = '';
-    for (let i = 0; i < marks.length; i++) {
-        degreeDots += `<circle class="tuner-degree-dot" cx="-100" cy="${cy}" r="2.2"/>`;
-    }
+    const namePx = clamp(h * 0.34, NAME_PX_FLOOR, NAME_PX_CEIL);
 
-    svg.setAttribute('width', width);
-    svg.setAttribute('height', h);
-    svg.innerHTML = `<g id="tunerRulerScroll">${dots}</g>`
-        + `<g id="tunerRulerDegrees">${degreeDots}</g>`;
+    /* THE THREE ROWS ARE SPACED BY WHAT THE NAMES ACTUALLY COME OUT AT, not by
+     * what they are allowed to reach.
+     *
+     * namePx is a ceiling; the size a name is really drawn at is that times
+     * the density scale, and the density scale is usually well under 1 —
+     * eleven-odd-limit at a hundred cents across settles somewhere near a
+     * third. Spacing the rows by the ceiling therefore left two bands of empty
+     * field between three rows of small type, with the ratio row stranded a
+     * long way under its own note. Spaced by the effective size they sit
+     * together as one reading, whatever the scale and the window make of it. */
+    const eff = isJiMode ? baseScale : EDO_SCALE;
+    const nameBand = namePx * eff * 1.25;   // room for a HEJI accidental's ascender
+    const ratioBand = namePx * RATIO_OF_NAME * eff * 1.3;
+    const total = nameBand + STRIP_GAP * 2 + ratioBand;
+    const top = (h - total) / 2;
+    return {
+        kind: 'linear', w, h, namePx,
+        pxPerCent: w / cw,
+        yNames: top + nameBand / 2,
+        yRuler: top + nameBand + STRIP_GAP,
+        yRatios: top + nameBand + STRIP_GAP * 2 + ratioBand / 2,
+    };
+}
 
-    const degEls = svg.querySelectorAll('#tunerRulerDegrees .tuner-degree-dot');
-    marks.forEach((m, i) => { m.dotEl = degEls[i] || null; });
+/** A point on the dial, `r` from the hub at `theta` radians clockwise of up. */
+function polar(g, r, theta) {
+    return { x: g.cx + r * Math.sin(theta), y: g.cy - r * Math.cos(theta) };
+}
+
+/**
+ * How many cents apart the ruler's dots are.
+ *
+ * One per cent is the honest ruler and the one worth having, but only while a
+ * cent is worth enough pixels to be a dot rather than part of a line. Opened
+ * out to half an octave or more — which the window width allows — a per-cent
+ * ruler is a grey band, so the ruler thins to every 2, 5, 10 cents and so on
+ * and stays a ruler.
+ */
+function dotStep(pxPerCent) {
+    for (const s of [1, 2, 5, 10, 25, 50, 100]) if (pxPerCent * s >= 4) return s;
+    return 100;
 }
 
 /** Tenney height (harmonic distance) size factor: simpler ratios -> larger.
@@ -345,25 +493,23 @@ function complexityFactor(deg) {
 }
 
 /**
- * Density scale: measure each mark's full-size footprint, then find the largest
- * uniform scale at which no two adjacent degrees collide. Inter-degree spacing
- * is fixed (the whole field scrolls together), so this depends only on the scale
- * and the strip width - computed on build / resize / complexity change, not per
- * frame. When complexity sizing is on, each mark's footprint is pre-shrunk by
- * its complexity factor, letting simpler-heavy regions pack larger.
+ * Density scale: measure each mark's full-size footprint, then find the
+ * largest uniform scale at which no two adjacent degrees collide. Inter-degree
+ * spacing is fixed (the whole field moves together), so this depends only on
+ * the scale and on how many pixels a cent is worth — computed on build, on
+ * resize and on a complexity change, not per frame. When complexity sizing is
+ * on, each mark's footprint is pre-shrunk by its complexity factor, letting
+ * simpler-heavy regions pack larger.
  */
 function computeBaseScale() {
-    const readout = el('tunerReadout');
-    if (!readout || !marks.length) return;
-    const width = readout.clientWidth;
-    if (!width) return; // collapsed/hidden - recomputed when shown
-    const pxPerCent = width / centsWindow();
+    const g = geometry();
+    if (!g || !marks.length) return; // hidden or unbuilt — recomputed when shown
     const complexityOn = isJiMode && el('tunerComplexitySizing').checked;
 
     // Measure full-size (scale 1) content widths in one reflow.
     for (const m of marks) {
-        m.nameEl.style.fontSize = LANE_BASE_REM.names + 'rem';
-        m.rEl.style.fontSize = LANE_BASE_REM.ratios + 'rem';
+        m.nameEl.style.fontSize = g.namePx + 'px';
+        m.rEl.style.fontSize = (g.namePx * RATIO_OF_NAME) + 'px';
         m.nameEl.style.display = 'inline-block';
         m.rEl.style.display = 'inline-block';
     }
@@ -382,11 +528,91 @@ function computeBaseScale() {
         if (i === order.length - 1) gapCents += 1200; // wrap across the octave
         if (gapCents <= 0) continue;
         const need = (a.fullWidth * cf(a) + b.fullWidth * cf(b)) / 2 + MARK_GUTTER_PX;
-        if (need > 0) scale = Math.min(scale, (gapCents * pxPerCent) / need);
+        if (need > 0) scale = Math.min(scale, (gapCents * g.pxPerCent) / need);
     }
     baseScale = Math.max(MIN_SCALE, Math.min(1, scale));
 
-    buildRuler(); // depends on the same width / pxPerCent
+    // Asked again rather than reusing `g`: on the strip the rows are spaced by
+    // the scale that was just decided, so the geometry the ruler is drawn into
+    // is not the one the measuring was done in.
+    buildRuler(geometry());
+}
+
+/**
+ * Draw the cent ruler and the needle.
+ *
+ * THE STRIP'S RULER IS A RUN OF CIRCLES AND THE DIAL'S IS A DOTTED STROKE, and
+ * that is not two ways of doing one thing. The strip scrolls, which a single
+ * transform on a group of circles does for free. The dial cannot: bending the
+ * same trick round the hub would need the group rotated, and a group drawn
+ * over a whole octave at the dial's own degrees-per-cent would wrap round the
+ * hub several times over. So the dial's ruler is one arc whose stroke is a
+ * dash pattern exactly one cent long, and "scrolling" it is a dash offset —
+ * one number per frame, and no DOM at all. See renderFrame for the offset.
+ */
+function buildRuler(g) {
+    const svg = el('tunerRuler');
+    if (!svg) return;
+    const key = `${g.kind}|${g.w}|${g.h}|${centsWindow()}|${marks.length}|${baseScale.toFixed(4)}`;
+    if (rulerShape === key) return;
+    rulerShape = key;
+
+    svg.setAttribute('viewBox', `0 0 ${g.w} ${g.h}`);
+    svg.setAttribute('width', g.w);
+    svg.setAttribute('height', g.h);
+
+    let body = '';
+    if (g.kind === 'dial') {
+        const step = dotStep(g.rRuler * g.radPerCent);
+        const period = g.rRuler * g.radPerCent * step;
+        const a = polar(g, g.rRuler, -g.half);
+        const b = polar(g, g.rRuler, g.half);
+        const dot = 0.01; // a zero-length dash with a round cap is a circle
+        dialDash = { period, dot, radius: g.rRuler, half: g.half,
+                     perCent: g.rRuler * g.radPerCent };
+        body += `<path id="tunerDotTrack" class="tuner-dot-track"`
+             + ` d="M${a.x.toFixed(2)} ${a.y.toFixed(2)}`
+             + ` A ${g.rRuler.toFixed(2)} ${g.rRuler.toFixed(2)} 0 0 1`
+             + ` ${b.x.toFixed(2)} ${b.y.toFixed(2)}"`
+             + ` stroke-width="1.8" stroke-dasharray="${dot} ${(period - dot).toFixed(3)}"/>`;
+
+        const tip = polar(g, g.R * NEEDLE_OUT, 0);
+        const foot = polar(g, g.R * NEEDLE_IN, 0);
+        body += `<line class="tuner-needle" x1="${g.cx.toFixed(2)}" y1="${foot.y.toFixed(2)}"`
+             + ` x2="${tip.x.toFixed(2)}" y2="${(tip.y + 7).toFixed(2)}"/>`
+             + `<circle class="tuner-needle-head" cx="${g.cx.toFixed(2)}"`
+             + ` cy="${foot.y.toFixed(2)}" r="4.5"/>`
+             + `<polygon class="tuner-needle-head" points="`
+             + `${g.cx.toFixed(2)},${tip.y.toFixed(2)} `
+             + `${(g.cx - 6).toFixed(2)},${(tip.y + 13).toFixed(2)} `
+             + `${(g.cx + 6).toFixed(2)},${(tip.y + 13).toFixed(2)}"/>`;
+    } else {
+        dialDash = null;
+        const step = dotStep(g.pxPerCent);
+        const pxPerCent = g.pxPerCent;
+        const cy = g.yRuler.toFixed(1);
+        // A little over one octave on each side, so the run stays covered at
+        // any scroll offset (pitchFolded is in [0, 1200)).
+        let dots = '';
+        for (let c = -300 - (((-300) % step) + step) % step; c < 1500; c += step) {
+            dots += `<circle cx="${(c * pxPerCent).toFixed(2)}" cy="${cy}" r="0.9"/>`;
+        }
+        body += `<g id="tunerRulerScroll">${dots}</g>`;
+        body += `<line class="tuner-needle" x1="${(g.w / 2).toFixed(2)}" y1="0"`
+             + ` x2="${(g.w / 2).toFixed(2)}" y2="${g.h}"/>`;
+    }
+
+    // One larger dot per scale degree, positioned per frame in renderFrame so
+    // it sits under its own note (and turns blue in tune). Painted last so it
+    // sits on top of the ruler.
+    let degreeDots = '';
+    for (let i = 0; i < marks.length; i++) {
+        degreeDots += `<circle class="tuner-degree-dot" cx="-100" cy="-100" r="2.6"/>`;
+    }
+    svg.innerHTML = body + `<g id="tunerRulerDegrees">${degreeDots}</g>`;
+
+    const degEls = svg.querySelectorAll('#tunerRulerDegrees .tuner-degree-dot');
+    marks.forEach((m, i) => { m.dotEl = degEls[i] || null; });
 }
 
 /** Fold a cents difference into [-600, 600). */
@@ -394,58 +620,134 @@ function wrapCents(c) {
     return ((c + 600) % 1200 + 1200) % 1200 - 600;
 }
 
+const setAt = (elm, x, y) => {
+    elm.style.left = x.toFixed(2) + 'px';
+    elm.style.top = y.toFixed(2) + 'px';
+};
+
+/** Put one mark's name, ratio and ruler dot where `delta` cents off puts them. */
+function place(m, g, delta) {
+    if (g.kind === 'dial') {
+        const theta = delta * g.radPerCent;
+        const n = polar(g, g.rNames, theta);
+        const r = polar(g, g.rRatios, theta);
+        const d = polar(g, g.rRuler, theta);
+        setAt(m.nameEl, n.x, n.y);
+        setAt(m.rEl, r.x, r.y);
+        if (m.dotEl) {
+            m.dotEl.setAttribute('cx', d.x.toFixed(2));
+            m.dotEl.setAttribute('cy', d.y.toFixed(2));
+        }
+        return;
+    }
+    const x = g.w / 2 + delta * g.pxPerCent;
+    setAt(m.nameEl, x, g.yNames);
+    setAt(m.rEl, x, g.yRatios);
+    if (m.dotEl) {
+        m.dotEl.setAttribute('cx', x.toFixed(2));
+        m.dotEl.setAttribute('cy', g.yRuler.toFixed(2));
+    }
+}
+
+/**
+ * Scroll the cent ruler so the incoming pitch sits under the needle.
+ *
+ * The dial's half of this is the dash arithmetic promised in buildRuler. Path
+ * length from the arc's start to the point `delta` cents off the needle is
+ * `perCent·(delta + half/radPerCent)`, so an integer cent `n` lands at
+ * `s = period·(n/step - pitch/step) + radius·half`. A dash pattern's k-th dash
+ * begins at `k·period - offset`, so setting `offset = dot/2 + perCent·pitch -
+ * radius·half` puts the middle of a dash on every whole cent — which is what
+ * makes the dial's ruler line up with its degree dots rather than merely look
+ * like a dotted arc.
+ */
+function scrollRuler(g, pitchFolded) {
+    if (g.kind === 'dial') {
+        const track = el('tunerDotTrack');
+        if (!track || !dialDash) return;
+        const { period, dot, radius, half, perCent } = dialDash;
+        let offset = dot / 2 + perCent * pitchFolded - radius * half;
+        offset = ((offset % period) + period) % period;
+        track.setAttribute('stroke-dashoffset', offset.toFixed(3));
+        return;
+    }
+    const scroll = el('tunerRulerScroll');
+    if (scroll) {
+        scroll.setAttribute('transform',
+            `translate(${(g.w / 2 - pitchFolded * g.pxPerCent).toFixed(2)},0)`);
+    }
+}
+
 /** Position every mark for the current incoming pitch. */
 function renderFrame() {
-    const readout = el('tunerReadout');
-    if (!readout) return;
+    const g = geometry();
+    if (!g) return;
 
-    if (latestFreq == null) { el('tunerIdle').style.display = ''; return; }
-    el('tunerIdle').style.display = 'none';
+    const idle = el('tunerIdle');
+    if (latestFreq == null) {
+        if (idle) idle.style.display = '';
+        showHud(null);
+        return;
+    }
+    if (idle) idle.style.display = 'none';
 
-    const width = readout.clientWidth || 240;
-    const pxPerCent = width / centsWindow();
     const half = centsWindow() / 2;
     const refFreq = parseFloat(state.freq1to1) || 261.6256;
-
     const pitchFolded = U.mod(1200 * Math.log2(latestFreq / refFreq), 1200);
     const complexityOn = isJiMode && el('tunerComplexitySizing').checked;
 
-    // Scroll the dotted cent ruler so the incoming pitch sits at the centre line.
-    const scroll = el('tunerRulerScroll');
-    if (scroll) scroll.setAttribute('transform', `translate(${(width / 2 - pitchFolded * pxPerCent).toFixed(2)},0)`);
+    scrollRuler(g, pitchFolded);
+    showHud(pitchFolded);
+
+    // The strip runs off the edge of the field, so a mark a little past the
+    // window is still worth drawing on its way out. The dial's arc simply
+    // stops, and a mark carried past its end would be drawn out in the corner
+    // of the field with nothing under it.
+    const margin = g.kind === 'dial' ? 0 : 24;
 
     for (const m of marks) {
         const delta = wrapCents(m.deg.cents - pitchFolded);
-        const visible = Math.abs(delta) <= half + 24;
+        const visible = Math.abs(delta) <= half + margin;
         setMarkVisible(m, visible);
         if (!visible) continue;
 
         // Ups and Downs: one fixed size for every mark (uniform regardless of
         // density, name length, enh, exclude halves). JI scales per-mark by the
         // density (anti-collision) scale times the complexity (Tenney) scale.
-        if (isJiMode) {
-            const s = baseScale * (complexityOn ? m.complexity : 1);
-            m.nameEl.style.fontSize = (LANE_BASE_REM.names * s) + 'rem';
-            m.rEl.style.fontSize = (LANE_BASE_REM.ratios * s) + 'rem';
-        } else {
-            m.nameEl.style.fontSize = (LANE_BASE_REM.names * EDO_SCALE) + 'rem';
-            m.rEl.style.fontSize = (LANE_BASE_REM.ratios * EDO_SCALE) + 'rem';
-        }
+        const s = isJiMode ? baseScale * (complexityOn ? m.complexity : 1) : EDO_SCALE;
+        m.nameEl.style.fontSize = (g.namePx * s) + 'px';
+        m.rEl.style.fontSize = (g.namePx * RATIO_OF_NAME * s) + 'px';
 
-        const leftPx = width / 2 + delta * pxPerCent;
-        m.nameEl.style.left = leftPx + 'px';
-        m.rEl.style.left = leftPx + 'px';
+        place(m, g, delta);
 
         // In tune (within 4c): name, ratio/step and the ruler degree dot turn
         // fully blue; the three 2c steps either side ramp toward blue.
         const cls = tuneClassFor(Math.abs(delta));
         applyTuneClass(m.nameEl, cls);
         applyTuneClass(m.rEl, cls);
-        if (m.dotEl) {
-            m.dotEl.setAttribute('cx', leftPx.toFixed(2));
-            applyTuneClass(m.dotEl, cls);
-        }
+        applyTuneClass(m.dotEl, cls);
     }
+}
+
+/**
+ * The two numbers the picture cannot say.
+ *
+ * The meter shows where the pitch sits AMONG THE DEGREES, which is what you
+ * tune by; it does not say what the pitch actually is. Hz is the measurement,
+ * and cents-from-1/1 is that same measurement in the app's own units — the
+ * unit every output window and every ratio in the scale is already spoken in.
+ */
+function showHud(pitchFolded) {
+    const f = el('tunerHudFreq');
+    const c = el('tunerHudCents');
+    if (!f || !c) return;
+    if (pitchFolded == null || latestFreq == null) {
+        f.textContent = '—';
+        c.textContent = '—';
+        return;
+    }
+    f.textContent = latestFreq.toFixed(1);
+    c.textContent = pitchFolded.toFixed(1);
 }
 
 /** Mic callback: log-smooth the pitch, snapping on large jumps (new note). */
@@ -462,28 +764,29 @@ function onPitch(freq) {
 
 async function toggleListening() {
     const btn = el('tunerToggleButton');
+    const idle = el('tunerIdle');
     if (Mic.isRunning()) {
         Mic.stop();
         latestFreq = null;
         marks.forEach((m) => setMarkVisible(m, false));
-        btn.textContent = 'on';
+        showHud(null);
+        btn.textContent = 'listen';
         btn.classList.remove('listening-active');
-        el('tunerIdle').textContent = 'press on to start listening';
-        el('tunerIdle').style.display = '';
+        idle.innerHTML = 'press <b>listen</b> to start';
+        idle.style.display = '';
         return;
     }
     try {
         buildMarks();
-        matchTunerHeight();
         computeBaseScale();
         await Mic.start(onPitch);
-        btn.textContent = 'off';
+        btn.textContent = 'stop';
         btn.classList.add('listening-active');
     } catch (e) {
         latestFreq = null;
-        btn.textContent = 'on';
+        btn.textContent = 'listen';
         btn.classList.remove('listening-active');
-        el('tunerIdle').textContent = 'microphone unavailable';
-        el('tunerIdle').style.display = '';
+        idle.textContent = 'microphone unavailable';
+        idle.style.display = '';
     }
 }

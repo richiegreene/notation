@@ -1,182 +1,103 @@
-import { initMidiOutput, sendMpeNoteOn, sendMpeNoteOff, sendMpePitchBendUpdate, releaseAllMpeNotes, playbackMode, isMpeNoteActive } from './mpe-playback.js';
+/* =====================================================================
+ *  IN-BROWSER PLAYBACK
+ * =====================================================================
+ *
+ * The two ways a chord leaves this app as sound — the browser's own synth and
+ * MPE MIDI — behind one call. Everything above this file asks for a list of
+ * frequencies and gets them sounding; which of the two routes carries them is
+ * the Play drawer's business, not the caller's.
+ *
+ * The browser route is Tetrads' and Xenachord Designer's voice engine (see
+ * ./synth/), not a bank of OscillatorNodes. Three things follow from that, and
+ * all three are the reason for the change:
+ *
+ *   The wavetables are band-limited per octave, so a partial that would fall
+ *   above Nyquist is not synthesised at all rather than folded back down as an
+ *   inharmonic tone somewhere inside the interval being compared. In an app
+ *   whose whole subject is exact pitch, an aliased partial is a wrong answer.
+ *
+ *   There is a second family — the filtered wavetable — whose brightness
+ *   follows its own amplitude, so the attack of a note opens up and its tail
+ *   closes down. That is a property of the recursion, not an effect bolted on
+ *   after, which is why the envelope lives inside the oscillator.
+ *
+ *   The envelope is an ADSR the user can draw, replacing the fixed 0.1s fade
+ *   in and out. `fadeDuration` therefore no longer describes the sound — the
+ *   release does — but it is still accepted and still honoured by the MPE
+ *   route, so no caller had to change.
+ *
+ * One voice id per column, so a chord re-struck while it is already sounding
+ * takes its own voices back rather than stacking a second copy on top.
+ * ------------------------------------------------------------------ */
 
-let audioCtx;
-export let currentPeriodicWave = null; // Export to be accessible for other modules if needed
-let compensationGainNode;
+import {
+    sendMpeNoteOn, sendMpeNoteOff, sendMpePitchBendUpdate,
+    releaseAllMpeNotes, playbackMode, isMpeNoteActive,
+} from './mpe-playback.js';
+import * as Voice from './synth/voice.js';
+import { FILTERED_MIN } from './synth/timbre.js';
 
-const numHarmonics = 64;
-const sineCoeffs = new Float32Array(numHarmonics);
-const triangleCoeffs = new Float32Array(numHarmonics);
-const sawtoothCoeffs = new Float32Array(numHarmonics);
-const squareCoeffs = new Float32Array(numHarmonics);
+/** What the Play drawer opens on: a filtered saw, the engine's own default. */
+export const DEFAULT_TIMBRE = FILTERED_MIN + 200;
+export const DEFAULT_ADSR = { a: 0.016, d: 0.120, s: 0.66, r: 0.544 };
 
-sineCoeffs[1] = 1;
+/** Ids of the browser voices currently sounding, so they can be released. */
+let sounding = [];
 
-for (let i = 1; i < numHarmonics; i++) {
-    const n = i;
-    // Sawtooth: 1/n
-    sawtoothCoeffs[n] = 1 / n;
-    if (n % 2 !== 0) {
-        // Square: 1/n for odd harmonics
-        squareCoeffs[n] = 1 / n;
-        // Triangle: 1/n^2 for odd harmonics, with alternating sign
-        triangleCoeffs[n] = (1 / (n * n)) * ((n - 1) % 4 === 0 ? 1 : -1);
-    }
-}
-
-const waveCoeffs = [sineCoeffs, triangleCoeffs, sawtoothCoeffs, squareCoeffs];
-const realCoeffs = new Float32Array(numHarmonics).fill(0); // All waves sine-based
-
-// Gain compensation values to normalize perceived loudness.
-// Sine, Triangle, Sawtooth, Square
-const loudnessCompensation = [1.0, 1.0, 0.6, 0.75]; 
-
+/**
+ * Build the audio graph before anybody plays it.
+ *
+ * Named as it always was — every caller says `initAudio()` — but it no longer
+ * creates a context and stops there: see warm() in ./synth/voice.js for why
+ * the graph has to be standing before the first gesture rather than built by
+ * it. Nothing sounds until a note is asked for.
+ */
 export function initAudio() {
-    if (audioCtx) return; // Already initialized
-    try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        compensationGainNode = audioCtx.createGain();
-        compensationGainNode.connect(audioCtx.destination);
-    } catch (e) {
-        console.error(`Error creating audio context: ${e.message}`);
-    }
+    Voice.warm();
 }
 
-export function updateWaveform(sliderValue) {
-    if (!audioCtx) initAudio();
-
-    // Handle the edge case for a pure square wave at the slider's maximum
-    if (sliderValue >= 3) {
-        const pureSquareCoeffs = waveCoeffs[3];
-        if (compensationGainNode) {
-            compensationGainNode.gain.setTargetAtTime(loudnessCompensation[3], audioCtx.currentTime, 0.01);
-        }
-        currentPeriodicWave = audioCtx.createPeriodicWave(realCoeffs, pureSquareCoeffs, { disableNormalization: false });
-        drawWaveform(pureSquareCoeffs);
-        return;
-    }
-
-    const floor = Math.floor(sliderValue);
-    const ceil = Math.ceil(sliderValue);
-    const mix = sliderValue - floor;
-
-    const fromCoeffs = waveCoeffs[floor];
-    const toCoeffs = waveCoeffs[ceil];
-
-    const interpolatedImag = new Float32Array(numHarmonics);
-    for (let i = 1; i < numHarmonics; i++) {
-        const from = fromCoeffs[i] || 0;
-        const to = toCoeffs[i] || 0;
-        interpolatedImag[i] = from + (to - from) * mix;
-    }
-
-    // Interpolate gain compensation
-    const fromGain = loudnessCompensation[floor];
-    const toGain = loudnessCompensation[ceil];
-    const interpolatedGain = fromGain + (toGain - fromGain) * mix;
-
-    if (compensationGainNode) {
-        compensationGainNode.gain.setTargetAtTime(interpolatedGain, audioCtx.currentTime, 0.01);
-    }
-
-    currentPeriodicWave = audioCtx.createPeriodicWave(realCoeffs, interpolatedImag, { disableNormalization: false });
-    
-    drawWaveform(interpolatedImag);
+/** The wave every browser voice is synthesised from. */
+export function setTimbre(value) {
+    Voice.setTimbre(value);
 }
 
-// Coordinate space of the SVG viewBox (see #waveformSvg in index.html). The
-// path is vector, so this only sets the aspect ratio - it renders crisply at
-// any physical size or device pixel ratio.
-const WAVEFORM_WIDTH = 60;
-const WAVEFORM_HEIGHT = 30;
-// Sample count is decoupled from pixel width now that the curve is vector: a
-// higher count gives a smoother trace (and cleaner square-wave edges).
-const WAVEFORM_SAMPLES = 256;
-
-export function drawWaveform(imag) {
-    const path = document.getElementById('waveformPath');
-    if (!path) return;
-
-    const yCenter = WAVEFORM_HEIGHT / 2;
-    const amplitude = WAVEFORM_HEIGHT * 0.4;
-
-    let maxVal = 0;
-    const wave = new Float32Array(WAVEFORM_SAMPLES);
-    for (let i = 0; i < WAVEFORM_SAMPLES; i++) {
-        const time = i / WAVEFORM_SAMPLES;
-        let y = 0;
-        for (let n = 1; n < imag.length; n++) {
-            y += imag[n] * Math.sin(2 * Math.PI * n * time);
-        }
-        wave[i] = y;
-        if (Math.abs(y) > maxVal) {
-            maxVal = Math.abs(y);
-        }
-    }
-
-    if (maxVal === 0) maxVal = 1; // silence: keep the trace flat, avoid /0
-
-    // Build the SVG path, normalized so the peak fills `amplitude`.
-    let d = '';
-    for (let i = 0; i < WAVEFORM_SAMPLES; i++) {
-        const x = (i / (WAVEFORM_SAMPLES - 1)) * WAVEFORM_WIDTH;
-        const y = yCenter - (wave[i] / maxVal) * amplitude;
-        d += `${i === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`;
-    }
-    path.setAttribute('d', d);
+/** The shape of a note: attack, decay, sustain level, release. */
+export function setAdsr(envelope) {
+    Voice.setAdsr(envelope);
 }
 
-let voices = [];
-
+/**
+ * Sound a chord.
+ *
+ * @param {number[]} frequencies one per output column, in Hz
+ * @param {number} fadeDuration kept for the MPE route and for callers; the
+ *        browser route's shape is the drawn envelope instead
+ * @param {number} slideDuration MPE pitch-bend glide, in seconds
+ */
 export function playFrequencies(frequencies, fadeDuration = 0.1, slideDuration = 0.1) {
-    // --- Handle Browser Audio Playback ---
-    if (playbackMode === 'browser' || playbackMode === undefined) { // playbackMode undefined for initial load
-        if (!audioCtx) initAudio();
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
+    if (playbackMode === 'browser' || playbackMode === 'both' || playbackMode === undefined) {
+        // Anything left over from the previous chord goes into its release
+        // before the new one is struck, so a re-press is not two chords deep.
+        releaseBrowserVoices();
 
-        stopAllFrequencies(0); // Stop any currently playing browser notes immediately
-
-        frequencies.forEach(freq => {
-            if (freq <= 20 || freq >= 20000) {
+        frequencies.forEach((freq, index) => {
+            if (!(freq > 20) || freq >= 20000) {
                 console.warn(`Frequency ${freq}Hz is out of audible range or unsafe, skipping.`);
                 return;
             }
-
-            const osc = audioCtx.createOscillator();
-            if (currentPeriodicWave) {
-                osc.setPeriodicWave(currentPeriodicWave);
-            } else {
-                osc.type = 'sine';
-            }
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-            const gainNode = audioCtx.createGain();
-            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + fadeDuration);
-
-            osc.connect(gainNode);
-            gainNode.connect(compensationGainNode);
-            osc.start(audioCtx.currentTime);
-
-            voices.push({ osc, gain: gainNode });
+            const id = `col-${index}`;
+            Voice.noteOn(id, freq);
+            sounding.push(id);
         });
-    } else {
-        // If not in browser mode, stop any existing browser audio
-        if (voices.length > 0) {
-            stopAllFrequencies(0); // Immediately stop browser audio
-        }
+    } else if (sounding.length) {
+        releaseBrowserVoices();
     }
 
-    // --- Handle MPE MIDI Playback ---
     if (playbackMode === 'mpe-midi' || playbackMode === 'both') {
-        // new channel requested for each note in the chord.
-
         const currentChordIndices = new Set(frequencies.map((_, index) => index));
-        
-        // Find notes that were active but are no longer in the current chord
-        for (let i = 0; i < 4; i++) { // Iterate through potential previous notes
+
+        // Any channel that was sounding a note this chord no longer has.
+        for (let i = 0; i < 16; i++) {
             if (isMpeNoteActive(i) && !currentChordIndices.has(i)) {
                 sendMpeNoteOff(i);
             }
@@ -190,49 +111,27 @@ export function playFrequencies(frequencies, fadeDuration = 0.1, slideDuration =
             }
         });
     } else {
-        releaseAllMpeNotes(); // Ensure MIDI notes are off if switching away from MIDI mode
+        releaseAllMpeNotes();
     }
 }
 
+/**
+ * Stop everything sounding.
+ *
+ * `fadeDuration` no longer sets how long the browser voices take to go — the
+ * envelope's release does — but it is still the signature every caller uses,
+ * and it still decides the MPE side. Kept rather than removed so a call site
+ * that means "stop quickly" is not silently reinterpreted.
+ */
 export function stopAllFrequencies(fadeDuration = 0.1) {
-    // --- Stop Browser Audio ---
-    if (playbackMode === 'browser' || playbackMode === undefined) {
-        const stopDelay = fadeDuration * 1000 + 50; // A bit longer than fade to ensure sound stops
-
-        voices.forEach(voice => {
-            voice.gain.gain.cancelScheduledValues(audioCtx.currentTime);
-            voice.gain.gain.setValueAtTime(voice.gain.gain.value, audioCtx.currentTime);
-            voice.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDuration);
-        });
-
-        const oldVoices = voices;
-        voices = [];
-        setTimeout(() => {
-            oldVoices.forEach(voice => {
-                try {
-                    voice.osc.stop();
-                    voice.osc.disconnect();
-                    voice.gain.disconnect();
-                } catch (e) {
-                    console.warn("Error stopping audio voice:", e);
-                }
-            });
-        }, stopDelay);
-    } else {
-        voices.forEach(voice => {
-            try {
-                voice.osc.stop();
-                voice.osc.disconnect();
-                voice.gain.disconnect();
-            } catch (e) {
-                console.warn("Error stopping audio voice:", e);
-            }
-        });
-        voices = [];
-    }
-
-    // --- Stop MPE MIDI ---
+    releaseBrowserVoices();
     if (playbackMode === 'mpe-midi' || playbackMode === 'both') {
         releaseAllMpeNotes();
     }
+}
+
+function releaseBrowserVoices() {
+    if (!sounding.length) return;
+    for (const id of sounding) Voice.noteOff(id);
+    sounding = [];
 }

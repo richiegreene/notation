@@ -4,9 +4,12 @@ import { state } from './calc/state.js';
 import * as Calc from './calc/calculator.js';
 import * as UI from './calc/ui.js';
 import { generateJohnstonPalette, generateJohnstonOutputColumns } from './calc/johnston.js';
-import { initAudio, updateWaveform, playFrequencies, stopAllFrequencies, currentPeriodicWave } from './audio-playback.js'; // Import audio functions
+import { initAudio, playFrequencies, stopAllFrequencies, setTimbre, setAdsr,
+         DEFAULT_TIMBRE, DEFAULT_ADSR } from './audio-playback.js'; // Import audio functions
+import { createTimbrePicker } from './synth/timbre.js'; // The Play drawer's wave picker
+import { attachAdsrEditor } from './synth/adsr.js';     // ...and its envelope editor
 import { initMidiOutput, setPlaybackMode, midiOutputSelect, midiDeviceSelectorDiv } from './mpe-playback.js'; // Import MPE functions
-import { initTuner } from './calc/tuner.js'; // Import Tuner window controller
+import { initTuner, setTunerShape, refitTuner } from './calc/tuner.js'; // Import Tuner stage controller
 import { initHistory } from './calc/history.js'; // Import undo/redo history
 
 let slideDuration = 0.25; // Default slide duration, can be made configurable
@@ -21,6 +24,10 @@ const MASONRY_VGAP = 8; // px of vertical space left below each card
 function layoutMasonry() {
     const container = document.querySelector('.calc-container');
     if (!container) return;
+    // The cards are display:none while the Tuner stage is up, so every card
+    // measures zero and every span would collapse to 1. Nothing is laid out
+    // that cannot be seen; coming back to the stage relayouts.
+    if (!container.clientWidth) return;
     container.querySelectorAll('.settings-menu-item').forEach(item => {
         // With align-items:start the card keeps its natural content height
         // regardless of how many row tracks it spans, so this is the true height.
@@ -356,15 +363,242 @@ function downloadCsv(content, filename) {
     }
 }
 
+
+/* =====================================================================
+ *  THE RAIL — two stages and three drawers
+ * =====================================================================
+ *
+ * Tetrads' and Xenachord Designer's rail, with one addition those two do not
+ * need: this app has two things to look at rather than one, so the rail holds
+ * STAGES as well as DRAWERS and the two behave differently.
+ *
+ *   A DRAWER is a set of controls beside whatever you are looking at.
+ *   Pressing the one you are in shuts it and gives the stage its width back;
+ *   pressing another switches to it. Settings and Play act on both stages —
+ *   the 1/1 a name is measured from is the 1/1 the tuner reads against — so
+ *   changing stage never shuts them.
+ *
+ *   A STAGE is what the window is showing, and there is exactly one.
+ *
+ *   TUNER IS BOTH, and that is not a compromise: its drawer is settings for
+ *   its stage and for nothing else, so wanting one without the other on the
+ *   way in is not a thing anybody wants. Pressing it takes you there and
+ *   opens them; pressing it again shuts the drawer and leaves you on the
+ *   meter with the whole window, which is how you actually use it.
+ * ------------------------------------------------------------------ */
+function setupPanel() {
+    const panel = document.getElementById('panel');
+    const main = document.getElementById('main');
+    if (!panel || !main) return;
+
+    const drawerButtons = panel.querySelectorAll('.rail-btn[data-drawer]');
+    const stageButtons = panel.querySelectorAll('.rail-btn[data-stage]');
+
+    /** Which drawer is up, or null if the panel is shut. */
+    const openDrawer = () => {
+        if (!panel.classList.contains('open')) return null;
+        const d = panel.querySelector('.drawer:not(.hidden)');
+        return d ? d.dataset.drawer : null;
+    };
+
+    const setDrawer = (name) => {
+        for (const d of panel.querySelectorAll('.drawer')) {
+            d.classList.toggle('hidden', d.dataset.drawer !== name);
+        }
+        for (const b of drawerButtons) {
+            b.setAttribute('aria-expanded', String(b.dataset.drawer === name));
+        }
+        panel.classList.toggle('open', !!name);
+        afterLayout();
+    };
+
+    const setStage = (name) => {
+        main.dataset.stage = name;
+        for (const b of stageButtons) b.classList.toggle('on', b.dataset.stage === name);
+        afterLayout();
+    };
+
+    /* The panel's width is animated, so what a measurement taken now would
+       find is a width that is on its way somewhere. Both things that measure
+       are asked again when it lands — and both also watch their own boxes, so
+       a transition that never fires (a browser with animations off, a stage
+       switched while the panel was already still) costs nothing. */
+    function afterLayout() {
+        scheduleMasonry();
+        refitTuner();
+    }
+    panel.addEventListener('transitionend', (e) => {
+        if (e.propertyName === 'width') afterLayout();
+    });
+
+    for (const btn of panel.querySelectorAll('.rail-btn[data-drawer], .rail-btn[data-stage]')) {
+        btn.addEventListener('click', () => {
+            const stage = btn.dataset.stage;
+            const drawer = btn.dataset.drawer;
+
+            if (stage && drawer) {          // Tuner — see the header above
+                if (main.dataset.stage !== stage) {
+                    setStage(stage);
+                    setDrawer(drawer);
+                } else {
+                    setDrawer(openDrawer() === drawer ? null : drawer);
+                }
+            } else if (stage) {             // Notation
+                setStage(stage);
+                // The tuner's options are settings for a stage you have left.
+                if (openDrawer() === 'tuner') setDrawer(null);
+            } else {                        // Settings, Play
+                setDrawer(openDrawer() === drawer ? null : drawer);
+            }
+        });
+    }
+
+    /* ON A NARROW WINDOW THE DRAWER STARTS SHUT.
+       The markup opens on Settings, which is right at a desk: the drawer is
+       340px of a wide window and the cards still have most of it. On a phone
+       held upright that same 340px is nearly the whole screen, and the app
+       would open on its settings with the thing they are settings for reduced
+       to a strip. Measured in geometry rather than by pointer type, because it
+       is the width that is the problem. */
+    if (window.matchMedia('(max-width: 900px), (max-height: 500px)').matches) {
+        setDrawer(null);
+    }
+}
+
+
+/* =====================================================================
+ *  THE PLAY DRAWER'S TWO DRAWN CONTROLS
+ * =====================================================================
+ *
+ * Tetrads' and Xenachord Designer's own picker and ADSR editor, built from the
+ * same modules (js/synth/timbre.js, js/synth/adsr.js), so the family list and
+ * the slider's range are written in by createTimbrePicker rather than spelled
+ * out in this app's markup and the three cannot come to offer different
+ * shapes. What replaced a single slider and a drawn SVG of the wave: the
+ * slider is still there, but it now crosses two families of synthesis and the
+ * note it makes has an envelope you can take hold of.
+ * ------------------------------------------------------------------ */
+const SYNTH_STORE = 'notation.synth.v1';
+
+let synthPicker = null;
+let synthAdsrEditor = null;
+let synthState = { timbre: DEFAULT_TIMBRE, adsr: { ...DEFAULT_ADSR } };
+
+/** The colours the two canvases are drawn in, read off the live theme. */
+function synthColours() {
+    const css = getComputedStyle(document.documentElement);
+    const light = document.documentElement.getAttribute('data-theme') === 'light';
+    return {
+        line: (css.getPropertyValue('--accent') || '#007bff').trim(),
+        axis: (css.getPropertyValue('--line') || '#555').trim(),
+        grid: light ? '#e2e2e2' : '#2e2e2e',
+    };
+}
+
+/** Redraw both canvases — after a theme change, or once they have a size. */
+function repaintSynthCanvases() {
+    if (synthPicker) synthPicker.refresh();
+    if (synthAdsrEditor) synthAdsrEditor.redraw();
+}
+
+function saveSynth() {
+    try { localStorage.setItem(SYNTH_STORE, JSON.stringify(synthState)); } catch (e) {}
+}
+
+function loadSynth() {
+    try {
+        const raw = localStorage.getItem(SYNTH_STORE);
+        if (!raw) return;
+        const v = JSON.parse(raw);
+        if (typeof v.timbre === 'number') synthState.timbre = v.timbre;
+        if (v.adsr && ['a', 'd', 's', 'r'].every((k) => typeof v.adsr[k] === 'number')) {
+            synthState.adsr = v.adsr;
+        }
+    } catch (e) {}
+}
+
+function setupSynthDrawer() {
+    const el = (id) => document.getElementById(id);
+    if (!el('s-family')) return;
+    if (!synthPicker) loadSynth(); // only on the way in, not on a rebuild
+
+    synthPicker = createTimbrePicker(
+        { family: el('s-family'), slider: el('s-timbre'), ticks: el('s-ticks'),
+          label: el('s-label'), canvas: el('s-wave') },
+        {
+            value: synthState.timbre,
+            ...synthColours(),
+            onInput: (v) => { synthState.timbre = v; setTimbre(v); },
+            onChange: saveSynth,
+        },
+    );
+
+    /** The four numbers under the curve, in the units they are set in. */
+    function showAdsr() {
+        const e = synthState.adsr;
+        const ms = (v) => (v >= 1 ? `${v.toFixed(2)} s` : `${Math.round(v * 1000)} ms`);
+        el('s-a').textContent = `A ${ms(e.a)}`;
+        el('s-d').textContent = `D ${ms(e.d)}`;
+        el('s-s').textContent = `S ${Math.round(e.s * 100)}%`;
+        el('s-r').textContent = `R ${ms(e.r)}`;
+    }
+
+    synthAdsrEditor = attachAdsrEditor(
+        el('s-adsr'),
+        () => synthState.adsr,
+        (next) => { synthState.adsr = next; setAdsr(next); showAdsr(); saveSynth(); },
+        synthColours(),
+    );
+
+    setTimbre(synthState.timbre);
+    setAdsr(synthState.adsr);
+    showAdsr();
+
+    /* A canvas has no size until it is laid out, and one in a drawer that is
+       shut has none at all — so both are drawn again whenever they get one. */
+    if (typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(repaintSynthCanvases);
+        ro.observe(el('s-wave'));
+        ro.observe(el('s-adsr'));
+    }
+}
+
+/* THE THEME CHANGED, SO THE TWO CANVASES HAVE TO BE BUILT AGAIN.
+ *
+ * Everything else in the app follows a token change on its own, because
+ * everything else is CSS. These two are painted — the picker and the editor
+ * are handed a line colour and an axis colour once, at construction, and they
+ * keep them for every later redraw. Repainting with fresh colours would fix
+ * the picture until the next drag, which would come out in the old ones.
+ *
+ * So the drawer is made again rather than repainted, and the canvases are
+ * replaced with clones of themselves first: attachAdsrEditor listens on the
+ * canvas node, and a second editor on the same node would run every drag
+ * twice. A clone carries the markup and none of the listeners, which is the
+ * shortest way to say "this control is new". The values survive because they
+ * live in synthState, not in either module.
+ */
+function rebuildSynthDrawer() {
+    for (const id of ['s-wave', 's-adsr']) {
+        const old = document.getElementById(id);
+        if (old) old.replaceWith(old.cloneNode(false));
+    }
+    setupSynthDrawer();
+}
+
 $(document).ready(function(){
     applyStoredTheme(); // Apply theme on load
+    setupPanel();       // The rail: two stages, three drawers
 
-    // Theme toggle functionality
+    // Theme toggle functionality. The wave and the envelope are painted into
+    // canvases rather than styled by CSS, so unlike everything else in the app
+    // they do not follow a token change on their own — they are redrawn here.
     $("#theme-toggle").on("click", function() {
         const currentTheme = document.documentElement.getAttribute("data-theme");
         const newTheme = currentTheme === "dark" ? "light" : "dark";
         document.documentElement.setAttribute("data-theme", newTheme);
         localStorage.setItem("theme", newTheme);
+        rebuildSynthDrawer();
     });
 
     // Keyboard shortcut to toggle save buttons visibility
@@ -396,8 +630,14 @@ $(document).ready(function(){
     // Build the Johnston Entry palette before any calculation reads it.
     generateJohnstonPalette();
 
-    // Wire up the Tuner window (mic stays closed until its toggle is pressed).
+    // Wire up the Tuner stage (mic stays closed until its toggle is pressed).
     initTuner();
+
+    // Straight or round, from the Tuner drawer. A segmented pair rather than a
+    // checkbox because these are two alternatives, not a thing that is on.
+    $("#tuner-shape-seg button").on("click", function() {
+        setTunerShape(this.dataset.v);
+    });
 
 	state.kammerTon = $("#frequencyA4").val();
 	state.precision = $("#precision").val();
@@ -412,33 +652,31 @@ $(document).ready(function(){
     $("#edoApproximationInput").trigger("change");
 
 
-    initAudio(); // Initialize the audio context
-    updateWaveform(parseFloat($("#timbreSlider").val())); // Set initial waveform
+    initAudio(); // Bring the voice engine up (silent until a note is asked for)
+    setupSynthDrawer(); // The Play drawer's wave picker and envelope editor
 
-    // Playback Mode change listener
+    // Playback Mode change listener.
+    //
+    // The Synth fieldset is shown whenever the browser's own engine is part of
+    // what is sounding, which now includes "Both" — the MIDI device has its own
+    // sound and the browser's wave still applies to the browser's half.
     $("#playbackMode").on("change", async function() {
         const selectedMode = $(this).val();
         setPlaybackMode(selectedMode); // Update the global playback mode in mpe-playback.js
 
-        const timbreRow = $("#timbre-row");
+        const usesMidi = selectedMode === 'mpe-midi' || selectedMode === 'both';
+        const usesBrowser = selectedMode !== 'mpe-midi';
 
-        if (selectedMode === 'mpe-midi') {
-            await initMidiOutput(); // Initialize MIDI when MPE MIDI is selected
-            if (midiDeviceSelectorDiv) {
-                midiDeviceSelectorDiv.style.display = 'flex'; // Show MIDI device selector
-            }
-            if (timbreRow) {
-                timbreRow.hide(); // Hide timbre slider and waveform
-            }
-        } else { // 'browser' selected
-            if (midiDeviceSelectorDiv) {
-                midiDeviceSelectorDiv.style.display = 'none'; // Hide MIDI device selector
-            }
-            if (timbreRow) {
-                timbreRow.show(); // Show timbre slider and waveform
-            }
-            stopAllFrequencies(0.1); // Stop any active MIDI notes if switching away from MPE
+        if (usesMidi) {
+            await initMidiOutput(); // Initialize MIDI when a MIDI mode is selected
+            if (midiDeviceSelectorDiv) midiDeviceSelectorDiv.style.display = 'flex';
+        } else if (midiDeviceSelectorDiv) {
+            midiDeviceSelectorDiv.style.display = 'none';
         }
+        $("#synth-fieldset").toggle(usesBrowser);
+        if (usesBrowser) repaintSynthCanvases(); // it had no size while hidden
+
+        stopAllFrequencies(0.1); // Nothing carries over a change of route
         performCalculationsAndStopPlayback(); // Recalculate and stop any playing sounds
     });
 
@@ -1058,11 +1296,6 @@ $(document).ready(function(){
         if (inChord && !$("#chordInput").prop("checked")) return;
         if (inInterval && !$("#intervalInput").prop("checked")) return;
         performCalculationsAndStopPlayback();
-    });
-
-    // Timbre slider event listener
-    $("#timbreSlider").on("input", function() {
-        updateWaveform(parseFloat($(this).val()));
     });
 
     // Play button event listener

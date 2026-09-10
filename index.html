@@ -12,201 +12,375 @@
 	<script type="module" src="js/main.js"></script>
 </head>
 <body>
-    <div class="calc-container">
-        <div class="settings-menu-item" id="ref-pitch-item">
-            <div class="toggle-header-placement">
-                <span>Settings</span>
-                <span class="toggle-icon">▼</span>
+
+<!-- =====================================================================
+     THE RAIL, THE DRAWER AND THE STAGE
+     =====================================================================
+
+     Tetrads' and Xenachord Designer's chrome, on the same terms: a 60px rail
+     of icons down the left, one drawer open at a time beside it, and the rest
+     of the window given to whatever is being worked on.
+
+     The rail is in two halves, and they are two different kinds of thing.
+
+     THE TOP TWO ARE STAGES — what the window is showing. Notation is the
+     nine cards; Tuner is the full-screen meter. They are exclusive, and the
+     one you are in is lit.
+
+     THE THREE UNDER THEM ARE DRAWERS — settings that act on whichever stage
+     is up. Settings and Play belong to both stages (the 1/1 a name is
+     measured from is the 1/1 the tuner reads against; the wave an output
+     window plays is the app's one wave), so switching stage does not shut
+     them. Tuner's own options are a drawer as well, and pressing Tuner takes
+     you to the stage AND opens them, because there is no reason to want one
+     without the other on the way in.
+
+     The foot of the rail is the app's own switches rather than any drawer's:
+     where the source lives, and whether the window is night or day.
+     ================================================================== -->
+<div id="app">
+
+  <aside id="panel" class="open">
+    <div class="rail">
+
+      <!-- Notation: the cards. A grid, because that is what it is — nine
+           windows you arrange yourself. -->
+      <button class="rail-btn stage-btn on" data-stage="cards"
+        title="Notation — the entry and output windows">
+        <svg class="rail-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor"
+          stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3.5" y="3.5" width="8" height="8" rx="1.5" />
+          <rect x="14.5" y="3.5" width="8" height="8" rx="1.5" />
+          <rect x="3.5" y="14.5" width="8" height="8" rx="1.5" />
+          <rect x="14.5" y="14.5" width="8" height="8" rx="1.5" />
+        </svg>
+      </button>
+
+      <!-- Tuner: a needle on a dial. Both a stage and a drawer — see above. -->
+      <button class="rail-btn stage-btn" data-stage="tuner" data-drawer="tuner"
+        aria-expanded="false" title="Tuner — listen, and read the pitch">
+        <svg class="rail-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor"
+          stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3.6 18.5a10.5 10.5 0 1 1 18.8 0" />
+          <path d="M13 18.5L17.4 9.9" />
+          <circle cx="13" cy="18.5" r="1.5" fill="currentColor" stroke="none" />
+        </svg>
+      </button>
+
+      <div class="rail-sep" aria-hidden="true"></div>
+
+      <!-- Settings: what every reading in the app is measured from. -->
+      <button class="rail-btn" data-drawer="settings" aria-expanded="true"
+        title="Settings — what 1/1 is, and how it is read">
+        <svg class="rail-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor"
+          stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="13" cy="13" r="3.1" />
+          <path d="M20.4 15.7a1.6 1.6 0 0 0 .32 1.77l.06.06a1.95 1.95 0 1 1-2.76 2.76l-.06-.06a1.6 1.6 0 0 0-1.77-.32 1.6 1.6 0 0 0-.97 1.47v.17a1.95 1.95 0 1 1-3.9 0v-.09a1.6 1.6 0 0 0-1.05-1.47 1.6 1.6 0 0 0-1.77.32l-.06.06a1.95 1.95 0 1 1-2.76-2.76l.06-.06a1.6 1.6 0 0 0 .32-1.77 1.6 1.6 0 0 0-1.47-.97h-.17a1.95 1.95 0 1 1 0-3.9h.09a1.6 1.6 0 0 0 1.47-1.05 1.6 1.6 0 0 0-.32-1.77l-.06-.06a1.95 1.95 0 1 1 2.76-2.76l.06.06a1.6 1.6 0 0 0 1.77.32h.08a1.6 1.6 0 0 0 .97-1.47v-.17a1.95 1.95 0 1 1 3.9 0v.09a1.6 1.6 0 0 0 .97 1.47 1.6 1.6 0 0 0 1.77-.32l.06-.06a1.95 1.95 0 1 1 2.76 2.76l-.06.06a1.6 1.6 0 0 0-.32 1.77v.08a1.6 1.6 0 0 0 1.47.97h.17a1.95 1.95 0 1 1 0 3.9h-.09a1.6 1.6 0 0 0-1.47.97z" />
+        </svg>
+      </button>
+
+      <!-- Play: how the app sounds — through the browser, through MPE, or
+           both, and in what wave and what envelope. -->
+      <button class="rail-btn" data-drawer="play" aria-expanded="false"
+        title="Play — how the app sounds">
+        <svg class="rail-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor"
+          stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9.5 6.5l9.5 6.5-9.5 6.5z" />
+        </svg>
+      </button>
+
+      <a class="rail-btn" id="info-link" href="https://github.com/richiegreene/notation"
+        target="_blank" rel="noopener noreferrer" title="About notation">
+        <svg class="rail-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor"
+          stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="13" cy="13" r="9.5" /><path d="M13 11.5v6" /><path d="M13 8.6v.1" />
+        </svg>
+      </a>
+
+      <!-- ---- night or day ----
+           Not a mode and not a setting of any one drawer: it is a property of
+           the whole window, and the foot of the rail is where the app's own
+           switches live.
+
+           Two glyphs, one shown at a time — the crescent while the app is dark,
+           the sun while it is light. The icon is the STATE rather than the
+           action, which is the reading every phone already gave the user. -->
+      <button class="rail-btn" id="theme-toggle" title="Light or dark"
+        aria-label="Toggle light and dark">
+        <svg class="rail-icon theme-icon dark-icon" viewBox="0 0 26 26" fill="none"
+          stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15.4A8.6 8.6 0 0 1 10.6 5a8.6 8.6 0 1 0 10.4 10.4z" />
+        </svg>
+        <svg class="rail-icon theme-icon light-icon" viewBox="0 0 26 26" fill="none"
+          stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <circle cx="13" cy="13" r="4.6" />
+          <path d="M13 2.6v2.6M13 20.8v2.6M2.6 13h2.6M20.8 13h2.6" />
+          <path d="M5.65 5.65l1.85 1.85M18.5 18.5l1.85 1.85M20.35 5.65L18.5 7.5M7.5 18.5l-1.85 1.85" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="panel-body">
+      <div class="drawers">
+
+        <!-- ============ SETTINGS ============
+             What every reading in the app is measured from, and how finely it
+             is reported. Playback used to sit at the foot of this list; it is
+             the Play drawer now, because how the app SOUNDS is not a setting
+             of what a name MEANS. -->
+        <div class="drawer" data-drawer="settings">
+          <h1>notation <small>· settings</small></h1>
+
+          <fieldset>
+            <legend>Display</legend>
+            <label for="precision">Decimal places</label>
+            <select id="precision"
+              title="How many decimal places every frequency and cent value in the app is reported to.">
+              <option value="6">6</option>
+              <option value="5">5</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1</option>
+              <option value="0" selected>0</option>
+            </select>
+          </fieldset>
+
+          <!-- Where the whole lattice is pinned. Every name spelled in every
+               output window, and every degree the tuner reads against, is
+               measured from this one pitch. -->
+          <fieldset>
+            <legend>Defining 1/1</legend>
+            <div class="ref-pitch-controls-centered">
+              <select id="diatonicNoteDropdown">
+                <option value="0">F</option>
+                <option value="1" selected>C</option>
+                <option value="2">G</option>
+                <option value="3">D</option>
+                <option value="4">A</option>
+                <option value="5">E</option>
+                <option value="6">B</option>
+              </select>
+              <select id="refAccidentalDropdown">
+                <option value="0">♭</option>
+                <option value="1" selected>♮</option>
+                <option value="2">♯</option>
+              </select>
+              <select id="octaveDropdown">
+                <option value="1">-4</option>
+                <option value="2">-3</option>
+                <option value="3">-2</option>
+                <option value="4">-1</option>
+                <option value="5">0</option>
+                <option value="6">1</option>
+                <option value="7">2</option>
+                <option value="8">3</option>
+                <option value="9" selected>4</option>
+                <option value="10">5</option>
+                <option value="11">6</option>
+                <option value="12">7</option>
+              </select>
             </div>
-            <div class="settings-content">
-                <div class="display-label-row">
-                    <h3>Display</h3>
-                </div>
-                <div class="display-options-container">
-                    <div class="precision-control-group">
-                        <select id="precision">
-                            <option value="6">6</option>
-                            <option value="5">5</option>
-                            <option value="4">4</option>
-                            <option value="3">3</option>
-                            <option value="2">2</option>
-                            <option value="1">1</option>
-                            <option value="0" selected>0</option>
-                        </select>
-                        <div class="theme-toggle-container">
-                            <button id="theme-toggle" aria-label="Toggle theme">
-                                <span class="icon light-icon">●</span>
-                                <span class="icon dark-icon">⏾</span>
-                            </button>
-                        </div>
-                        <a href="https://github.com/richiegreene/notation" target="_blank" class="info-link" aria-label="GitHub Repository">ⓘ</a>
-                    </div>
-                </div>
-                <div class="refbox">
-                    <h3>Defining 1/1</h3>
-                    <br>
-                    <div class="ref-pitch-controls-centered">
-                        <select id="diatonicNoteDropdown">
-                            <option value="0">F</option>
-                            <option value="1" selected>C</option>
-                            <option value="2">G</option>
-                            <option value="3">D</option>
-                            <option value="4">A</option>
-                            <option value="5">E</option>
-                            <option value="6">B</option>
-                        </select>
-                        <select id="refAccidentalDropdown">
-                            <option value="0">♭</option>
-                            <option value="1" selected>♮</option>
-                            <option value="2">♯</option>
-                        </select>
-                        <select id="octaveDropdown">
-                            <option value="1">-4</option>
-                            <option value="2">-3</option>
-                            <option value="3">-2</option>
-                            <option value="4">-1</option>
-                            <option value="5">0</option>
-                            <option value="6">1</option>
-                            <option value="7">2</option>
-                            <option value="8">3</option>
-                            <option value="9" selected>4</option>
-                            <option value="10">5</option>
-                            <option value="11">6</option>
-                            <option value="12">7</option>
-                        </select>
-                    </div>
-                    <div class="row">
-                        <h3>1/1 (Hz)</h3><br>
-                        <input type="number" id="1to1Frequency" value="261.6256"></input>
-                    </div>
-                    <br>
-                    <h3>Tuning Meter Settings</h3>
-                    <br>
-                    <div class="ref-frequency-toggles">
-                        <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked> <label for="refFrequencyLinkedRadio">1/1&plusmn;0c</label>
-                        <input type="radio" name="refInput" id="refFrequencyFreeRadio"> <label for="refFrequencyFreeRadio">A4 &plusmn;0c</label>
-                    </div>
-                    <h3>Tuner Window Width (cents)</h3>
-                    <br>
-                    <input type="number" id="tunerCentsWindow" class="tuner-cents-window-input" value="100" min="1">
-                    <br>
-                    <br>
-                                                              <div class="row">
-                                                                 <h3>A4 (Hz)</h3><br>
-                                                                 <input type="number" id="frequencyA4" value="440.0000"></input>
-                                                             </div>
-                                                 			<br> <!-- Add a line break for spacing -->
-                                                             <h3>Playback</h3>
-                                                             <br>
-                                                                                 <div class="settings-row">
-                                                                                     <select id="playbackMode" style="width: 100%;">
-                                                                                         <option value="browser" selected>In-Browser Audio</option>
-                                                                                         <option value="mpe-midi">MIDI Polyphonic Expression</option>
-                                                                                     </select>
-                                                                                 </div>                                                             <br> <!-- Line break added here -->
-                                                                                 <div class="settings-row" id="midi-device-selector" style="display: none;">
-                                                                                     <select id="midiOutputSelect" style="flex-grow: 1; width: 100%;">
-                                                                                         <option>No devices found</option>
-                                                                                     </select>
-                                                                                     <br> <!-- Line break added here -->
-                                                                                 </div>                                                             <div class="settings-row" id="timbre-row">
-                                                                 <input type="range" id="timbreSlider" min="0" max="3" value="1" step="0.01">
-                                                                 <svg id="waveformSvg" width="60" height="30" viewBox="0 0 60 30" preserveAspectRatio="none"><path id="waveformPath" fill="none" stroke="#007bff" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg>
-                                                             </div>
-                                                         </div>
-                                                     </div>        </div>
+            <label for="1to1Frequency">1/1 (Hz)</label>
+            <input type="number" id="1to1Frequency" value="261.6256">
+            <label for="frequencyA4">A4 (Hz)</label>
+            <input type="number" id="frequencyA4" value="440.0000">
+          </fieldset>
 
-        <div class="settings-menu-item" id="tuner-item">
-            <div class="settings-header">
-                <span>Tuner</span>
-                <span class="toggle-icon">▼</span>
+          <!-- Two settings the Tuner stage reads, kept here rather than in the
+               Tuner drawer because they are statements about the app's
+               reference pitch rather than about the meter: the first says
+               which pitch is called zero cents, and the second how much of the
+               octave the meter can see at once. -->
+          <fieldset>
+            <legend>Tuning Meter</legend>
+            <!-- Two alternatives, so a segmented switch rather than two
+                 radio dots: the strip says the choice is exclusive by being
+                 one control, which is what a segmented button is for. The
+                 inputs are still radios and still where every handler and the
+                 undo history read the answer — only the dot is gone. -->
+            <div class="seg ref-frequency-toggles">
+              <label class="seg-radio">
+                <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked>
+                <span>1/1&plusmn;0c</span>
+              </label>
+              <label class="seg-radio">
+                <input type="radio" name="refInput" id="refFrequencyFreeRadio">
+                <span>A4 &plusmn;0c</span>
+              </label>
             </div>
-            <div class="settings-content">
-                <div class="tunerbox">
-                    <div class="tuner-top">
-                        <div class="tuner-controls-row">
-                            <select id="tunerLanguage">
-                                <option value="heji" selected>HEJI</option>
-                                <option value="sagittal">Sagittal</option>
-                                <option value="johnston">Johnston</option>
-                                <option value="updown">Ups and Downs</option>
-                            </select>
-                        </div>
-
-                        <div class="tuner-controls-row" id="tunerSagittalType" style="display: none;">
-                            <select id="tunerSagittalTypeDropdown">
-                                <option value="medium" selected>Athenian</option>
-                                <option value="high">Promethean</option>
-                                <option value="ultra">Herculean</option>
-                                <option value="extreme">Olympian</option>
-                            </select>
-                        </div>
-
-                        <div class="tuner-controls-row" id="tunerJiSettings">
-                            <select id="tunerLimitType">
-                                <option value="integer">Integer-Limit</option>
-                                <option value="odd" selected>Odd-Limit</option>
-                                <option value="prime">Prime-Limit</option>
-                                <option value="custom">Custom Scale</option>
-                            </select>
-                            <span class="tuner-field" id="tunerLimitField">
-                                <input type="number" id="tunerLimitValue" class="tuner-num" value="11" min="1">
-                            </span>
-                            <span class="tuner-field tuner-field-grow" id="tunerMaxExpField" style="display: none;">
-                                <label for="tunerMaxExp">maximum exponent</label>
-                                <input type="number" id="tunerMaxExp" class="tuner-num tuner-num-grow" value="2" min="1">
-                            </span>
-                        </div>
-
-                        <div class="tuner-controls-row" id="tunerCustomRow" style="display: none;">
-                            <textarea id="tunerCustomScale" rows="3" spellcheck="false"
-                                placeholder="e.g.1/1 9/8 5/4 4/3 3/2 5/3 15/8"></textarea>
-                        </div>
-
-                        <div class="tuner-controls-row" id="tunerEdoSettings" style="display: none;">
-                            <input type="number" id="tunerEdo" class="edo tuner-edo-input" value="41" min="1">
-                        </div>
-                    </div>
-
-                    <div class="tuner-readout" id="tunerReadout">
-                        <div class="tuner-lane tuner-lane-names" id="tunerLaneNames"></div>
-                        <svg class="tuner-ruler" id="tunerRuler" preserveAspectRatio="none"></svg>
-                        <div class="tuner-lane tuner-lane-ratios" id="tunerLaneRatios"></div>
-                        <div class="tuner-centerline"></div>
-                        <div class="tuner-idle" id="tunerIdle">press <b>on</b> to start listening</div>
-                    </div>
-
-                    <div class="tuner-bottom">
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerEdoChecks" style="display: none;">
-                            <label><input type="checkbox" id="tunerShowEnharmonics"> enh equivalent</label>
-                            <label><input type="checkbox" id="tunerExcludeHalves" checked> exclude halves</label>
-                        </div>
-
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerHejiChecks">
-                            <label><input type="checkbox" id="tunerUnofficialExtensions" checked> unofficial extensions</label>
-                        </div>
-
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalEnhCheck" style="display: none;">
-                            <label><input type="checkbox" id="tunerSagittalShowEnharmonics"> enh equivalent</label>
-                        </div>
-
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerComplexityChecks">
-                            <label><input type="checkbox" id="tunerComplexitySizing" checked> complexity sizing</label>
-                        </div>
-
-                        <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalRevoRow" style="display: none;">
-                            <div class="sagittal-toggle-row">
-                                <button type="button" id="tunerSagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
-                                <button type="button" id="tunerSagittalEvoToggle" class="sagittal-toggle-button">evo</button>
-                            </div>
-                        </div>
-
-                        <button id="tunerToggleButton" class="clear">on</button>
-                    </div>
-                </div>
-            </div>
+            <label for="tunerCentsWindow">Window width (cents)</label>
+            <input type="number" id="tunerCentsWindow" class="tuner-cents-window-input"
+              value="100" min="1"
+              title="How much of the octave the meter spans end to end. Smaller is more zoomed in.">
+          </fieldset>
         </div>
 
+        <!-- ============ PLAY ============
+             Everything about how the app SOUNDS, in one place: which engine
+             carries the chord, and — for the browser's own — what wave it is
+             synthesised from and what shape the note has.
+
+             The synth is Tetrads' and Xenachord Designer's, built from the same
+             modules through the same picker (see createTimbrePicker in
+             js/synth/timbre.js), so the family list and the slider's range are
+             written in by that rather than spelled out here and the three apps
+             cannot come to offer different shapes. -->
+        <div class="drawer hidden" data-drawer="play">
+          <h1>notation <small>· play</small></h1>
+
+          <fieldset>
+            <legend>Output</legend>
+            <label for="playbackMode">Playback</label>
+            <select id="playbackMode"
+              title="Where a pressed play button sends the chord. Both sounds the browser's synth and the MIDI device together.">
+              <option value="browser" selected>In-Browser Audio</option>
+              <option value="mpe-midi">MIDI Polyphonic Expression (MPE)</option>
+              <option value="both">Both</option>
+            </select>
+
+            <div id="midi-device-selector" style="display:none">
+              <label for="midiOutputSelect">MIDI Out</label>
+              <select id="midiOutputSelect">
+                <option>No devices found</option>
+              </select>
+            </div>
+          </fieldset>
+
+          <fieldset id="synth-fieldset">
+            <legend>Synth</legend>
+            <label class="tune-h" for="s-family">Timbre</label>
+            <select id="s-family"
+              title="Wavetable: fixed waveform, volume-independent. Filtered wavetable: sine phase-modulated by its own low-passed output, so quiet notes stay near-sine and loud ones buzz."></select>
+            <canvas id="s-wave" class="scope" style="margin-top:9px"></canvas>
+            <div class="pressrow" style="margin-top:7px">
+              <label for="s-timbre" id="s-label" class="pressname">Filtered saw</label>
+            </div>
+            <input id="s-timbre" type="range" min="1000" max="1300" step="1" value="1200">
+            <div class="wave-ticks" id="s-ticks"></div>
+
+            <div class="tune-h" style="margin-top:12px">Envelope</div>
+            <canvas id="s-adsr" class="scope"
+              title="Drag the corners: the first is the attack, the second the decay and the level it falls to, the last the release."></canvas>
+            <div class="wave-ticks" id="s-adsr-ticks">
+              <span id="s-a">A</span><span id="s-d">D</span>
+              <span id="s-s">S</span><span id="s-r">R</span>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- ============ TUNER ============
+             The meter's own settings. The meter itself is the stage — see
+             #tuner-stage below — so nothing here draws anything: it says what
+             scale is being listened for, in what notation, and in what shape.
+
+             The on switch is NOT here. It is on the stage, under the dial,
+             because it is the one control you reach for while playing rather
+             than while setting up, and a drawer you have shut is a drawer you
+             cannot reach it in. -->
+        <div class="drawer hidden" data-drawer="tuner">
+          <h1>notation <small>· tuner</small></h1>
+
+          <!-- Two ways of drawing the same reading. Straight is a strobe strip
+               — the scale slides past a fixed line, and cents are millimetres.
+               Round is the instrument every tuner and every speedometer already
+               taught: a needle at twelve o'clock, and the scale swung under it.
+               Neither is more accurate; they are read differently, and which
+               one reads better depends on the window width and the room. -->
+          <fieldset>
+            <legend>Shape</legend>
+            <div class="seg" id="tuner-shape-seg">
+              <button data-v="linear" class="on"
+                title="A strobe strip: the scale slides past a fixed centre line">Straight</button>
+              <button data-v="dial"
+                title="A dial: a needle at the top, the scale swung beneath it">Round</button>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Notation</legend>
+            <div class="tuner-controls-row">
+              <select id="tunerLanguage">
+                <option value="heji" selected>HEJI</option>
+                <option value="sagittal">Sagittal</option>
+                <option value="johnston">Johnston</option>
+                <option value="updown">Ups and Downs</option>
+              </select>
+            </div>
+            <div class="tuner-controls-row" id="tunerSagittalType" style="display: none;">
+              <select id="tunerSagittalTypeDropdown">
+                <option value="medium" selected>Athenian</option>
+                <option value="high">Promethean</option>
+                <option value="ultra">Herculean</option>
+                <option value="extreme">Olympian</option>
+              </select>
+            </div>
+            <div class="tuner-controls-row" id="tunerSagittalRevoRow" style="display: none;">
+              <div class="sagittal-toggle-row">
+                <button type="button" id="tunerSagittalRevoToggle" class="sagittal-toggle-button selected">revo</button>
+                <button type="button" id="tunerSagittalEvoToggle" class="sagittal-toggle-button">evo</button>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Scale</legend>
+            <div class="tuner-controls-row" id="tunerJiSettings">
+              <select id="tunerLimitType">
+                <option value="integer">Integer-Limit</option>
+                <option value="odd" selected>Odd-Limit</option>
+                <option value="prime">Prime-Limit</option>
+                <option value="custom">Custom Scale</option>
+              </select>
+              <span class="tuner-field" id="tunerLimitField">
+                <input type="number" id="tunerLimitValue" class="tuner-num" value="11" min="1">
+              </span>
+              <span class="tuner-field tuner-field-grow" id="tunerMaxExpField" style="display: none;">
+                <label for="tunerMaxExp">maximum exponent</label>
+                <input type="number" id="tunerMaxExp" class="tuner-num tuner-num-grow" value="2" min="1">
+              </span>
+            </div>
+
+            <div class="tuner-controls-row" id="tunerCustomRow" style="display: none;">
+              <textarea id="tunerCustomScale" rows="3" spellcheck="false"
+                placeholder="e.g.1/1 9/8 5/4 4/3 3/2 5/3 15/8"></textarea>
+            </div>
+
+            <div class="tuner-controls-row" id="tunerEdoSettings" style="display: none;">
+              <input type="number" id="tunerEdo" class="edo tuner-edo-input" value="41" min="1">
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Reading</legend>
+            <div class="output-checkboxes tuner-checkboxes" id="tunerEdoChecks" style="display: none;">
+              <label><input type="checkbox" id="tunerShowEnharmonics"> enh equivalent</label>
+              <label><input type="checkbox" id="tunerExcludeHalves" checked> exclude halves</label>
+            </div>
+            <div class="output-checkboxes tuner-checkboxes" id="tunerHejiChecks">
+              <label><input type="checkbox" id="tunerUnofficialExtensions" checked> unofficial extensions</label>
+            </div>
+            <div class="output-checkboxes tuner-checkboxes" id="tunerSagittalEnhCheck" style="display: none;">
+              <label><input type="checkbox" id="tunerSagittalShowEnharmonics"> enh equivalent</label>
+            </div>
+            <div class="output-checkboxes tuner-checkboxes" id="tunerComplexityChecks">
+              <label><input type="checkbox" id="tunerComplexitySizing" checked> complexity sizing</label>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ---------- the stage ----------
+       Two of them, and one attribute on #main deciding which is up. Laid out
+       rather than swapped so the cards keep their order, their open and shut
+       states and everything typed into them across a visit to the tuner. -->
+  <main id="main" data-stage="cards">
+
+    <div class="calc-container">
         <div class="settings-menu-item" id="output-item">
             <div class="settings-header">
                 <span>HEJI Output</span>
@@ -307,6 +481,7 @@
                 </div>
             </div>
         </div>
+
         <div class="settings-menu-item collapsed-item" id="chord-entry-item">
             <div class="toggle-header-placement">
                 <input type="radio" name="inputType" id="chordInput" checked> <label for="chordInput">Chord Entry</label>
@@ -355,7 +530,7 @@
             </div>
         </div>
 
-                                <div class="settings-menu-item collapsed-item" id="heji-entry-item">
+        <div class="settings-menu-item collapsed-item" id="heji-entry-item">
 
                                     <div class="toggle-header-placement">
 
@@ -652,7 +827,7 @@
             </div>
         </div>
 
-		<div class="settings-menu-item collapsed-item" id="interval-entry-item">
+        <div class="settings-menu-item collapsed-item" id="interval-entry-item">
             <div class="toggle-header-placement">
                 <input type="radio" name="inputType" id="intervalInput"> <label for="intervalInput">Interval Entry</label>
                 <span class="toggle-icon">▼</span>
@@ -690,7 +865,7 @@
             </div>
         </div>
 
-		<div class="settings-menu-item collapsed-item" id="johnston-entry-item">
+        <div class="settings-menu-item collapsed-item" id="johnston-entry-item">
             <div class="toggle-header-placement">
                 <input type="radio" name="inputType" id="johnstonInput"> <label for="johnstonInput">Johnston Entry</label>
                 <span class="toggle-icon">▼</span>
@@ -730,7 +905,7 @@
             </div>
         </div>
 
-		<div class="settings-menu-item collapsed-item" id="sagittal-entry-item">
+        <div class="settings-menu-item collapsed-item" id="sagittal-entry-item">
             <div class="toggle-header-placement">
                 <input type="radio" name="inputType" id="sagittalEntryInput"> <label for="sagittalEntryInput">Sagittal Entry</label>
                 <span class="toggle-icon">▼</span>
@@ -780,12 +955,47 @@
             </div>
         </div>
 
-
     </div>
 
-	    
+    <!-- ============ THE TUNER ============
+         What was a card is the window. The meter wants width above everything
+         — the whole of its accuracy is how many pixels a cent is worth — and
+         in a 300px card at 100 cents across, a cent was three of them.
+
+         Both shapes are drawn from the same marks. The names and the ratios
+         are ordinary HTML, so a HEJI accidental, a Sagittal flag and a
+         Johnston numeral come out of the same engines the output windows use;
+         the frame only decides where each one is put, and the dial puts it on
+         an arc instead of on a line. See renderFrame in js/calc/tuner.js. -->
+    <section id="tuner-stage" data-shape="linear">
+      <div class="tuner-readout" id="tunerReadout">
+        <svg class="tuner-ruler" id="tunerRuler" aria-hidden="true"></svg>
+        <div class="tuner-lane tuner-lane-names" id="tunerLaneNames"></div>
+        <div class="tuner-lane tuner-lane-ratios" id="tunerLaneRatios"></div>
+        <div class="tuner-idle" id="tunerIdle">press <b>listen</b> to start</div>
+      </div>
+
+      <!-- The two numbers the picture cannot say, and the switch. The readout
+           is the pitch as measured; the picture is the pitch as placed. -->
+      <div class="tuner-hud">
+        <div class="tuner-hud-read">
+          <span class="tuner-hud-value" id="tunerHudFreq">—</span>
+          <span class="tuner-hud-unit">Hz</span>
+        </div>
+        <button id="tunerToggleButton" class="clear">listen</button>
+        <div class="tuner-hud-read">
+          <span class="tuner-hud-value" id="tunerHudCents">—</span>
+          <span class="tuner-hud-unit">¢ from 1/1</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
 </body>
 </html>
+
 
 <script>
 	document.querySelectorAll("input[type=number]" && "input[class=ratioIn]").forEach(function (input) {

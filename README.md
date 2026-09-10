@@ -23,16 +23,22 @@ Match a live sound against a scale by ear and eye:
 
 <img width="486" height="838" alt="Live microtonal tuner displaying HEJI, Sagittal, Johnston, and Ups & Downs notation" src="https://github.com/user-attachments/assets/4b90705b-422c-4745-90f8-8141509433a0" />
 
-- **Live pitch detection** from the microphone (McLeod / NSDF), plotting the
-  incoming pitch against a scrolling cent ruler with the received pitch fixed at
-  the centre line.
+- **Live pitch detection** from the microphone (McLeod / NSDF). The tuner is a
+  **full-screen meter** — its settings live in the side rail's Tuner drawer, so
+  the whole window goes to the reading.
+- **Two shapes, one reading.** *Straight* is a strobe strip: a fixed needle is
+  the incoming pitch and the scale slides past it. *Round* is a dial — a needle
+  at twelve o'clock with the scale swung beneath it on an arc, the way a
+  clip-on tuner or a speedometer is read. Both draw the same marks from the
+  same notation engines; only where each one is put differs.
 - Label the scale degrees in any notation language — **HEJI, Sagittal,
   Johnston, or Ups and Downs** — drawn from a just-intonation set (integer-,
   odd-, or prime-limit, or a custom scale) or an EDO.
 - Names, ratios, and ruler dots turn **blue in tune** (within 4c), fading
   through three 2c gradient steps as the pitch approaches.
+- A readout under the meter gives the measured **Hz** and **cents from 1/1**.
 - Optional complexity (Tenney) sizing, 89-limit extensions, and enharmonic
-  equivalents; adjustable **cents window** (zoom) via the Settings card.
+  equivalents; adjustable **cents window** (zoom) in the Settings drawer.
 
 ### Pitch Entry: Enter Just Intonation Ratios and Microtonal Pitches
 Choose whichever method of describing a pitch is most natural:
@@ -61,24 +67,49 @@ its cent deviation, the resulting frequency in Hz, and the interval size in
 cents from 1/1.
 
 ### Reference and tuning
+Gathered in the rail's **Settings** drawer:
+
 - Define **1/1** by diatonic note, accidental, and octave.
 - Set the **1/1 frequency** directly, or work relative to **A4** with a linked
   or free tuning meter.
 - Octave-reduce output, and toggle enharmonic equivalents where applicable.
 
 ### Playback
-- **In-browser audio** with a continuous timbre morph across sine, triangle,
-  sawtooth, and square waves, plus a live waveform display.
+In the rail's **Play** drawer — the same synth as
+[Tetrads](https://github.com/richiegreene/tetrads) and Xenachord Designer,
+built from the same modules, so a wave chosen in one app is the wave the others
+would sound:
+
+- **In-browser audio** from two families of synthesis, each a continuous morph
+  across sine, triangle, sawtooth, and square:
+  - **Wavetable** — band-limited per octave, so a partial that would land above
+    Nyquist is never synthesised rather than folded back down into the interval
+    being compared.
+  - **Filtered wavetable** — a sine phase-modulated by its own low-passed
+    output, so quiet notes stay near-sine and loud ones fold into a buzz. The
+    brightness follows the amplitude because the recursion says it does, not
+    because a filter was put after it.
+- A **drawn envelope**: attack, decay, sustain and release, taken hold of by the
+  corners of the curve itself. Because the envelope lives inside the oscillator,
+  the filtered family's timbre opens and closes with it.
 - **MPE MIDI output** for sending microtonal pitches to external instruments via
-  per-note pitch bend.
+  per-note pitch bend — or **Both** at once.
 
 ### Export
 - **Save / Export CSV:** `⇧⌘S`
   - (outputs a simple custom filetype intended for my personal use)
 
 ### Display
-- Light and dark themes.
-- UI/UX made with sortable.js for optimized/custom desktop display as well as a practical phone experience (e.g. using the tuner on music stand)
+- A **side rail**: two stages (the notation windows, and the tuner) over three
+  drawers (Settings, Play, Tuner). Shut, the drawer is the width of the rail
+  and the stage keeps everything it gives back; on a phone it lies over the
+  stage rather than squeezing it.
+- Nine **sortable cards** — four outputs and five entry areas — dragged into
+  whatever arrangement suits the work, packed by a masonry layout that follows
+  the space the cards actually have rather than the size of the window.
+- Every on/off in the app is a **latch** and every either/or is a **switch**;
+  there is not a tickbox or a radio dot anywhere.
+- Light and dark themes, from one toggle at the foot of the rail.
 
 ---
 
@@ -106,6 +137,10 @@ Please refer to and support the original sources:
   Extended Just Intonation: A Guide for Interpreters*).
 
 - **[Notes.oft](https://github.com/Sin-tel/tessera/blob/master/assets/font/notes.otf)** — Microtonal Font created by Sintel to accompany the neo-grotesque sans-serif typeface, [Inter.ttf](https://github.com/rsms/inter)
+
+- **Filtered wavetable oscillator** — after the phase-feedback synthesis in
+  *justidraw* (`src/audio.lua`); its recursion, its feedback pole, and its saw
+  and square settings are transcribed rather than approximated.
 ---
 
 ## License

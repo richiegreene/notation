@@ -69,13 +69,398 @@ html {
     --color-link: #007bff; /* link color */
     --color-link-hover: #0056b3; /* link hover color */
     --color-input: #4a4a4a; /* input background */
+
+    /* ---- the panel ----
+       Tetrads' and Xenachord Designer's chrome tokens, mapped onto this app's
+       own palette rather than copied as literals: the rail has to sit beside
+       these cards, so its ground is the card's ground and its accent is the
+       one blue the whole app already uses for "this is the one that is true"
+       — a selected palette button, a play button that is playing, a note in
+       tune. A second blue in the chrome would have read as a second meaning.
+
+       They are custom properties on :root and overridden wholesale under
+       html[data-theme="light"] below, so day mode recolours the rail, the
+       drawer and the tuner without a second stylesheet. */
+    --panel: #1a1a1a;        /* the rail and drawer ground */
+    --panel2: #2a2a2a;       /* controls sitting on it */
+    --panel-bright: #343434; /* a control that is pressed in */
+    --line: #555;            /* every hairline in the chrome */
+    --dim: #9a9aa4;          /* labels, legends, anything that reports */
+    --accent: #007bff;       /* the app's one blue */
+    --scope-bg: #2a2a2a;     /* the wave and envelope canvases */
+
+    /* ---- a latch that is down ----
+       Tetrads' `button.latched`, token for token. Distinct from the lit
+       segment below it on purpose: a segmented button is a choice among
+       alternatives and presses IN when chosen, whereas a latch is a thing
+       that is either on or off and LIGHTS UP when it is on. Drawing them the
+       same would say the two are the same kind of decision. */
+    --latched-bg: #24405c;
+    --latched-border: #007bff;
+    --latched-text: #cfe6ff;
 }
 
 body {
     background-color: var(--bg-main);
     color: var(--color-text);
     font-family: "Inter", sans-serif; /* Primary font */
+    /* The page itself no longer scrolls: #app is exactly the viewport and the
+       one thing inside it that overflows — the card grid — scrolls on its own.
+       Without this a rounding error anywhere gives a second scrollbar beside
+       the first. */
+    overflow: hidden;
 }
+
+/* =====================================================================
+ *  THE RAIL, THE DRAWER AND THE STAGE
+ * =====================================================================
+ *
+ * Tetrads' and Xenachord Designer's chrome, rule for rule, on this app's own
+ * tokens. The three apps share a synth and a notation engine, and a control
+ * that looked different in each would suggest it did something different.
+ *
+ * Shut, the panel is the width of the rail and the stage keeps everything it
+ * gives back — which is the whole argument for a drawer over a card: the
+ * tuner and the nine windows want the width, and the settings do not want it
+ * all the time.
+ * ------------------------------------------------------------------ */
+
+#app {
+    display: flex;
+    /* dvh, with vh behind it for anything that has not heard of dvh. A phone's
+       address bar takes a slice out of 100vh and gives it back as you scroll,
+       which on a music stand means the tuner's on switch walking off the
+       bottom of the screen at the moment you reach for it. */
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#panel {
+    display: flex;
+    overflow: hidden;
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    width: 61px;
+    min-width: 61px;
+    flex: 0 0 auto;
+    transition: width .14s ease, min-width .14s ease;
+}
+/* On a narrow window the drawer would be nearly the whole of it, so it takes
+   what is there rather than a fixed 340. The rail always stays — it is 60px,
+   and it is how the drawer is got back. */
+#panel.open { width: min(340px, 82vw); min-width: min(340px, 82vw); }
+
+.rail {
+    width: 60px;
+    flex: 0 0 auto;
+    border-right: 1px solid var(--line);
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.rail-btn {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    place-items: center;
+    color: var(--dim);
+    border-radius: 9px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+}
+.rail-btn > * { pointer-events: none; }
+.rail-btn:hover { color: var(--color-text); background: var(--panel2); border-color: transparent; }
+.rail-icon { width: 24px; height: 24px; }
+
+/* A DRAWER THAT IS OPEN IS RINGED; A STAGE THAT IS UP IS FILLED.
+   Two different facts, so two different marks. The ring says "these controls
+   are beside you"; the fill says "this is what you are looking at" — and the
+   Tuner button, which is both, can therefore be lit and ringed at once and
+   still be read correctly. */
+.rail-btn[aria-expanded="true"] {
+    color: var(--color-text);
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--accent);
+}
+.rail-btn.stage-btn.on {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+}
+.rail-btn.stage-btn.on:hover { color: #fff; background: var(--accent); }
+.rail-btn.stage-btn.on[aria-expanded="true"] { box-shadow: inset 0 0 0 1px var(--panel); }
+
+/* The hairline between the stages and the drawers — the one place the rail
+   says out loud that it holds two kinds of thing. */
+.rail-sep {
+    width: 26px;
+    height: 1px;
+    flex: 0 0 auto;
+    background: var(--line);
+    margin: 3px 0;
+}
+
+/* The info link sits at the foot of the rail rather than in the run of modes:
+   it is not a mode, and it leaves the app. The theme toggle sits under it for
+   the mirror reason — it is not a mode either, and it is about the whole
+   window rather than about anything in a drawer. */
+#info-link { margin-top: auto; text-decoration: none; }
+#info-link:hover { color: var(--color-text); }
+
+/* ---- the night/day toggle ----
+   Both glyphs are in the markup and one is shown at a time, rather than one
+   glyph being swapped by script: no icon flashes in on first paint, and the
+   rule that decides which is showing lives beside the rule that draws them.
+   The icon shows the STATE, not the action — a crescent while the app is
+   dark, a sun while it is light. */
+#theme-toggle .theme-icon { grid-area: 1 / 1; }
+#theme-toggle .light-icon { display: none; }
+html[data-theme="light"] #theme-toggle .dark-icon { display: none; }
+html[data-theme="light"] #theme-toggle .light-icon { display: block; }
+
+.panel-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+.drawers { flex: 1; min-height: 0; overflow-y: auto; }
+.drawer { padding: 14px 16px 20px; }
+.drawer.hidden { display: none; }
+
+/* ---------- panel furniture ----------
+   Everything below is scoped to #panel so the cards, which have their own
+   long-settled look, are untouched by it. */
+#panel h1 { font-size: 15px; margin: 2px 0 12px; color: var(--color-text);
+    font-weight: 600; letter-spacing: 0; padding: 0; }
+#panel h1 small { color: var(--dim); font-weight: 400; font-size: 15px; }
+
+#panel fieldset {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin: 0 0 12px;
+    padding: 9px 11px;
+}
+#panel legend {
+    color: var(--dim);
+    font-size: 10.5px;
+    font-weight: 400;
+    letter-spacing: .03em;
+    padding: 0 6px;
+}
+#panel label {
+    display: block;
+    color: var(--dim);
+    font-size: 11px;
+    margin: 7px 0 3px;
+}
+#panel select,
+#panel input[type=number],
+#panel input[type=text],
+#panel textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--panel2);
+    color: var(--color-text);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 5px 7px;
+    font-size: 12.5px;
+    text-align: left;
+}
+#panel select:focus, #panel input:focus, #panel textarea:focus {
+    outline: 1px solid var(--accent);
+    outline-offset: -1px;
+}
+/* `.drawer button`, not `#panel button`: the rail's buttons are in the panel
+   too, and an id in the selector would have outranked every rule that draws
+   them — they would all have come out as drawer buttons with a ground and a
+   border, including the lit one. */
+.drawer button {
+    background: var(--panel2);
+    color: var(--color-text);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 11.5px;
+    margin: 0;
+    cursor: pointer;
+}
+.drawer button:hover { border-color: var(--accent); color: var(--accent); }
+
+/* A heading INSIDE a fieldset — the second thing a fieldset holds, when its
+   legend has already named the first. */
+#panel .tune-h {
+    display: block;
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 11.5px;
+    margin: 10px 0 5px;
+}
+#panel .tune-h:first-child { margin-top: 0; }
+#panel .pressrow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+#panel .pressname { margin: 0; font-weight: 600; color: var(--color-text); font-size: 11.5px; }
+
+/* ---------- segmented buttons ----------
+   WHICH ONE IS ON IS SAID TWICE, by the strip and by a line under it: the lit
+   segment is lifted to --panel-bright and carries a 2px accent rule along its
+   bottom edge, where a tab's indicator sits. The unlit segments are NOT
+   dimmed — they are all live choices, equally available, and greying them
+   would make a two-way switch look like one button beside a disabled one. */
+#panel .seg { display: flex; gap: 0; margin: 0 0 4px; flex-wrap: wrap; }
+#panel .seg button {
+    flex: 1 1 0;
+    min-width: 0;
+    border-radius: 0;
+    padding: 5px 6px;
+    font-size: 11.5px;
+    border-left-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#panel .seg button:first-child { border-radius: 6px 0 0 6px; border-left-width: 1px; }
+#panel .seg button:last-child { border-radius: 0 6px 6px 0; }
+#panel .seg button.on {
+    background: var(--panel-bright);
+    color: var(--color-text);
+    box-shadow: inset 0 -2px 0 var(--accent);
+}
+#panel .seg button:hover { color: var(--accent); }
+
+/* ---------- sliders ----------
+   The browser's own, tinted and left alone. `accent-color` is what makes the
+   travelled part of the track fill in, so the control says how far along it
+   is twice — by where the thumb sits and by how much of the track is blue.
+   A hand-built track (appearance:none) throws that away, because nothing in
+   CSS knows where the value is. */
+#panel input[type=range] {
+    width: 100%;
+    margin: 5px 0 0;
+    padding: 0;
+    accent-color: var(--accent);
+}
+
+/* ---------- the synth's two drawn controls ---------- */
+#panel .scope {
+    display: block;
+    width: 100%;
+    height: 74px;
+    background: var(--scope-bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+}
+#panel #s-adsr { height: 92px; cursor: pointer; touch-action: none; }
+#panel .wave-ticks {
+    display: flex;
+    justify-content: space-between;
+    color: var(--dim);
+    font-size: 10px;
+    margin-top: 3px;
+}
+#panel .wave-ticks span { font-variant-numeric: tabular-nums; }
+
+/* ---------- rows that are not stacks ----------
+   A handful of controls in the drawers are read across rather than down, and
+   the block `label` above would break each of them. */
+#panel .tuner-field label {
+    display: inline;
+    margin: 0;
+    font-size: 11px;
+}
+#panel .ref-frequency-toggles { margin: 4px 0 0; }
+/* The drawer's own ground, not the cards': a latch in here sits among the
+   drawer's controls and has to be the same material as they are. */
+#panel .tuner-checkboxes { min-height: 0; margin: 0; }
+#panel .tuner-checkboxes > label {
+    display: flex;
+    background-color: var(--panel2);
+    border-color: var(--line);
+    color: var(--color-text);
+    font-size: 11.5px;
+    margin: 0 0 4px;
+    border-radius: 6px;
+}
+#panel .tuner-checkboxes > label:has(input:checked) {
+    background-color: var(--latched-bg);
+    border-color: var(--latched-border);
+    color: var(--latched-text);
+}
+/* A chosen segment in a drawer, where #panel button would otherwise win. */
+#panel .drawer button.selected {
+    background: var(--panel-bright);
+    border-color: var(--line);
+    color: var(--color-text);
+    box-shadow: inset 0 -2px 0 var(--accent);
+}
+#panel .tuner-field { display: inline-flex; align-items: center; gap: .3rem; }
+#panel .tuner-field input { text-align: center; }
+#panel #tunerLimitField { flex: 0 0 5rem; }
+#panel .tuner-controls-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 7px; }
+#panel .tuner-controls-row:first-of-type { margin-top: 0; }
+#panel .tuner-controls-row > select { flex: 1 1 auto; width: auto; }
+#panel .sagittal-toggle-row { width: 100%; display: flex; gap: 0; }
+#panel .ref-pitch-controls-centered { gap: 6px; margin-bottom: 0; }
+#panel #refAccidentalDropdown { text-align: center; }
+#panel #tunerCustomScale { font-family: monospace; resize: vertical; }
+
+/* ---------- ON A NARROW SCREEN THE DRAWER LIES OVER THE STAGE ----------
+   Everywhere else the drawer takes its 340px out of the window and the stage
+   keeps the rest, which is the whole point of a drawer over a card. On a phone
+   held upright there is no rest: 340 of 414 leaves the meter a 74px strip, and
+   a control panel that hides the thing it controls is worse than a modal.
+
+   So the panel keeps its rail's width in the layout and the drawer floats out
+   beside it instead. The stage underneath is untouched — it never changes size,
+   so nothing relayouts when the drawer opens, and shutting it reveals rather
+   than reflows. */
+@media (max-width: 760px) {
+    #panel.open { width: 61px; min-width: 61px; }
+    #panel.open .panel-body {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 61px;
+        width: min(340px, calc(100vw - 61px));
+        background: var(--panel);
+        border-right: 1px solid var(--line);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, .45);
+        z-index: 30;
+    }
+}
+
+/* ---------- the stage ---------- */
+#main {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* The card grid's column count is asked of this box rather than of the
+       window — see the @container rules below .calc-container. */
+    container-type: inline-size;
+    container-name: stage;
+}
+#main > .calc-container { flex: 1; min-height: 0; overflow-y: auto; }
+#main[data-stage="tuner"] > .calc-container { display: none; }
+#main[data-stage="cards"] > #tuner-stage { display: none; }
+
 
 .settings-menu-item {
     background-color: var(--bg-header);
@@ -217,29 +602,42 @@ div.version {
     row-gap: 0;
     grid-auto-flow: row;
     padding: 10px;
-    margin: 0 auto;
+    /* NOT `margin: 0 auto`. That centred the grid when it was the whole page;
+       as a flex child of #main it does something else entirely — an auto
+       margin on the cross axis overrides `align-items: stretch`, so the grid
+       shrank to its content and sat in the middle of the stage with a wide
+       empty gutter down each side. */
+    margin: 0;
     align-items: start; /* Don't stretch cards to match the tallest card in their row */
 }
 
-@media (max-width: 1200px) {
+/* HOW MANY COLUMNS IS A QUESTION ABOUT THE STAGE, NOT ABOUT THE WINDOW.
+   These were viewport media queries, which was right while the cards were the
+   whole page. They are not right beside a drawer: opening one takes 340px off
+   the stage without changing the viewport by a pixel, so a window just over a
+   breakpoint kept six columns in the room for four and the cards were squeezed
+   until nothing in them could be read. Asked of #main instead, the count
+   follows the space the cards actually have — and it answers when the drawer
+   opens and shuts, which is exactly when it needs to. */
+@container stage (max-width: 1200px) {
     .calc-container {
         grid-template-columns: repeat(4, 1fr);
     }
 }
 
-@media (max-width: 992px) {
+@container stage (max-width: 992px) {
     .calc-container {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
-@media (max-width: 768px) {
+@container stage (max-width: 768px) {
     .calc-container {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (max-width: 576px) {
+@container stage (max-width: 576px) {
     .calc-container {
         grid-template-columns: 1fr;
     }
@@ -396,9 +794,31 @@ select {
     border-radius: 4px; 
 }
 
+/* ---------- the one that is chosen ----------
+ * Tetrads' and Xenachord Designer's rule, and the reasoning with it.
+ *
+ * WHICH ONE IS ON IS SAID TWICE, by the ground and by a line under it: the
+ * chosen button is taken to --panel-bright, which is DARKER than the button
+ * ground in both themes, and carries a 2px accent rule along its bottom edge.
+ * So it presses IN rather than lighting up, on paper and on black alike.
+ *
+ * It used to be a flat blue fill. That read well enough on one accidental at
+ * a time, but a palette is twenty glyphs in a row, and a solid blue tile
+ * behind a HEJI accidental fights the glyph it is meant to be showing you —
+ * the thing you are choosing is the SHAPE, and the state should not be
+ * painted over it. Pressed-in and underlined leaves the glyph on its own
+ * ground at full contrast and still cannot be missed at a glance.
+ *
+ * The underline sits where a tab's indicator sits, which is the thing this
+ * control most nearly is. An inset ring on all four sides — the obvious
+ * alternative — draws a box INSIDE a box, and at this size that reads as a
+ * rendering fault rather than as a state.
+ */
 .selected {
-    background-color: var(--bg-button-selected);
-    border-color: var(--bg-button-selected); 
+    background-color: var(--panel-bright);
+    border-color: var(--line);
+    color: var(--color-text);
+    box-shadow: inset 0 -2px 0 var(--accent);
 }
 
 .clearFreq, .clear, .clearSave, .clearMelodic, .clearMelodicSave, .clearInputRatio, .clearEnharmonic {
@@ -560,11 +980,15 @@ table.enharmonic-table > tr, td, th {
 .output-checkboxes {
     margin: 0.5rem 0 0.25rem;
     text-align: left;
-    min-height: 6.5rem;
+    /* Sized to the tallest set (Sagittal's two latches and two strips) so the
+       clear/play/save buttons below start at the same offset in every window.
+       Taller than it was, because a latch is taller than the line of text it
+       replaced. */
+    min-height: 10rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    align-items: flex-start;
+    align-items: stretch;
 }
 
 .output-checkboxes .sagittal-toggle-row {
@@ -631,19 +1055,31 @@ table.enharmonic-table > tr, td, th {
     box-sizing: border-box;
 }
 
+/* revo/evo and unicode/ascii are two alternatives each, so each pair is one
+   segmented strip rather than two buttons with a gap between them — the same
+   control the Shape switch in the Tuner drawer is, and the same one Tetrads
+   uses everywhere it asks a two-way question. The gap used to be 0.5rem,
+   which made them read as two independent presses that happened to sit
+   together, and left it open whether both could be down at once. */
 .sagittal-toggle-row {
     display: flex;
     width: 100%;
-    gap: 0.5rem;
+    gap: 0;
     margin-bottom: 0.4rem;
 }
 
 .sagittal-toggle-button {
     flex: 1 1 0;
+    min-width: 0;
     text-align: center;
-    font-size: 0.75rem; /* Match .interval-button (load/clear in Interval Entry) */
-    padding: 2px 4px;
+    font-size: 0.8rem;
+    padding: 5px 4px;
+    margin: 0;
+    border-radius: 0;
+    border-left-width: 0;
 }
+.sagittal-toggle-button:first-child { border-radius: 4px 0 0 4px; border-left-width: 1px; }
+.sagittal-toggle-button:last-child { border-radius: 0 4px 4px 0; }
 
 .sagittal-notation-display {
     display: flex;
@@ -924,22 +1360,6 @@ html[data-theme="light"] .unofficial-extension-row button:not(.selected) {
     margin-left: auto; /* Push toggle icon to the far right */
 }
 
-.toggle-header-placement input[type="radio"] {
-    margin-right: 5px; /* Space between radio button and its label */
-}
-
-.ref-frequency-toggles {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Space between the two radio button groups */
-    justify-content: center; /* Center the group within its parent */
-    margin-bottom: 10px; /* Add some space below this row */
-}
-
-.ref-frequency-toggles input[type="radio"] {
-    margin-right: 5px; /* Space between radio button and its label */
-}
-
 .midiAccidental {
     font-family: "HEJI2";
     font-size: 1.2rem;
@@ -979,57 +1399,6 @@ input.ratioIn {
 /* Card grid-row spans are computed at runtime by layoutMasonry() in main.js
    from each card's real pixel height, so no hard-coded spans live here. */
 
-#timbre-row {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1fr auto; /* Only slider and canvas */
-    gap: 20px; /* Increased gap to 20px */
-    margin-top: 0;
-}
-
-#timbreSlider {
-    width: 100%;
-}
-
-/* Range slider styling to match Timbre aesthetic */
-#playback-item input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 6px;
-    background: #3d3d3d;
-    border-radius: 6px;
-    outline: none;
-}
-#playback-item input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #007bff;
-    border: none;
-    box-shadow: none;
-    margin-top: -4px;
-}
-#playback-item input[type="range"]::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #007bff;
-    border: none;
-    box-shadow: none;
-}
-#playback-item input[type="range"]:focus { outline: none; }
-#playback-item input[type="range"]::-webkit-slider-runnable-track { height: 6px; background: #3d3d3d; border-radius: 6px; }
-#playback-item input[type="range"]::-moz-range-track { height: 6px; background: #3d3d3d; border-radius: 6px; }
-
-#waveformSvg {
-    border: 1px solid #555;
-    background-color: #2a2a2a;
-    border-radius: 4px;
-    display: block;
-}
 #playOutputButton.playing-active, #playEdoOutputButton.playing-active, #playSagittalOutputButton.playing-active, #playJohnstonOutputButton.playing-active {
     background-color: var(--bg-button-selected);
     border-color: var(--bg-button-selected);
@@ -1104,41 +1473,6 @@ input.ratioIn {
     margin-top: 10px; /* Small margin to push it down */
 }
 
-.display-label-row span {
-    font-weight: normal; /* Unbold "Display" label */
-    font-size: 1rem;
-}
-
-.display-options-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: center; /* Center horizontally */
-    margin-top: 0; /* No extra space between "Display" and this row */
-}
-
-#theme-toggle {
-    background-color: var(--bg-button);
-    border: 1px solid var(--border-button);
-    border-radius: 50%;
-    width: 30px; 
-    height: 30px; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    padding: 0;
-    font-size: 1.2rem; 
-    line-height: 1;
-}
-
-#theme-toggle .icon {
-    display: none; 
-}
-
-#theme-toggle .dark-icon {
-    display: block; 
-}
 
 html[data-theme="light"] {
     --bg-main: #f0f0f0;
@@ -1154,66 +1488,29 @@ html[data-theme="light"] {
     --color-link: #007bff;
     --color-link-hover: #0056b3;
     --color-input: #fff;
+
+    /* When the VIEW is drawn on paper the rail goes light with it. A dark
+       panel against a white window is a bezel with a lamp behind it: the eye
+       adapts to the larger surface, and the panel then reads as a hole. */
+    --panel: #e6e6e6;
+    --panel2: #f6f6f6;
+    --panel-bright: #d6d6d6;
+    --line: #bbb;
+    --dim: #5c5d66;
+    --accent: #007bff;
+    --scope-bg: #fff;
+
+    /* The lit fills that carried a latch on black would read as ink blots on
+       paper, so day mode gets the pale-blue pair instead of the navy one. */
+    --latched-bg: #dbe7f7;
+    --latched-border: #9dbde6;
+    --latched-text: #12325e;
 }
 
 html[data-theme="light"] .palette .label {
     color: #5a5a5a;
 }
 
-html[data-theme="light"] #theme-toggle {
-    background-color: rgb(255, 255, 255);
-    border-color: var(--border-button);
-}
-
-html[data-theme="light"] .info-link {
-    background-color: rgb(255, 255, 255);
-}
-
-html[data-theme="light"] #theme-toggle .dark-icon {
-    display: none; /* Hide dark icon in light mode */
-}
-
-html[data-theme="light"] #theme-toggle .light-icon {
-    display: block; /* Show light icon in light mode */
-}
-
-html[data-theme="light"] #waveformSvg {
-    background-color: rgb(255, 255, 255);
-    border-color: rgb(187, 187, 187);
-}
-
-.precision-control-group {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.info-link {
-    font-size: 1.2rem; /* Similar to button icon size */
-    color: var(--color-text); /* Use text color */
-    text-decoration: none; /* Remove underline */
-    display: flex; /* Use flex to center the 'i' */
-    justify-content: center;
-    align-items: center;
-    width: 30px; /* Same width as theme toggle button */
-    height: 30px; /* Same height as theme toggle button */
-    border-radius: 50%; /* Make it round */
-    border: 1px solid var(--border-button); /* Match button border */
-}
-
-.info-link:hover {
-    color: var(--color-link-hover); /* Hover effect */
-    border-color: var(--color-link-hover);
-}
-
-html[data-theme="dark"] .info-link {
-    background-color: rgb(90, 90, 90);
-}
-
-.precision-control-group label {
-    font-size: 1rem; /* Match "Display" label font size */
-    font-weight: normal; /* Override bold if inherited from span */
-}
 
 /* EDO Output styles */
 .edo-output-container {
@@ -1255,129 +1552,102 @@ html[data-theme="dark"] .info-link {
     height: 0.5rem; /* Height of the blank row */
     margin-bottom: 0.5rem; /* Space below the blank row */
 }
-/* ---------------------------------------------------------------------------
-   Tuner window
-   --------------------------------------------------------------------------- */
-/* #tuner-item's grid-row span is computed by layoutMasonry() like every other card. */
+/* =====================================================================
+ *  THE TUNER
+ * =====================================================================
+ *
+ * What was a card is a stage. The meter wants width above everything else —
+ * the whole of its accuracy is how many pixels a cent is worth — and in a
+ * 300px card spanning 100 cents, a cent was three of them and every name had
+ * to be shrunk until the neighbours cleared.
+ *
+ * TWO SHAPES, ONE SET OF MARKS. Straight is a strobe strip: a fixed centre
+ * line is the pitch coming in, and the scale slides past it. Round is the
+ * instrument every tuner and every speedometer already taught: a needle at
+ * twelve o'clock, and the same scale swung beneath it on an arc. Nothing
+ * about what is drawn changes between them — the same note names, out of the
+ * same notation engines the output windows use — only where each one is put,
+ * which is why both are laid out by JS setting `left` and `top` on marks that
+ * live in one absolutely-positioned lane rather than by two sets of rules
+ * here. See renderFrame in js/calc/tuner.js.
+ * ------------------------------------------------------------------ */
 
-/* The tuner content is a fixed-height column (JS matches its height to an
-   Output card, so every language reads at the same card height): top settings,
-   a flexible readout that expands to fill the middle, and the toggles + on
-   button anchored at the bottom like an Output card's checkboxes + buttons. */
-/* JS sets an explicit pixel height on .tunerbox (matchTunerHeight) so the card
-   matches an Output card regardless of language; the readout flexes to fill. */
-.tunerbox {
+#tuner-stage {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-}
-.tuner-top {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 0 0 auto;
-}
-.tuner-bottom {
-    flex: 0 0 auto;
-}
-
-.tuner-controls-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-}
-.tuner-controls-row select { flex: 1 1 auto; }
-
-.tuner-field { display: inline-flex; align-items: center; gap: 0.3rem; }
-input.tuner-num { width: 4rem; box-sizing: border-box; }
-
-/* Prime-limit "maximum exponent": label + input stretch to fill the row. */
-.tuner-field-grow { flex: 3 1 auto; }
-input.tuner-num-grow { flex: 1 1 auto; width: auto; min-width: 0; }
-
-/* Ups-and-downs EDO entry: full-width, like #edoApproximationInput. */
-input.tuner-edo-input { width: 100%; box-sizing: border-box; }
-
-/* Tuner Cents Window (the zoom control, in the Settings card): full-width row. */
-input.tuner-cents-window-input { width: 100%; box-sizing: border-box; }
-
-/* Tuner checkbox groups are compact (no fixed min-height like Output cards). */
-.tuner-checkboxes { min-height: 0; margin: 0.15rem 0; }
-
-#tunerCustomScale {
-    width: 100%;
+    padding: 12px;
+    gap: 10px;
     box-sizing: border-box;
-    resize: vertical;
-    font-family: monospace;
-    font-size: 0.9rem;
-    background-color: rgb(45, 45, 45);
-    color: #fff;
-    border: 1px solid #555;
-    border-radius: 4px;
-}
-html[data-theme="light"] #tunerCustomScale {
-    background-color: #fff;
-    color: #000;
-    border-color: rgb(187, 187, 187);
 }
 
-/* The strobe strip fills the space between the top settings and bottom controls,
-   giving the readout the maximum available height. A vertical centre line marks
-   the incoming pitch; scale degrees glide past it, positioned by cents. */
+/* The field the marks are placed in. Everything inside is absolutely
+   positioned against it, in both shapes. */
 .tuner-readout {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     flex: 1 1 auto;
-    min-height: 5rem;
+    min-height: 0;
     overflow: hidden;
-    border: 1px solid #555;
-    background-color: #2a2a2a;
-    border-radius: 4px;
+    border: 1px solid var(--line);
+    background-color: var(--scope-bg);
+    border-radius: 8px;
 }
 
-/* Note names and ratios sit close together with the dotted cent ruler between,
-   the cluster vertically centred in the readout. */
 .tuner-lane {
-    position: relative;
-    width: 100%;
+    position: absolute;
+    inset: 0;
     overflow: visible;
-    flex: 0 0 auto;
+    pointer-events: none;
 }
-.tuner-lane-names  { height: 4.6rem; }
-.tuner-lane-ratios { height: 2.2rem; }
 
-/* Dotted cent ruler: one uniform dot per cent (1/1..2/1). It
-   scrolls with the pitch (JS transform), a moving frame of reference. */
+/* The ruler and the needle share one SVG stretched over the field, so the
+   dots, the arc and the pointer are drawn in the same coordinates the marks
+   are placed in and cannot drift apart. */
 .tuner-ruler {
-    flex: 0 0 auto;
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: 14px;
-    margin: 0.05rem 0;
-    overflow: hidden;
+    height: 100%;
     display: block;
+    pointer-events: none;
+}
+.tuner-ruler .tuner-dot-track {
+    fill: none;
+    stroke: var(--color-text);
+    opacity: 0.28;
+    stroke-linecap: round;
 }
 .tuner-ruler circle { fill: var(--color-text); opacity: 0.3; }
 /* Larger dot marking each scale degree's cent; blue when in tune. Higher
    specificity than the small-dot rule above so its opacity/fill win. */
 .tuner-ruler .tuner-degree-dot { fill: var(--color-text); opacity: 0.9; }
-.tuner-ruler .tuner-degree-dot.in-tune { fill: #007bff; opacity: 1; }
-/* Three 2c gradient steps either side of the in-tune band: the fill ramps from
-   the base text colour toward the in-tune blue as the note approaches 4c.
-   color-mix keeps it theme-aware (white→blue in dark, near-black→blue in light). */
-.tuner-ruler .tuner-degree-dot.tune-1 { fill: color-mix(in srgb, var(--color-text) 25%, #007bff 75%); opacity: 1; }
-.tuner-ruler .tuner-degree-dot.tune-2 { fill: color-mix(in srgb, var(--color-text) 50%, #007bff 50%); opacity: 1; }
-.tuner-ruler .tuner-degree-dot.tune-3 { fill: color-mix(in srgb, var(--color-text) 75%, #007bff 25%); opacity: 0.95; }
+.tuner-ruler .tuner-degree-dot.in-tune { fill: var(--accent); opacity: 1; }
+/* Three 2c gradient steps either side of the in-tune band: the fill ramps
+   from the base text colour toward the in-tune blue as the note approaches
+   4c. color-mix keeps it theme-aware (white→blue in dark, near-black→blue in
+   light). */
+.tuner-ruler .tuner-degree-dot.tune-1 { fill: color-mix(in srgb, var(--color-text) 25%, var(--accent) 75%); opacity: 1; }
+.tuner-ruler .tuner-degree-dot.tune-2 { fill: color-mix(in srgb, var(--color-text) 50%, var(--accent) 50%); opacity: 1; }
+.tuner-ruler .tuner-degree-dot.tune-3 { fill: color-mix(in srgb, var(--color-text) 75%, var(--accent) 25%); opacity: 0.95; }
 
-/* A degree mark, absolutely placed; JS sets `left` and `font-size` each frame.
-   Child glyphs size in em, so a single font-size on the mark scales the whole
-   label - this is how the density (anti-collision) and complexity (Tenney
-   height) sizing are applied. Full size (scale 1) equals the Output windows. */
+/* THE NEEDLE IS THE PITCH, and it never moves — the scale does. That is the
+   frame of reference both shapes are drawn in, and it is why the reading is
+   the same gesture in either: bring the name you want under the needle. */
+.tuner-ruler .tuner-needle {
+    stroke: var(--accent);
+    stroke-width: 2;
+    opacity: 0.85;
+    stroke-linecap: round;
+}
+.tuner-ruler .tuner-needle-head { fill: var(--accent); opacity: 0.85; }
+
+/* A degree mark, absolutely placed; JS sets `left`, `top` and `font-size`
+   each frame. Child glyphs size in em, so a single font-size on the mark
+   scales the whole label — this is how the density (anti-collision) and
+   complexity (Tenney height) sizing are applied. */
 .tuner-mark {
     position: absolute;
-    top: 50%;
     transform: translate(-50%, -50%);
     white-space: nowrap;
     text-align: center;
@@ -1391,7 +1661,7 @@ html[data-theme="light"] #tunerCustomScale {
     justify-content: center;
 }
 
-/* Glyphs are em-relative to the mark's JS-set font-size (1em = Output letter). */
+/* Glyphs are em-relative to the mark's JS-set font-size. */
 .tuner-note-letter { font-family: "Inter", sans-serif; font-size: 1em; }
 .tuner-readout .heji2,
 .tuner-readout .heji-extensions { font-size: 1.5em; top: 0; letter-spacing: 0; }
@@ -1400,14 +1670,14 @@ html[data-theme="light"] #tunerCustomScale {
 .tuner-readout .johnston-symbols { font-size: 1em; }
 /* Johnston accidentals/numerals in em so they scale with the mark (and thus
    with complexity sizing) at Johnston Output's proportions: the SMuFL
-   accidental is 4rem*4/3 and the raised numeral 1.6rem against the 4rem letter,
-   i.e. 1.333em and 0.4em here. Without this they keep a fixed rem size and the
-   letter scales away from the accidental. */
+   accidental is 4rem*4/3 and the raised numeral 1.6rem against the 4rem
+   letter, i.e. 1.333em and 0.4em here. Without this they keep a fixed rem
+   size and the letter scales away from the accidental. */
 .tuner-readout .johnston-accidental { font-size: 1.333em; }
 .tuner-readout .johnston-numeral { font-size: 0.4em; }
 .tuner-readout .johnston-numerals-inline { margin-top: 0.1em; }
-/* Sagittal symbol renders like the note letter + an em glyph, mirroring HEJI so
-   it scales with the mark (and complexity). 1.333em == Sagittal Output's
+/* Sagittal symbol renders like the note letter + an em glyph, mirroring HEJI
+   so it scales with the mark (and complexity). 1.333em == Sagittal Output's
    5.333rem symbol against the 4rem letter. */
 .tuner-sag-symbol {
     font-family: "Bravura", serif;
@@ -1420,8 +1690,9 @@ html[data-theme="light"] #tunerCustomScale {
 .tuner-edo-note { font-family: "EdoAccidentals", sans-serif; font-size: 1em; }
 .tuner-edo-acc  { font-family: "EdoAccidentals", sans-serif; font-size: 1em; }
 
-/* enh equivalent: spellings stacked vertically, the pair centred where a single
-   spelling would sit, at the same size (no shrink) so all EDO text is uniform. */
+/* enh equivalent: spellings stacked vertically, the pair centred where a
+   single spelling would sit, at the same size (no shrink) so all EDO text is
+   uniform. */
 .tuner-edo-stack {
     display: flex;
     flex-direction: column;
@@ -1457,31 +1728,16 @@ html[data-theme="light"] #tunerCustomScale {
 
 /* In-tune (within 4c): note name, ratio/step and their glyphs turn blue. */
 .tuner-readout .tuner-mark.in-tune,
-.tuner-readout .tuner-mark.in-tune * {
-    color: #007bff;
-}
-/* Three 2c gradient steps either side of the in-tune band (4-6c, 6-8c, 8-10c):
-   text ramps from the base colour toward the in-tune blue as it approaches 4c.
-   color-mix keeps it theme-aware (white→blue in dark, near-black→blue in light). */
+.tuner-readout .tuner-mark.in-tune * { color: var(--accent); }
+/* Three 2c gradient steps either side of the in-tune band (4-6c, 6-8c,
+   8-10c): text ramps from the base colour toward the in-tune blue as it
+   approaches 4c. */
 .tuner-readout .tuner-mark.tune-1,
-.tuner-readout .tuner-mark.tune-1 * { color: color-mix(in srgb, var(--color-text) 25%, #007bff 75%); }
+.tuner-readout .tuner-mark.tune-1 * { color: color-mix(in srgb, var(--color-text) 25%, var(--accent) 75%); }
 .tuner-readout .tuner-mark.tune-2,
-.tuner-readout .tuner-mark.tune-2 * { color: color-mix(in srgb, var(--color-text) 50%, #007bff 50%); }
+.tuner-readout .tuner-mark.tune-2 * { color: color-mix(in srgb, var(--color-text) 50%, var(--accent) 50%); }
 .tuner-readout .tuner-mark.tune-3,
-.tuner-readout .tuner-mark.tune-3 * { color: color-mix(in srgb, var(--color-text) 75%, #007bff 25%); }
-
-/* Fixed centre line = the received pitch. */
-.tuner-centerline {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 2px;
-    transform: translateX(-50%);
-    background-color: #007bff;
-    opacity: 0.85;
-    pointer-events: none;
-}
+.tuner-readout .tuner-mark.tune-3 * { color: color-mix(in srgb, var(--color-text) 75%, var(--accent) 25%); }
 
 .tuner-idle {
     position: absolute;
@@ -1489,25 +1745,239 @@ html[data-theme="light"] #tunerCustomScale {
     left: 50%;
     transform: translate(-50%, -50%);
     color: var(--color-text);
-    opacity: 0.6;
-    font-size: 0.9rem;
+    opacity: 0.75;
+    font-size: 1.35rem;
+    letter-spacing: 0.01em;
     text-align: center;
     width: 90%;
     pointer-events: none;
 }
+/* The word that names the button underneath, marked by an accent rule rather
+   than by being set in the accent colour — a blue word this size on this
+   ground is harder to read than the sentence around it, which is the opposite
+   of what emphasis is for. */
+.tuner-idle b {
+    color: var(--color-text);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 1px;
+}
+
+/* ---------- under the meter ----------
+   The two numbers the picture cannot say, and the one switch you reach for
+   while playing rather than while setting up — which is why the switch is
+   here on the instrument and not in the drawer, where shutting the drawer
+   would put it out of reach.
+
+   The readouts flank the button and are given equal width, so the button
+   stays centred under the needle no matter how many digits arrive. */
+.tuner-hud {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+}
+.tuner-hud-read {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    color: var(--dim);
+}
+.tuner-hud-read:first-child { justify-content: flex-end; }
+.tuner-hud-read:last-child { justify-content: flex-start; }
+.tuner-hud-value {
+    color: var(--color-text);
+    font-size: 1.6rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+.tuner-hud-unit { font-size: 0.95rem; color: var(--dim); }
 
 #tunerToggleButton {
-    display: block;
-    width: 100%;
-    font-size: 11.2px;
-    margin: 0.4rem 0 0 0;
+    flex: 0 0 auto;
+    min-width: 9rem;
+    font-size: 1.1rem;
+    padding: 8px 18px;
+    margin: 0;
+    border-radius: 6px;
 }
 #tunerToggleButton.listening-active {
     background-color: var(--bg-button-selected);
     border-color: var(--bg-button-selected);
+    color: #fff;
 }
 
-html[data-theme="light"] .tuner-readout {
-    background-color: rgb(255, 255, 255);
-    border-color: rgb(187, 187, 187);
+/* On a phone the two readouts and the button do not fit across; the button
+   keeps the full width and the numbers sit above it. */
+@media (max-width: 560px) {
+    .tuner-hud { flex-wrap: wrap; gap: 8px 14px; }
+    .tuner-hud-read { flex: 1 1 40%; }
+    #tunerToggleButton { flex: 1 1 100%; order: 1; }
 }
+
+
+/* =====================================================================
+ *  LATCHES AND SWITCHES — no tickboxes
+ * =====================================================================
+ *
+ * Tetrads' and Xenachord Designer's idiom, applied to every on/off and every
+ * either/or in the app. There is not a native checkbox or radio dot left
+ * showing anywhere.
+ *
+ * WHAT DID NOT CHANGE IS THE MARKUP. Every input is still an <input> of the
+ * same type with the same id in the same place; it is moved off-screen rather
+ * than removed, so it still takes the click through its own <label>, still
+ * carries the value every handler reads with .checked, still fires change, and
+ * is still what the undo history snapshots and writes back. The whole of this
+ * is presentation — which is why none of the app's several hundred lines of
+ * control wiring had to be touched to do it.
+ *
+ * TWO LOOKS, BECAUSE THERE ARE TWO KINDS OF QUESTION.
+ *
+ *   A LATCH is a thing that is on or off by itself — octave reduce,
+ *   unofficial extensions, complexity sizing. Nothing else changes when it
+ *   does, so it LIGHTS UP: the latched fill, the accent border, and the
+ *   brighter text.
+ *
+ *   A SWITCH is a choice among alternatives — revo or evo, unicode or ascii,
+ *   straight or round, 1/1 or A4. Exactly one is true, and the strip says so
+ *   by being one control; the chosen segment presses IN (see .selected above)
+ *   rather than lighting up.
+ *
+ * Drawing both the same would have said the two were the same decision, and
+ * the difference between "these can all be on" and "only one of these" is
+ * exactly what a user needs to know before pressing.
+ * ------------------------------------------------------------------ */
+
+/* The input itself: still there, still the state, no longer drawn.
+   Kept in the layout (not display:none) so it stays focusable, so the label
+   still activates it, and so assistive technology still finds it. */
+.output-checkboxes label input[type="checkbox"],
+.heji-entry-checkboxes label input[type="checkbox"],
+.tuner-checkboxes label input[type="checkbox"],
+.seg-radio input[type="radio"],
+.toggle-header-placement input[type="radio"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ---------- the latch ---------- */
+.output-checkboxes > label,
+.heji-entry-checkboxes > label,
+.tuner-checkboxes > label {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 5px 8px;
+    margin: 0 0 4px;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--color-text);
+    background-color: var(--bg-button);
+    border: 1px solid var(--border-button);
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+}
+.output-checkboxes > label:hover,
+.heji-entry-checkboxes > label:hover,
+.tuner-checkboxes > label:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.output-checkboxes > label:has(input:checked),
+.heji-entry-checkboxes > label:has(input:checked),
+.tuner-checkboxes > label:has(input:checked) {
+    background-color: var(--latched-bg);
+    border-color: var(--latched-border);
+    color: var(--latched-text);
+    font-weight: 600;
+}
+.output-checkboxes > label:has(input:checked):hover,
+.heji-entry-checkboxes > label:has(input:checked):hover,
+.tuner-checkboxes > label:has(input:checked):hover {
+    color: var(--latched-text);
+}
+/* The box is gone, so focus has to be visible somewhere else. */
+.output-checkboxes > label:has(input:focus-visible),
+.heji-entry-checkboxes > label:has(input:focus-visible),
+.tuner-checkboxes > label:has(input:focus-visible),
+.seg-radio:has(input:focus-visible),
+.toggle-header-placement:has(input:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
+.heji-entry-checkboxes { display: flex; flex-direction: column; align-items: stretch; }
+
+/* ---------- a radio pair drawn as a segmented switch ----------
+   The same strip .seg draws in the drawers, built out of labels because the
+   thing that has to be clicked is the label of a radio. */
+#panel .seg .seg-radio {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 5px 6px;
+    font-size: 11.5px;
+    color: var(--color-text);
+    background: var(--panel2);
+    border: 1px solid var(--line);
+    border-left-width: 0;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+#panel .seg .seg-radio:first-child { border-radius: 6px 0 0 6px; border-left-width: 1px; }
+#panel .seg .seg-radio:last-child { border-radius: 0 6px 6px 0; }
+#panel .seg .seg-radio:hover { color: var(--accent); }
+#panel .seg .seg-radio:has(input:checked) {
+    background: var(--panel-bright);
+    color: var(--color-text);
+    box-shadow: inset 0 -2px 0 var(--accent);
+}
+#panel .seg .seg-radio span { color: inherit; font-size: inherit; }
+
+/* ---------- the entry card that is active ----------
+   Five cards carry a radio saying which entry area the output windows are
+   reading from. It was a dot beside the card's name, which is a small mark
+   for a large fact — the whole app is showing you the consequences of that
+   one choice. The dot is gone and the CARD'S OWN HEADER is the indicator: an
+   accent rule down its leading edge and the name at full weight, so which
+   card is live is legible from across the grid rather than at reading
+   distance.
+
+   The header is still the collapse handle and still the drag handle; nothing
+   about the rule interferes with either, because it is a border rather than
+   anything that takes a press. */
+.toggle-header-placement {
+    position: relative;
+    border-left: 3px solid transparent;
+    border-radius: 8px 8px 0 0;
+    transition: background-color .12s ease, border-color .12s ease;
+}
+.toggle-header-placement label {
+    cursor: pointer;
+    color: var(--color-text);
+    opacity: 0.72;
+}
+.toggle-header-placement:has(input:checked) {
+    border-left-color: var(--accent);
+    background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.toggle-header-placement:has(input:checked) label { opacity: 1; }
+.toggle-header-placement:hover label { opacity: 1; }
