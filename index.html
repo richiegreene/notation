@@ -310,57 +310,6 @@
         <div class="drawer hidden" data-drawer="tuner">
           <h1>notation <small>· tuner</small></h1>
 
-          <!-- ============ THE METER ITSELF ============
-               Everything about how the reading is PRESENTED, as against what is
-               being read — which is the three fieldsets below.
-
-               The two ways of drawing it: straight is a strobe strip, the scale
-               sliding past a fixed line with cents as millimetres; round is the
-               instrument every tuner and every speedometer already taught, a
-               needle at twelve o'clock with the scale swung under it. Neither
-               is more accurate. They are read differently, and which reads
-               better depends on the window width and on the room. -->
-          <fieldset>
-            <legend>Meter</legend>
-
-            <label class="tune-h">Shape</label>
-            <div class="seg" id="tuner-shape-seg">
-              <button data-v="linear" class="on"
-                title="A strobe strip: the scale slides past a fixed centre line">Straight</button>
-              <button data-v="dial"
-                title="A dial: a needle at the top, the scale swung beneath it">Round</button>
-            </div>
-
-            <!-- Lines through the field from every cent and every degree, in
-                 either shape. The dots say where a mark is; the lines say
-                 which way it is going, and how far the goal still is. -->
-            <div class="output-checkboxes tuner-checkboxes">
-              <label title="Draw a line through the field from every cent of the ruler and from every degree of the scale, so movement toward a note reads as the whole grid sliding."><input type="checkbox" id="tunerGrid"> grid</label>
-            </div>
-
-            <!-- Which pitch is called zero cents. Two alternatives, so a
-                 segmented switch rather than two radio dots: the strip says the
-                 choice is exclusive by being one control, which is what a
-                 segmented button is for. The inputs are still radios and still
-                 where every handler reads the answer — only the dot is gone. -->
-            <label class="tune-h">Reference</label>
-            <div class="seg ref-frequency-toggles">
-              <label class="seg-radio">
-                <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked>
-                <span>1/1&plusmn;0c</span>
-              </label>
-              <label class="seg-radio">
-                <input type="radio" name="refInput" id="refFrequencyFreeRadio">
-                <span>A4 &plusmn;0c</span>
-              </label>
-            </div>
-
-            <label for="tunerCentsWindow">Window width (cents)</label>
-            <input type="number" id="tunerCentsWindow" class="tuner-cents-window-input"
-              value="100" min="4" max="1200" step="0.1"
-              title="How much of the octave the meter spans end to end. Smaller is more zoomed in. Pinch or scroll on the meter itself to set it by hand.">
-          </fieldset>
-
           <fieldset>
             <legend>Notation</legend>
             <div class="tuner-controls-row">
@@ -415,14 +364,100 @@
             </div>
           </fieldset>
 
-          <!-- Octave reduce, enh equivalent, exclude halves and unofficial
-               extensions are the Settings drawer's Reading latches, shared
-               with the output windows; only the meter's own sizing is here. -->
+          <!-- ============ DISPLAY ============
+               Everything about how the reading is PRESENTED, as against what is
+               being read — which is the two fieldsets above. Last, because it
+               is set up once and then left; what scale and what notation are
+               the questions asked every time.
+
+               The two ways of drawing it: straight is a strobe strip, the scale
+               sliding past a fixed line with cents as millimetres; round is the
+               instrument every tuner and every speedometer already taught, a
+               needle at twelve o'clock with the scale swung under it. Neither
+               is more accurate. They are read differently, and which reads
+               better depends on the window width and on the room. -->
           <fieldset>
-            <legend>Reading</legend>
-            <div class="output-checkboxes tuner-checkboxes" id="tunerComplexityChecks">
-              <label><input type="checkbox" id="tunerComplexitySizing" checked> complexity sizing</label>
+            <legend>Display</legend>
+
+            <!-- ---- the shape of the meter ----
+                 Which way it is drawn, and then the two numbers that set how
+                 much fits in it: how many cents the field spans, and how much
+                 a ratio's complexity is allowed to say about its size. -->
+            <label class="tune-h">Shape</label>
+            <div class="seg" id="tuner-shape-seg">
+              <button data-v="linear" class="on"
+                title="A strobe strip: the scale slides past a fixed centre line">Straight</button>
+              <button data-v="dial"
+                title="A dial: a needle at the top, the scale swung beneath it">Round</button>
             </div>
+
+            <!-- Lines through the field from every cent and every degree, in
+                 either shape. The dots say where a mark is; the lines say
+                 which way it is going, and how far the goal still is. -->
+            <div class="output-checkboxes tuner-checkboxes">
+              <label title="Draw a line through the field from every cent of the ruler and from every degree of the scale, so movement toward a note reads as the whole grid sliding."><input type="checkbox" id="tunerGrid"> grid</label>
+            </div>
+
+            <label for="tunerCentsWindow">Window width (cents)</label>
+            <input type="number" id="tunerCentsWindow" class="tuner-cents-window-input"
+              value="100" min="4" max="1200" step="0.1"
+              title="How much of the octave the meter spans end to end. Smaller is more zoomed in. Pinch or scroll on the meter itself to set it by hand.">
+
+            <!-- How much a ratio's complexity is allowed to say about its
+                 size — Tetrads' Measure slider, for names instead of chords.
+                 A strength rather than a latch: at 0 every degree is drawn the
+                 same size, at 1 it is the sizing the meter always had, and
+                 past that the simple ratios stand out of a dense scale like
+                 landmarks. JI only: an EDO's steps are all one complexity, so
+                 the row is put away while Ups and Downs is up. -->
+            <div id="tunerComplexityRow">
+              <div class="pressrow" style="margin-top:10px">
+                <label for="tunerComplexity" class="pressname">Complexity sizing</label>
+                <span class="pressval" id="tunerComplexityValue">1.00×</span>
+              </div>
+              <input type="range" id="tunerComplexity" min="0" max="2" step="0.05" value="1"
+                title="How strongly simpler ratios are drawn larger than complex ones. 0 is every degree the same size; 1 is the meter's usual sizing; 2 is twice as steep.">
+            </div>
+
+            <!-- Which pitch is called zero cents. Two alternatives, so a
+                 segmented switch rather than two radio dots: the strip says the
+                 choice is exclusive by being one control, which is what a
+                 segmented button is for. The inputs are still radios and still
+                 where every handler reads the answer — only the dot is gone. -->
+            <label class="tune-h">Reference</label>
+            <div class="seg ref-frequency-toggles">
+              <label class="seg-radio">
+                <input type="radio" name="refInput" id="refFrequencyLinkedRadio" checked>
+                <span>1/1&plusmn;0c</span>
+              </label>
+              <label class="seg-radio">
+                <input type="radio" name="refInput" id="refFrequencyFreeRadio">
+                <span>A4 &plusmn;0c</span>
+              </label>
+            </div>
+
+            <!-- ---- color ----
+                 The field itself saying how close the nearest degree is:
+                 green when the note is in the band, through amber to red as it
+                 leaves it. A continuous ramp rather than the marks' three
+                 steps, because a whole field of color is read at the edge of
+                 the eye, where a step would be a flicker and a ramp is a
+                 direction.
+
+                 The slider under it is the band: how many cents either side
+                 of a degree still count as on it. It is the one definition
+                 of "in tune" the meter has, so it moves the marks' blue and
+                 the ruler's lit dot as well as the field. -->
+            <label class="tune-h">Color</label>
+            <div class="output-checkboxes tuner-checkboxes">
+              <label title="Color the whole field by how far the nearest degree is: green in tune, ramping through amber to red as the note leaves the band."><input type="checkbox" id="tunerColor" checked> color</label>
+            </div>
+            <div class="pressrow" style="margin-top:6px">
+              <label for="tunerInTune" class="pressname">In-tune window</label>
+              <span class="pressval" id="tunerInTuneValue">±3.0c</span>
+            </div>
+            <input type="range" id="tunerInTune" min="0.5" max="20" step="0.5" value="3"
+              title="How many cents either side of a degree count as in tune: the field is green, and the name blue, inside this band.">
           </fieldset>
         </div>
       </div>

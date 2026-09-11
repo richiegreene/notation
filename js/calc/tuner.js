@@ -29,17 +29,27 @@ import { playFrequencies, stopAllFrequencies } from '../audio-playback.js';
  */
 
 const DEFAULT_CENTS_WINDOW = 100; // total cents spanned across the meter
-const IN_TUNE = 4;        // cents within which a note name turns fully blue
-const TUNE_STEP = 2;      // cents per gradient step outside the in-tune band
+const IN_TUNE_DEFAULT = 3; // cents within which a note name turns fully blue
+const TUNE_STEP = 2;       // cents per gradient step outside the in-tune band
+/* The in-tune band is the Display drawer's In-tune window slider. It is the
+   one definition of "on the note" the meter has, so it moves the marks' blue
+   and the ruler's lit dot as well as the field's green: two bands would say
+   the eye and the field disagree about what in tune is. */
+const IN_TUNE_STORE = 'notation.tuner.intune.v1';
+function inTune() {
+    const v = parseFloat(el('tunerInTune') && el('tunerInTune').value);
+    return Number.isFinite(v) && v > 0 ? v : IN_TUNE_DEFAULT;
+}
 // All tune-state classes, and a helper that returns the class for a given
-// absolute cent deviation: full blue inside 4c, then three 2c gradient steps
-// (tune-1 nearest, tune-3 farthest) up to 10c, and nothing beyond.
+// absolute cent deviation: full blue inside the band, then three 2c gradient
+// steps (tune-1 nearest, tune-3 farthest), and nothing beyond.
 const TUNE_CLASSES = ['in-tune', 'tune-1', 'tune-2', 'tune-3'];
 function tuneClassFor(absDelta) {
-    if (absDelta <= IN_TUNE) return 'in-tune';
-    if (absDelta <= IN_TUNE + TUNE_STEP) return 'tune-1';
-    if (absDelta <= IN_TUNE + 2 * TUNE_STEP) return 'tune-2';
-    if (absDelta <= IN_TUNE + 3 * TUNE_STEP) return 'tune-3';
+    const band = inTune();
+    if (absDelta <= band) return 'in-tune';
+    if (absDelta <= band + TUNE_STEP) return 'tune-1';
+    if (absDelta <= band + 2 * TUNE_STEP) return 'tune-2';
+    if (absDelta <= band + 3 * TUNE_STEP) return 'tune-3';
     return '';
 }
 function applyTuneClass(elm, cls) {
@@ -50,6 +60,33 @@ function applyTuneClass(elm, cls) {
 
 const SHAPE_STORE = 'notation.tuner.shape.v1';
 const GRID_STORE = 'notation.tuner.grid.v1';
+const COLOR_STORE = 'notation.tuner.color.v1';
+const COMPLEXITY_STORE = 'notation.tuner.complexity.v1';
+
+/* ---- the field's colour ----
+ * With the Display drawer's color latch down, the whole field says how far
+ * the nearest degree is. The marks already say it three steps at a time, in
+ * the app's blue, for the mark you are looking AT; this is for the field you
+ * are not looking at — a wash read at the edge of the eye while the eye is on
+ * the instrument. So it is a continuous ramp and not steps, and it is the
+ * colour every tuner already taught rather than the blue: green inside the
+ * in-tune band, amber on the way out, red once it is gone. The three stops
+ * are Tetrads' own --ok and --warn and a red of the same weight.
+ *
+ * COLOR_RAMP_CENTS is how far past the band the ramp runs before it is fully
+ * red: about a quarter-tone, so a note half a step off in 41-EDO is plainly
+ * out and one in a dense 11-limit scale can still be somewhere between. */
+const COLOR_RAMP_CENTS = 25;
+const COLOR_STOPS = [[0x79, 0xd1, 0x8b], [0xff, 0xb4, 0x54], [0xe8, 0x5d, 0x5d]];
+function tuneColorFor(absDelta) {
+    const t = clamp((absDelta - inTune()) / COLOR_RAMP_CENTS, 0, 1);
+    // Two segments, green→amber then amber→red, so the midpoint is amber.
+    const seg = t < 0.5 ? 0 : 1;
+    const u = seg === 0 ? t * 2 : (t - 0.5) * 2;
+    const a = COLOR_STOPS[seg], b = COLOR_STOPS[seg + 1];
+    const c = a.map((v, i) => Math.round(v + (b[i] - v) * u));
+    return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+}
 
 /* ---- the grid ----
  * Lines through the field from every cent of the ruler and from every degree
@@ -141,6 +178,11 @@ const MARK_GUTTER_PX = 5;     // min pixel gap kept between adjacent marks
 // floor is lowered so complex ratios can shrink enough to let simple ones grow.
 const COMPLEXITY_SLOPE = 0.1;
 const COMPLEXITY_FLOOR = 0.05;
+/* How much of that slope the Display drawer's slider lets through. 1 is the
+   sizing above as it always was; 0 flattens it so every degree is one size;
+   2 doubles the slope, so the simple ratios stand out of a dense scale like
+   landmarks. Tetrads' Measure slider, for names instead of chords. */
+const COMPLEXITY_DEFAULT = 1;
 // Ups and Downs renders at one fixed size for every mark — never scaled by
 // density, name length, complexity, enh equivalent, or exclude halves.
 const EDO_SCALE = 0.55;
@@ -180,6 +222,39 @@ function centsWindow() {
     return (v && v > 0) ? v : DEFAULT_CENTS_WINDOW;
 }
 
+/** The Display drawer's complexity strength, 0..2; 1 is the plain sizing. */
+function complexityStrength() {
+    const v = parseFloat(el('tunerComplexity') && el('tunerComplexity').value);
+    return Number.isFinite(v) ? clamp(v, 0, 2) : COMPLEXITY_DEFAULT;
+}
+
+/** The number beside the slider: "off" at 0, otherwise the strength. */
+function showComplexity() {
+    const v = el('tunerComplexityValue');
+    if (!v) return;
+    const k = complexityStrength();
+    v.textContent = k === 0 ? 'off' : `${k.toFixed(2)}×`;
+}
+
+/** The number beside the band slider, as the tolerance it is. */
+function showInTune() {
+    const v = el('tunerInTuneValue');
+    if (v) v.textContent = `±${inTune().toFixed(1)}c`;
+}
+
+/** Paint the field by how far the nearest degree is, or wipe it. The colour
+ *  goes on as a custom property and the rule in style.css mixes it into the
+ *  ground, so the wash is the same tint in both themes. */
+function paintField(absDelta) {
+    const readout = el('tunerReadout');
+    if (!readout) return;
+    const c = el('tunerColor');
+    const on = c && c.checked && absDelta != null;
+    readout.classList.toggle('colored', !!on);
+    if (on) readout.style.setProperty('--tune-color', tuneColorFor(absDelta));
+    else readout.style.removeProperty('--tune-color');
+}
+
 export function initTuner() {
     if (!el('tunerLanguage')) return;
 
@@ -196,8 +271,22 @@ export function initTuner() {
         'unofficialExtensions'].forEach((id) =>
         el(id).addEventListener('change', rebuildScale));
 
-    // Complexity sizing only changes text scale, not the scale itself.
-    el('tunerComplexitySizing').addEventListener('change', refitTuner);
+    // Complexity sizing only changes text scale, not the scale itself — but
+    // each mark's factor is baked in at build, so the strength is re-applied
+    // to the marks that exist before the refit.
+    const cx = el('tunerComplexity');
+    if (cx) {
+        let k = null;
+        try { k = parseFloat(localStorage.getItem(COMPLEXITY_STORE)); } catch (e) {}
+        if (Number.isFinite(k)) cx.value = clamp(k, 0, 2);
+        showComplexity();
+        cx.addEventListener('input', () => {
+            showComplexity();
+            try { localStorage.setItem(COMPLEXITY_STORE, cx.value); } catch (e) {}
+            for (const m of marks) m.complexity = complexityFactor(m.deg);
+            refitTuner();
+        });
+    }
 
     // Window width (the "zoom") lives in the Settings drawer; re-fit on change.
     const cw = el('tunerCentsWindow');
@@ -227,6 +316,33 @@ export function initTuner() {
             try { localStorage.setItem(GRID_STORE, grid.checked ? '1' : '0'); } catch (e) {}
             rulerShape = null; // the ruler is drawn with or without the grid
             refitTuner();
+        });
+    }
+
+    // ...and whether the field was coloured. Same arrangement as the grid.
+    const colour = el('tunerColor');
+    if (colour) {
+        let c = null;
+        try { c = localStorage.getItem(COLOR_STORE); } catch (e) {}
+        if (c === '1' || c === '0') colour.checked = c === '1';
+        colour.addEventListener('change', () => {
+            try { localStorage.setItem(COLOR_STORE, colour.checked ? '1' : '0'); } catch (e) {}
+            renderFrame();
+        });
+    }
+
+    // ...and how wide the band is. Redraws rather than refits: nothing moves
+    // or resizes, only which marks and how much of the field are lit.
+    const band = el('tunerInTune');
+    if (band) {
+        let b = null;
+        try { b = parseFloat(localStorage.getItem(IN_TUNE_STORE)); } catch (e) {}
+        if (Number.isFinite(b) && b > 0) band.value = b;
+        showInTune();
+        band.addEventListener('input', () => {
+            showInTune();
+            try { localStorage.setItem(IN_TUNE_STORE, band.value); } catch (e) {}
+            renderFrame();
         });
     }
 
@@ -414,7 +530,7 @@ function updateVisibility() {
     el('tunerSagittalRevoRow').style.display = lang === 'sagittal' ? '' : 'none';
 
     // Complexity sizing applies to the three JI languages only.
-    el('tunerComplexityChecks').style.display = updown ? 'none' : '';
+    el('tunerComplexityRow').style.display = updown ? 'none' : '';
 }
 
 /** Rebuild the scale (degrees + names) and its DOM marks. */
@@ -714,7 +830,8 @@ function lineStep(pxPerCent) {
 function complexityFactor(deg) {
     if (isJiMode) {
         const hd = Math.log2(Math.max(1, deg.num * deg.den));
-        return Math.max(COMPLEXITY_FLOOR, Math.min(1, 1 - hd * COMPLEXITY_SLOPE));
+        return Math.max(COMPLEXITY_FLOOR,
+            Math.min(1, 1 - hd * COMPLEXITY_SLOPE * complexityStrength()));
     }
     return 1;
 }
@@ -724,14 +841,13 @@ function complexityFactor(deg) {
  * largest uniform scale at which no two adjacent degrees collide. Inter-degree
  * spacing is fixed (the whole field moves together), so this depends only on
  * the scale and on how many pixels a cent is worth — computed on build, on
- * resize and on a complexity change, not per frame. When complexity sizing is
- * on, each mark's footprint is pre-shrunk by its complexity factor, letting
- * simpler-heavy regions pack larger.
+ * resize and on a complexity change, not per frame. Each mark's footprint is
+ * pre-shrunk by its complexity factor, letting simpler-heavy regions pack
+ * larger.
  */
 function computeBaseScale() {
     const g = geometry();
     if (!g || !marks.length) return; // hidden or unbuilt — recomputed when shown
-    const complexityOn = isJiMode && el('tunerComplexitySizing').checked;
 
     // Measure full-size (scale 1) content widths in one reflow.
     for (const m of marks) {
@@ -746,7 +862,9 @@ function computeBaseScale() {
     for (const m of marks) setMarkVisible(m, false);
 
     const order = marks.slice().sort((a, b) => a.deg.cents - b.deg.cents);
-    const cf = (m) => (complexityOn ? m.complexity : 1);
+    // Each mark's Tenney factor already carries the slider's strength (1 for
+    // every mark at 0, and always 1 for an EDO), so there is no latch here.
+    const cf = (m) => m.complexity;
     let scale = 1;
     for (let i = 0; i < order.length; i++) {
         const a = order[i];
@@ -993,6 +1111,7 @@ function renderFrame() {
     if (latestFreq == null) {
         if (idle) idle.style.display = '';
         showHud(null);
+        paintField(null);
         return;
     }
     if (idle) idle.style.display = 'none';
@@ -1000,7 +1119,6 @@ function renderFrame() {
     const half = centsWindow() / 2;
     const refFreq = parseFloat(state.freq1to1) || 261.6256;
     const pitchFolded = U.mod(1200 * Math.log2(latestFreq / refFreq), 1200);
-    const complexityOn = isJiMode && el('tunerComplexitySizing').checked;
 
     scrollRuler(g, pitchFolded);
     showHud(pitchFolded);
@@ -1011,8 +1129,10 @@ function renderFrame() {
     // of the field with nothing under it.
     const margin = g.kind === 'dial' ? 0 : 24;
 
+    let nearest = Infinity; // how far the closest degree is, for the field
     for (const m of marks) {
         const delta = wrapCents(m.deg.cents - pitchFolded);
+        if (Math.abs(delta) < nearest) nearest = Math.abs(delta);
         const visible = Math.abs(delta) <= half + margin;
         setMarkVisible(m, visible);
         if (!visible) continue;
@@ -1020,7 +1140,7 @@ function renderFrame() {
         // Ups and Downs: one fixed size for every mark (uniform regardless of
         // density, name length, enh, exclude halves). JI scales per-mark by the
         // density (anti-collision) scale times the complexity (Tenney) scale.
-        const s = isJiMode ? baseScale * (complexityOn ? m.complexity : 1) : EDO_SCALE;
+        const s = isJiMode ? baseScale * m.complexity : EDO_SCALE;
         m.nameEl.style.fontSize = (g.namePx * s) + 'px';
         m.rEl.style.fontSize = (g.namePx * RATIO_OF_NAME * s) + 'px';
 
@@ -1034,6 +1154,7 @@ function renderFrame() {
         applyTuneClass(m.dotEl, cls);
         applyTuneClass(m.lineEl, cls);
     }
+    paintField(marks.length ? nearest : null);
 }
 
 /**
@@ -1078,6 +1199,7 @@ async function toggleListening() {
         latestFreq = null;
         marks.forEach((m) => setMarkVisible(m, false));
         showHud(null);
+        paintField(null);
         btn.textContent = 'listen';
         btn.classList.remove('listening-active');
         idle.innerHTML = 'press <b>listen</b> to start';
