@@ -76,7 +76,7 @@ Gathered in the rail's **Settings** drawer:
 
 ### Playback
 In the rail's **Play** drawer — the same synth as
-[Tetrads](https://github.com/richiegreene/tetrads) and Xenachord Designer,
+[Models](https://github.com/richiegreene/models) and [Keyboard Designer](https://github.com/richiegreene/keyboards),
 built from the same modules, so a wave chosen in one app is the wave the others
 would sound:
 

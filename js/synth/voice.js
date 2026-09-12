@@ -2,7 +2,7 @@
  *  THE SOUNDING END
  * =====================================================================
  *
- * Tetrads' and Xenachord Designer's synth, module for module, so a wave chosen
+ * Models' and Keyboard Designer's synth, module for module, so a wave chosen
  * in the Play drawer here is the wave those apps would sound. What replaced
  * the app's old pair of OscillatorNodes: a naive PeriodicWave built from 64
  * harmonics aliases the moment it is played high, and this app exists to let

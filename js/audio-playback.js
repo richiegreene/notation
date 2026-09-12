@@ -7,7 +7,7 @@
  * frequencies and gets them sounding; which of the two routes carries them is
  * the Play drawer's business, not the caller's.
  *
- * The browser route is Tetrads' and Xenachord Designer's voice engine (see
+ * The browser route is Models' and Keyboard Designer's voice engine (see
  * ./synth/), not a bank of OscillatorNodes. Three things follow from that, and
  * all three are the reason for the change:
  *

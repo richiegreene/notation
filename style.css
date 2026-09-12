@@ -71,7 +71,7 @@ html {
     --color-input: #4a4a4a; /* input background */
 
     /* ---- the panel ----
-       Tetrads' and Xenachord Designer's chrome tokens, mapped onto this app's
+       Models' and Keyboard Designer's chrome tokens, mapped onto this app's
        own palette rather than copied as literals: the rail has to sit beside
        these cards, so its ground is the card's ground and its accent is the
        one blue the whole app already uses for "this is the one that is true"
@@ -87,10 +87,10 @@ html {
     --line: #555;            /* every hairline in the chrome */
     --dim: #9a9aa4;          /* labels, legends, anything that reports */
     --accent: #007bff;       /* the app's one blue */
-    --scope-bg: #12161c;     /* the wave and envelope canvases: Tetrads' own screen ground */
+    --scope-bg: #12161c;     /* the wave and envelope canvases: Models' own screen ground */
 
     /* ---- a latch that is down ----
-       Tetrads' `button.latched`, token for token. Distinct from the lit
+       Models' `button.latched`, token for token. Distinct from the lit
        segment below it on purpose: a segmented button is a choice among
        alternatives and presses IN when chosen, whereas a latch is a thing
        that is either on or off and LIGHTS UP when it is on. Drawing them the
@@ -115,7 +115,7 @@ body {
  *  THE RAIL, THE DRAWER AND THE STAGE
  * =====================================================================
  *
- * Tetrads' and Xenachord Designer's chrome, rule for rule, on this app's own
+ * Models' and Keyboard Designer's chrome, rule for rule, on this app's own
  * tokens. The three apps share a synth and a notation engine, and a control
  * that looked different in each would suggest it did something different.
  *
@@ -789,7 +789,7 @@ select {
 }
 
 /* ---------- the one that is chosen ----------
- * Tetrads' and Xenachord Designer's rule, and the reasoning with it.
+ * Models' and Keyboard Designer's rule, and the reasoning with it.
  *
  * WHICH ONE IS ON IS SAID TWICE, by the ground and by a line under it: the
  * chosen button is taken to --panel-bright, which is DARKER than the button
@@ -1064,7 +1064,7 @@ table.enharmonic-table > tr, td, th {
 
 /* revo/evo and unicode/ascii are two alternatives each, so each pair is one
    segmented strip rather than two buttons with a gap between them — the same
-   control the Shape switch in the Tuner drawer is, and the same one Tetrads
+   control the Shape switch in the Tuner drawer is, and the same one Models
    uses everywhere it asks a two-way question. The gap used to be 0.5rem,
    which made them read as two independent presses that happened to sit
    together, and left it open whether both could be down at once. */
@@ -1486,7 +1486,7 @@ html[data-theme="light"] {
        panel against a white window is a bezel with a lamp behind it: the eye
        adapts to the larger surface, and the panel then reads as a hole.
 
-       Day mode is Tetrads' and Xenachord Designer's bright chrome, token for
+       Day mode is Models' and Keyboard Designer's bright chrome, token for
        token, the way night mode there is this app's: the three apps sit side
        by side, and a panel that is tinted in one and not the others reads as
        a different panel. Note --panel2 is DARKER than --panel here, so a
@@ -1901,7 +1901,7 @@ html[data-theme="light"] .palette .label {
  *  LATCHES AND SWITCHES — no tickboxes
  * =====================================================================
  *
- * Tetrads' and Xenachord Designer's idiom, applied to every on/off and every
+ * Models' and Keyboard Designer's idiom, applied to every on/off and every
  * either/or in the app. There is not a native checkbox or radio dot left
  * showing anywhere.
  *

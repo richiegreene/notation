@@ -71,7 +71,7 @@ const COMPLEXITY_STORE = 'notation.tuner.complexity.v1';
  * the instrument. So it is a continuous ramp and not steps, and it is the
  * colour every tuner already taught rather than the blue: green inside the
  * in-tune band, amber on the way out, red once it is gone. The three stops
- * are Tetrads' own --ok and --warn and a red of the same weight.
+ * are Models' own --ok and --warn and a red of the same weight.
  *
  * COLOR_RAMP_CENTS is how far past the band the ramp runs before it is fully
  * red: about a quarter-tone, so a note half a step off in 41-EDO is plainly
@@ -181,7 +181,7 @@ const COMPLEXITY_FLOOR = 0.05;
 /* How much of that slope the Display drawer's slider lets through. 1 is the
    sizing above as it always was; 0 flattens it so every degree is one size;
    2 doubles the slope, so the simple ratios stand out of a dense scale like
-   landmarks. Tetrads' Measure slider, for names instead of chords. */
+   landmarks. Models' Measure slider, for names instead of chords. */
 const COMPLEXITY_DEFAULT = 1;
 // Ups and Downs renders at one fixed size for every mark — never scaled by
 // density, name length, complexity, enh equivalent, or exclude halves.

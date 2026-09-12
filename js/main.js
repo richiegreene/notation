@@ -374,7 +374,7 @@ function downloadCsv(content, filename) {
  *  THE RAIL — two stages and three drawers
  * =====================================================================
  *
- * Tetrads' and Xenachord Designer's rail, with one addition those two do not
+ * Models' and Keyboard Designer's rail, with one addition those two do not
  * need: this app has two things to look at rather than one, so the rail holds
  * STAGES as well as DRAWERS and the two behave differently.
  *
@@ -492,7 +492,7 @@ function setupPanel() {
  *  THE PLAY DRAWER'S TWO DRAWN CONTROLS
  * =====================================================================
  *
- * Tetrads' and Xenachord Designer's own picker and ADSR editor, built from the
+ * Models' and Keyboard Designer's own picker and ADSR editor, built from the
  * same modules (js/synth/timbre.js, js/synth/adsr.js), so the family list and
  * the slider's range are written in by createTimbrePicker rather than spelled
  * out in this app's markup and the three cannot come to offer different
@@ -506,7 +506,7 @@ let synthPicker = null;
 let synthAdsrEditor = null;
 let synthState = { timbre: DEFAULT_TIMBRE, adsr: { ...DEFAULT_ADSR } };
 
-/** The colours the two canvases are drawn in: Tetrads' and Xenachord
+/** The colours the two canvases are drawn in: Models' and Keyboard
  *  Designer's own, literal for literal, in both themes. The scopes are
  *  instrument screens with their own ground (--scope-bg) rather than a
  *  surface of the chrome, so the trace is the mint the other two draw it in
