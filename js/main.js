@@ -1460,3 +1460,40 @@ $(document).ready(function(){
     // history, and nothing set up above is recorded as a user edit.
     initHistory({ reapply: applyAllFromInputs });
 });
+
+// --- The glass Chrome forgot to hand over ---------------------------------
+// Chrome on iOS, turned to landscape, keeps sizing the page as though its
+// bottom toolbar were still there: the toolbar has gone, but the page is told
+// a height a toolbar short of the screen, and stays short until a scroll or a
+// reload. dvh cannot help — it is the browser's own figure, and the figure is
+// the thing that is wrong. The visual viewport, though, is measured from what
+// is actually on the glass, so when it is taller than #app the difference is
+// screen going unused, and #app is set to it in pixels.
+//
+// Only ever taller. When the visible box is SMALLER than #app — the URL bar
+// back up, the keyboard open over a field — the inline height is cleared and
+// the stylesheet's dvh answers as before, so typing does not squash the tuner
+// to fit above the keys. Re-run on the next frame and once more after the
+// rotate animation, because the events that announce a new shape are
+// delivered while the old one is still measured (the same three passes the
+// masonry uses, for the same reason).
+function fillForgottenGlass() {
+    const app = document.getElementById('app');
+    const vv = window.visualViewport;
+    if (!app || !vv) return;
+    app.style.height = '';
+    const have = app.getBoundingClientRect().height;
+    const glass = Math.max(vv.height, window.innerHeight || 0);
+    if (glass - have > 2) app.style.height = Math.round(glass) + 'px';
+}
+let glassFrame = null;
+function fillGlassSoon() {
+    fillForgottenGlass();
+    if (glassFrame !== null) cancelAnimationFrame(glassFrame);
+    glassFrame = requestAnimationFrame(fillForgottenGlass);
+    setTimeout(fillForgottenGlass, 320);
+}
+window.addEventListener('resize', fillGlassSoon);
+window.addEventListener('orientationchange', fillGlassSoon);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', fillGlassSoon);
+fillGlassSoon();
